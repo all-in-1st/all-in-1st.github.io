@@ -1,0 +1,23 @@
+# .gitignore for manga-platform static site project
+
+# Node dependencies
+node_modules/
+
+# IDE config files
+.vscode/
+
+# macOS Finder files
+.DS_Store
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Logs
+npm-debug.log*
+
+# Build outputs (if any)
+dist/
+build/
+
+# Environment variables
+.env

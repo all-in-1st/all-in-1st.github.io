@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Watch – All in 1st</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    /* Scrollable related videos */
+    .related-videos {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      padding-bottom: 1rem;
+    }
+    .related-videos .card {
+      min-width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg" style="background-color: white;">
+    <div class="container">
+      <a class="navbar-brand" href="index.html" style="color: #007bff; font-weight: bold;">All in 1st</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="watch.html">Watch</a></li>
+          <li class="nav-item"><a class="nav-link" href="upload.html">Upload</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4" id="mainContent">
+    <!-- Controls: ALL and GENRE Dropdown + Search -->
+    <div class="d-flex align-items-center mb-3" id="listControls">
+      <button id="allBtn" class="btn btn-primary me-3">All</button>
+      <div id="genreDropdown" class="dropdown me-3">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          Genre
+        </button>
+        <ul class="dropdown-menu p-2">
+          <input type="text" id="genreSearch" class="form-control mb-2" placeholder="Search genre..." />
+          <!-- Genre items omitted for brevity -->
+          <li><a class="dropdown-item genre-item" href="#" data-genre="Action">Action</a></li>
+          <li><a class="dropdown-item genre-item" href="#" data-genre="Fantasy">Fantasy</a></li>
+          <!-- …other genres… -->
+        </ul>
+      </div>
+      <input type="text" id="videoSearch" class="form-control flex-grow-1" placeholder="Search videos..." />
+    </div>
+
+    <!-- Video Grid -->
+    <div class="row" id="videoGrid"></div>
+  </div>
+
+  <script>
+    // Simulated login status
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+
+    // Sample video data
+    const videos = [
+      {
+        id: '1',
+        title: 'Dragon Ball Explained',
+        genre: 'Action',
+        thumb: 'https://via.placeholder.com/320x180?text=Dragon+Ball',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        description: 'Detailed breakdown of Dragon Ball storyline, characters, and lore.',
+        episodes: ['Episode 1: Origins', 'Episode 2: Training', 'Episode 3: First Battle'],
+        channelUrl: 'https://www.youtube.com/channel/UC-DragonBall'
+      },
+      {
+        id: '2',
+        title: 'Fairy Tail Fantasy',
+        genre: 'Fantasy',
+        thumb: 'https://via.placeholder.com/320x180?text=Fairy+Tail',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        description: 'In-depth analysis of Fairy Tail magic system and world.',
+        episodes: ['Episode 1: Guild Formation', 'Episode 2: Fire Dragon’s Roar'],
+        channelUrl: 'https://www.youtube.com/channel/UC-FairyTail'
+      },
+      // …more videos…
+    ];
+
+    const videoGrid = document.getElementById('videoGrid');
+    const allBtn = document.getElementById('allBtn');
+    const genreSearch = document.getElementById('genreSearch');
+    const genreItems = document.querySelectorAll('.genre-item');
+    const videoSearch = document.getElementById('videoSearch');
+    const mainContent = document.getElementById('mainContent');
+    const listControls = document.getElementById('listControls');
+
+    // Render video grid
+    function renderVideos(filterFn) {
+      videoGrid.innerHTML = '';
+      videos.filter(filterFn).forEach(v => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-4';
+        col.innerHTML = `
+          <div class="card h-100">
+            <img src="${v.thumb}" class="card-img-top" alt="${v.title}">
+            <div class="card-body d-flex flex-column">
+              <h6 class="card-title">${v.title}</h6>
+              <p class="text-muted mb-2 small">${v.genre}</p>
+              <button class="mt-auto btn btn-sm btn-primary" onclick="handleWatchClick('${v.id}')">Watch</button>
+            </div>
+          </div>`;
+        videoGrid.appendChild(col);
+      });
+    }
+
+    // Handle watch click
+    function handleWatchClick(videoId) {
+      if (!isLoggedIn) {
+        return window.location.href = 'login.html';
+      }
+      const video = videos.find(v => v.id === videoId);
+      showVideoDetail(video);
+    }
+
+    // Show detailed view
+    function showVideoDetail(video) {
+      // Hide list controls
+      listControls.style.display = 'none';
+      videoGrid.style.display = 'none';
+
+      // Build detail HTML
+      const detailHtml = `
+        <div id="videoDetail">
+          <button class="btn btn-link mb-3" onclick="exitDetail()">← Back to list</button>
+          <h3>${video.title}</h3>
+          <div class="ratio ratio-16x9 mb-3">
+            <iframe src="${video.url}" frameborder="0" allowfullscreen></iframe>
+          </div>
+          <p>${video.description}</p>
+          <h5>Episodes</h5>
+          <ul>${video.episodes.map(ep => `<li>${ep}</li>`).join('')}</ul>
+          <h5>Related Videos</h5>
+          <div class="related-videos">
+            ${videos
+              .filter(v => v.genre === video.genre && v.id !== video.id)
+              .map(rv => `
+                <div class="card">
+                  <img src="${rv.thumb}" class="card-img-top" alt="${rv.title}">
+                  <div class="card-body p-2">
+                    <small>${rv.title}</small>
+                  </div>
+                </div>`)
+              .join('')}
+          </div>
+          <a href="${video.channelUrl}" class="btn btn-danger mt-3">Subscribe to Channel</a>
+        </div>`;
+
+      mainContent.insertAdjacentHTML('beforeend', detailHtml);
+    }
+
+    // Exit detail view
+    function exitDetail() {
+      document.getElementById('videoDetail').remove();
+      listControls.style.display = 'flex';
+      videoGrid.style.display = 'flex';
+    }
+
+    // Event bindings
+    allBtn.addEventListener('click', () => renderVideos(() => true));
+    genreItems.forEach(item => {
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        renderVideos(v => v.genre === item.dataset.genre);
+      });
+    });
+    genreSearch.addEventListener('input', () => {
+      const term = genreSearch.value.toLowerCase();
+      genreItems.forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(term) ? 'block' : 'none';
+      });
+    });
+    videoSearch.addEventListener('input', () => {
+      const term = videoSearch.value.toLowerCase();
+      renderVideos(v => v.title.toLowerCase().includes(term));
+    });
+
+    // Initial render
+    renderVideos(() => true);
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
