@@ -141,14 +141,9 @@
 
         <!-- Quick Login Options -->
         <div class="row g-2 mb-3">
-          <div class="col-6">
-            <button class="btn btn-outline-primary w-100" onclick="quickLogin('user')">
-              <i class="bi bi-person"></i> Demo User
-            </button>
-          </div>
-          <div class="col-6">
-            <button class="btn btn-outline-success w-100" onclick="quickLogin('admin')">
-              <i class="bi bi-shield-check"></i> Demo Admin
+          <div class="col-12">
+            <button class="btn btn-outline-primary w-100" onclick="quickLogin('demo')">
+              <i class="bi bi-person"></i> Demo Login
             </button>
           </div>
         </div>
@@ -201,19 +196,68 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // User accounts (in real app, this would be in a database)
+    // Admin credentials (YOU are the only admin)
+    const ADMIN_CREDENTIALS = {
+      username: 'admin',
+      email: 'admin@allin1st.com',
+      password: 'allin1st2025',
+      role: 'admin'
+    };
+
+    // Default demo user
     const users = [
-      { username: 'admin', email: 'admin@allin1st.com', password: 'admin123', role: 'admin' },
-      { username: 'user', email: 'user@allin1st.com', password: 'user123', role: 'user' },
       { username: 'demo', email: 'demo@allin1st.com', password: 'demo123', role: 'user' }
     ];
+
+    // Session management functions
+    function setUserSession(user, rememberMe) {
+      const sessionData = {
+        isLoggedIn: true,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        loginTime: new Date().toISOString()
+      };
+      
+      // Store in both localStorage and sessionStorage for reliability
+      const sessionString = JSON.stringify(sessionData);
+      sessionStorage.setItem('allin1st_session', sessionString);
+      
+      if (rememberMe) {
+        localStorage.setItem('allin1st_session', sessionString);
+      }
+      
+      console.log('Session stored:', sessionData);
+    }
+
+    function getUserSession() {
+      const sessionData = localStorage.getItem('allin1st_session') || sessionStorage.getItem('allin1st_session');
+      if (sessionData) {
+        try {
+          return JSON.parse(sessionData);
+        } catch (e) {
+          console.error('Invalid session data:', e);
+          clearUserSession();
+        }
+      }
+      return null;
+    }
+
+    function clearUserSession() {
+      localStorage.removeItem('allin1st_session');
+      sessionStorage.removeItem('allin1st_session');
+    }
+
+    function isLoggedIn() {
+      const session = getUserSession();
+      return session && session.isLoggedIn === true;
+    }
 
     // Load existing users from localStorage
     function loadUsers() {
       const savedUsers = localStorage.getItem('allin1st_users');
       if (savedUsers) {
         const parsedUsers = JSON.parse(savedUsers);
-        // Merge with default users (avoid duplicates)
         parsedUsers.forEach(savedUser => {
           if (!users.find(u => u.username === savedUser.username)) {
             users.push(savedUser);
@@ -252,18 +296,28 @@
       }
     }
 
-    // Quick login
+    // Quick demo login
     function quickLogin(type) {
-      const username = type === 'admin' ? 'admin' : 'demo';
-      const password = type === 'admin' ? 'admin123' : 'demo123';
+      document.getElementById('username').value = 'demo';
+      document.getElementById('password').value = 'demo123';
       
-      document.getElementById('username').value = username;
-      document.getElementById('password').value = password;
-      
-      // Auto-submit after a short delay
       setTimeout(() => {
         document.getElementById('loginForm').requestSubmit();
       }, 500);
+    }
+
+    // Authenticate user
+    function authenticateUser(username, password) {
+      // Check if admin
+      if ((username === ADMIN_CREDENTIALS.username || username === ADMIN_CREDENTIALS.email) && 
+          password === ADMIN_CREDENTIALS.password) {
+        return ADMIN_CREDENTIALS;
+      }
+      
+      // Check regular users
+      return users.find(u => 
+        (u.username === username || u.email === username) && u.password === password
+      );
     }
 
     // Login form submission
@@ -280,30 +334,16 @@
       loginBtn.textContent = 'Signing In...';
       spinner.classList.remove('d-none');
       
-      // Simulate API delay
+      // Simulate API delay and authenticate
       setTimeout(() => {
-        const user = users.find(u => 
-          (u.username === username || u.email === username) && u.password === password
-        );
+        const user = authenticateUser(username, password);
         
         if (user) {
           // Success
-          showAlert(`Welcome back, ${user.username}!`, 'success');
+          showAlert(`Welcome ${user.role === 'admin' ? 'Admin' : 'back'}, ${user.username}!`, 'success');
           
-          // Store login session
-          const sessionData = {
-            isLoggedIn: true,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-            loginTime: new Date().toISOString()
-          };
-          
-          if (rememberMe) {
-            localStorage.setItem('allin1st_session', JSON.stringify(sessionData));
-          } else {
-            sessionStorage.setItem('allin1st_session', JSON.stringify(sessionData));
-          }
+          // Set session
+          setUserSession(user, rememberMe);
           
           // Redirect after success
           setTimeout(() => {
@@ -349,13 +389,14 @@
         return;
       }
       
-      if (users.find(u => u.username === username)) {
-        alert('Username already exists');
+      // Check if username/email already exists (including admin)
+      if (username === ADMIN_CREDENTIALS.username || email === ADMIN_CREDENTIALS.email) {
+        alert('Username or email already exists');
         return;
       }
       
-      if (users.find(u => u.email === email)) {
-        alert('Email already registered');
+      if (users.find(u => u.username === username || u.email === email)) {
+        alert('Username or email already exists');
         return;
       }
       
@@ -377,13 +418,22 @@
       
       // Pre-fill login form
       document.getElementById('username').value = username;
+      document.getElementById('password').value = '';
     }
 
     // Forgot password
     function forgotPassword() {
       const email = prompt('Enter your email address:');
       if (email) {
-        const user = users.find(u => u.email === email);
+        let user = null;
+        
+        // Check admin
+        if (email === ADMIN_CREDENTIALS.email) {
+          user = ADMIN_CREDENTIALS;
+        } else {
+          user = users.find(u => u.email === email);
+        }
+        
         if (user) {
           alert(`Password recovery email sent to ${email}\n\nFor demo purposes, your password is: ${user.password}`);
         } else {
@@ -392,23 +442,29 @@
       }
     }
 
-    // Check if already logged in
+    // Check if already logged in on page load
     function checkExistingLogin() {
-      const sessionData = localStorage.getItem('allin1st_session') || sessionStorage.getItem('allin1st_session');
-      if (sessionData) {
-        const session = JSON.parse(sessionData);
-        if (session.isLoggedIn) {
-          showAlert(`Already logged in as ${session.username}. Redirecting...`, 'info');
-          setTimeout(() => {
-            window.location.href = 'watch.html';
-          }, 2000);
-        }
+      if (isLoggedIn()) {
+        const session = getUserSession();
+        showAlert(`Already logged in as ${session.username}. Redirecting...`, 'info');
+        setTimeout(() => {
+          const redirectUrl = new URLSearchParams(window.location.search).get('redirect') || 'watch.html';
+          window.location.href = redirectUrl;
+        }, 2000);
       }
     }
 
     // Initialize
     loadUsers();
     checkExistingLogin();
+
+    // Global session management for other pages
+    window.AllIn1st = {
+      isLoggedIn: isLoggedIn,
+      getUserSession: getUserSession,
+      setUserSession: setUserSession,
+      clearUserSession: clearUserSession
+    };
   </script>
 </body>
 </html>
