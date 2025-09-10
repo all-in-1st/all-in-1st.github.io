@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://all-in-1st.github.io/All-in-1st-/sitemap.xml
