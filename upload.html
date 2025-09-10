@@ -3,78 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Upload Video – All in 1st</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>Upload – All in 1st</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet" />
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg" style="background-color: white;">
+  <nav class="navbar navbar-light bg-light">
     <div class="container">
-      <a class="navbar-brand" href="index.html" style="color: #007bff; font-weight: bold;">All in 1st</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+      <a class="navbar-brand" href="watch.html">All in 1st</a>
+      <button class="btn btn-outline-secondary" onclick="location.href='watch.html'">
+        Back to Watch
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-           <li class="nav-item"><a class="nav-link" href="watch.html">Watch</a></li>
-          <li class="nav-item"><a class="nav-link active" href="upload.html">Upload</a></li>
-          <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
-        </ul>
-      </div>
     </div>
   </nav>
 
-  <div class="container mt-5">
-    <h2>Upload Your Manga Explainer Video</h2>
+  <div class="container py-5">
+    <h2>Upload Your Video</h2>
     <form id="uploadForm">
       <div class="mb-3">
-        <label for="videoTitle" class="form-label">Video Title</label>
-        <input type="text" class="form-control" id="videoTitle" placeholder="Enter video title" required />
+        <label class="form-label">Video Title</label>
+        <input type="text" id="title" class="form-control" required />
       </div>
       <div class="mb-3">
-        <label for="youtubeLink" class="form-label">YouTube Video Link</label>
-        <input type="url" class="form-control" id="youtubeLink" placeholder="Enter YouTube video URL" required />
+        <label class="form-label">YouTube Video Link</label>
+        <input type="url" id="link" class="form-control" required />
       </div>
       <div class="mb-3">
-        <label for="videoTags" class="form-label">Tags (comma separated)</label>
-        <input type="text" class="form-control" id="videoTags" placeholder="e.g. Magic, Fantasy, Adventure" />
-        <div class="form-text">Enter tags separated by commas. Tags help organize genres.</div>
+        <label class="form-label">Tags (comma-separated)</label>
+        <input type="text" id="tags" class="form-control" placeholder="e.g. Action, Fantasy" />
       </div>
       <div class="mb-3">
-        <label for="videoDescription" class="form-label">Short Description</label>
-        <textarea class="form-control" id="videoDescription" rows="3" placeholder="Briefly describe the video"></textarea>
+        <label class="form-label">Short Description</label>
+        <textarea id="description" class="form-control" rows="3"></textarea>
       </div>
-      <button type="submit" class="btn btn-primary">Submit Video</button>
+      <button type="submit" class="btn btn-primary">
+        Submit
+      </button>
     </form>
   </div>
 
   <script>
+    // Ensure user is logged in
+    const session = JSON.parse(localStorage.getItem('allin1st_session')||'null');
+    if (!session || !session.isLoggedIn) {
+      return location.href = 'login.html?next=upload.html';
+    }
+
+    // Load existing uploads
+    let uploads = JSON.parse(localStorage.getItem('videosUploaded')||'[]');
+
     document.getElementById('uploadForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const title = document.getElementById('videoTitle').value.trim();
-      const youtubeUrl = document.getElementById('youtubeLink').value.trim();
-      const tagsRaw = document.getElementById('videoTags').value.trim();
-      const description = document.getElementById('videoDescription').value.trim();
+      const title       = document.getElementById('title').value.trim();
+      const link        = document.getElementById('link').value.trim();
+      const tagsInput   = document.getElementById('tags').value.trim();
+      const description = document.getElementById('description').value.trim();
 
-      const tags = tagsRaw ? tagsRaw.split(',').map(tag => tag.trim()).filter(tag => tag !== '') : [];
+      // Basic validation
+      if (!title || !link) {
+        return alert('Title and link are required.');
+      }
 
-      // Example output - you would integrate with backend here
-      console.log({
+      // Extract YouTube ID from link
+      const match = link.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+      if (!match) {
+        return alert('Enter a valid YouTube URL.');
+      }
+
+      const youtubeId = match[1];
+      const tags      = tagsInput ? tagsInput.split(',').map(t => t.trim()) : [];
+
+      // Create new video object
+      const newVideo = {
+        id: Date.now(),
         title,
-        youtubeUrl,
-        tags,
+        genre: tags[0] || 'Uncategorized',
         description,
-      });
+        youtubeId,
+        tags,
+        uploadDate: new Date().toISOString(),
+        views: 0
+      };
 
-      alert('Video submitted! Titles: ' + title + ', Tags: ' + tags.join(', '));
+      // Save to localStorage
+      uploads.unshift(newVideo);
+      localStorage.setItem('videosUploaded', JSON.stringify(uploads));
 
-      // Clear form
-      this.reset();
+      alert('Video submitted successfully!');
+      // Redirect back to watch page so gallery can show it
+      location.href = 'watch.html';
     });
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
