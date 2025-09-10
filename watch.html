@@ -1,237 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Watch – All in 1st</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-        rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
-        rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch - All in 1st</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    #sidebar { position: fixed; top:0; right:-300px; width:300px; height:100%;
-      background:#f8f9fa; box-shadow:-2px 0 5px rgba(0,0,0,0.1);
-      transition:right .3s; z-index:1050; padding:1rem; overflow-y:auto; }
-    #sidebar.active{ right:0; }
-    .avatar-btn{ background:transparent; border:none; margin-left:1rem; }
-    .avatar-btn img{ width:32px; height:32px; border-radius:50%; }
+    .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 0; }
+    .video-card { border: none; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s; cursor: pointer; }
+    .video-card:hover { transform: translateY(-5px); }
+    .sidebar { position: fixed; top: 0; right: -350px; width: 350px; height: 100vh; background: white; box-shadow: -2px 0 10px rgba(0,0,0,0.1); transition: right 0.3s; z-index: 1050; overflow-y: auto; }
+    .sidebar.active { right: 0; }
+    .avatar-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #007bff; background: #f8f9fa; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; display: none; }
+    .overlay.active { display: block; }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="index.html">All in 1st</a>
+  <!-- Loading Screen -->
+  <div id="loadingScreen" class="position-fixed top-0 start-0 w-100 h-100 bg-white d-flex align-items-center justify-content-center" style="z-index: 9999;">
+    <div class="text-center">
+      <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+      <h5 class="text-primary">Loading your content...</h5>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-primary" href="index.html">All in 1st</a>
+      
       <div class="d-flex align-items-center">
-        <button class="btn btn-outline-danger" onclick="logout()">Logout</button>
-        <button class="avatar-btn" onclick="toggleSidebar()">
-          <img id="navAvatar"
-               src="https://avatars.githubusercontent.com/u/583231?v=4"
-               onerror="this.onerror=null;this.src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png';"
-               alt="Profile"/>
+        <span class="me-3" id="welcomeText">Welcome!</span>
+        <button class="btn btn-outline-danger btn-sm me-2" onclick="logout()">Logout</button>
+        <button class="avatar-btn d-flex align-items-center justify-content-center" onclick="toggleSidebar()">
+          <i class="bi bi-person text-primary"></i>
         </button>
       </div>
     </div>
   </nav>
 
-  <div id="loading"
-       class="d-flex vh-100 vw-100 align-items-center justify-content-center">
-    <div class="text-center">
-      <div class="spinner-border mb-2"></div>
-      <div>Verifying login…</div>
+  <!-- Hero Section -->
+  <section class="hero-section" style="margin-top: 56px;">
+    <div class="container text-center">
+      <h1 class="display-4 fw-bold mb-3">Your Video Library</h1>
+      <p class="lead">Discover and manage your manga explainer videos</p>
     </div>
-  </div>
+  </section>
 
-  <div class="container py-5 d-none" id="content">
-    <h1>Video Library</h1>
-    <div class="row" id="videos"></div>
+  <!-- Main Content -->
+  <div class="container py-5" id="mainContent">
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>All Videos</h2>
+          <a href="upload.html" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Upload Video
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row" id="videoGallery">
+      <!-- Videos will be loaded here -->
+    </div>
   </div>
 
   <!-- Sidebar -->
-  <div id="sidebar">
-    <div class="d-flex align-items-center mb-3">
-      <img id="sidebarAvatar"
-           src="https://avatars.githubusercontent.com/u/583231?v=4"
-           onerror="this.onerror=null;this.src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png';"
-           width="50" height="50" class="rounded-circle me-2"/>
-      <div>
-        <h5 id="sidebarName">User</h5>
-        <small id="sidebarRole" class="text-muted">Role</small>
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="mb-0">Account</h5>
+        <button class="btn-close" onclick="closeSidebar()"></button>
       </div>
-    </div>
-    <hr/>
-    <ul class="nav flex-column">
-      <li class="nav-item mb-2">
-        <a href="upload.html" class="nav-link">
-          <i class="bi bi-cloud-upload-fill me-2"></i>Upload
+      
+      <div class="text-center mb-4">
+        <div class="avatar-btn mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+          <i class="bi bi-person text-primary"></i>
+        </div>
+        <h6 id="sidebarUsername">Username</h6>
+        <small class="text-muted" id="sidebarRole">Role</small>
+      </div>
+      
+      <div class="list-group list-group-flush">
+        <a href="upload.html" class="list-group-item list-group-item-action">
+          <i class="bi bi-cloud-upload me-2"></i>Upload Video
         </a>
-      </li>
-      <li class="nav-item mb-2">
-        <a href="#" class="nav-link" onclick="showProfileEditor()">
-          <i class="bi bi-pencil-square me-2"></i>Edit Profile
+        <a href="#" class="list-group-item list-group-item-action" onclick="showHistory()">
+          <i class="bi bi-clock-history me-2"></i>Watch History
         </a>
-      </li>
-      <li class="nav-item mb-2">
-        <a href="#" class="nav-link" onclick="showHistory()">
-          <i class="bi bi-clock-history me-2"></i>History
-        </a>
-      </li>
-      <li class="nav-item mb-2">
-        <a href="#" class="nav-link" onclick="showYourVideos()">
+        <a href="#" class="list-group-item list-group-item-action" onclick="showUploads()">
           <i class="bi bi-collection-play me-2"></i>Your Videos
         </a>
-      </li>
-    </ul>
+        <a href="#" class="list-group-item list-group-item-action" onclick="editProfile()">
+          <i class="bi bi-person-gear me-2"></i>Edit Profile
+        </a>
+      </div>
+    </div>
   </div>
 
-  <!-- Profile Editor Modal -->
-  <div class="modal fade" id="profileModal" tabindex="-1">
-    <div class="modal-dialog"><div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Profile</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+  <!-- Video Modal -->
+  <div class="modal fade" id="videoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="videoTitle">Video Title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="ratio ratio-16x9 mb-3">
+            <iframe id="videoFrame" src="" allowfullscreen></iframe>
+          </div>
+          <p id="videoDescription">Video description...</p>
+          <div id="videoTags"></div>
+        </div>
       </div>
-      <div class="modal-body text-center">
-        <img id="editAvatarPreview"
-             src="https://avatars.githubusercontent.com/u/583231?v=4"
-             width="80" height="80" class="rounded-circle mb-2"/>
-        <input type="file" id="editAvatar" class="form-control mb-3" accept="image/*"/>
-        <input type="text" id="editName" class="form-control" placeholder="Display Name"/>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-primary" onclick="saveProfile()">Save</button>
-      </div>
-    </div></div>
+    </div>
   </div>
 
-  <!-- List Modal -->
-  <div class="modal fade" id="listModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-scrollable"><div class="modal-content">
-      <div class="modal-header">
-        <h5 id="listModalTitle" class="modal-title">Title</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+  <!-- Info Modal -->
+  <div class="modal fade" id="infoModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="infoModalTitle">Title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="infoModalBody">
+          Content...
+        </div>
       </div>
-      <div class="modal-body" id="listModalBody"></div>
-    </div></div>
+    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Session and login
+    let currentUser = null;
+    let allVideos = [];
+    let watchHistory = [];
+
+    // Session management
     function getSession() {
-      try { return JSON.parse(localStorage.getItem('allin1st_session')); }
-      catch { return null; }
+      try {
+        return JSON.parse(localStorage.getItem('allin1st_session') || sessionStorage.getItem('allin1st_session') || 'null');
+      } catch (e) {
+        console.error('Invalid session data:', e);
+        return null;
+      }
     }
+
     function isLoggedIn() {
-      const s = getSession(); return s && s.isLoggedIn;
+      const session = getSession();
+      return session && session.isLoggedIn === true;
     }
+
     function logout() {
       localStorage.removeItem('allin1st_session');
-      location.href = 'login.html?next=watch.html';
+      sessionStorage.removeItem('allin1st_session');
+      window.location.href = 'login.html?next=watch.html';
     }
 
-    // Sidebar toggle
+    // Sidebar functions
     function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('active');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
     }
 
-    // Default videos
-    const defaults = [
-      { id:1, title:'Dragon Ball Z Explained', genre:'Action' },
-      { id:2, title:'Fairy Tail Fantasy', genre:'Fantasy' }
-    ];
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+    }
 
     // Load videos
     function loadVideos() {
-      const uploads = JSON.parse(localStorage.getItem('videosUploaded')||'[]')
-        .map(v=>({ id:v.id, title:v.title, genre:v.genre }));
-      const all = [...uploads, ...defaults];
-      const container = document.getElementById('videos');
-      container.innerHTML = all.map(v=>
-        `<div class="col-md-4 mb-3">
-          <div class="card p-3" onclick="playVideo(${v.id},'${v.title}')">
-            <h5>${v.title}</h5>
-            <span class="badge bg-primary">${v.genre}</span>
+      // Default videos
+      const defaultVideos = [
+        {
+          id: 1,
+          title: 'Dragon Ball Z Explained',
+          description: 'Complete breakdown of Dragon Ball Z power systems and story arcs.',
+          genre: 'Action',
+          youtubeId: 'dQw4w9WgXcQ',
+          tags: ['Action', 'Shounen'],
+          uploadDate: '2024-01-15',
+          uploader: 'System'
+        },
+        {
+          id: 2,
+          title: 'Fairy Tail Fantasy Analysis',
+          description: 'Deep dive into the magical world of Fairy Tail.',
+          genre: 'Fantasy',
+          youtubeId: 'dQw4w9WgXcQ',
+          tags: ['Fantasy', 'Magic'],
+          uploadDate: '2024-01-10',
+          uploader: 'System'
+        }
+      ];
+
+      // Load uploaded videos
+      const uploadedVideos = JSON.parse(localStorage.getItem('videosUploaded') || '[]');
+      
+      // Combine videos (uploaded first)
+      allVideos = [...uploadedVideos, ...defaultVideos];
+      
+      // Render videos
+      renderVideos();
+      
+      console.log('Loaded videos:', allVideos);
+    }
+
+    function renderVideos() {
+      const gallery = document.getElementById('videoGallery');
+      
+      if (allVideos.length === 0) {
+        gallery.innerHTML = `
+          <div class="col-12 text-center py-5">
+            <i class="bi bi-collection-play" style="font-size: 3rem; color: #6c757d;"></i>
+            <h4 class="text-muted mt-3">No videos available</h4>
+            <p class="text-muted">Upload your first video to get started!</p>
+            <a href="upload.html" class="btn btn-primary">Upload Video</a>
           </div>
-        </div>`).join('');
+        `;
+        return;
+      }
+
+      gallery.innerHTML = allVideos.map(video => `
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card video-card h-100" onclick="playVideo(${video.id})">
+            <div class="card-body">
+              <h5 class="card-title">${video.title}</h5>
+              <p class="card-text text-muted">${video.description || 'No description available'}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge bg-primary">${video.genre}</span>
+                <small class="text-muted">by ${video.uploader || currentUser.username}</small>
+              </div>
+              <div class="mt-2">
+                ${(video.tags || []).map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
     }
 
-    // Watched history
-    let videosWatched = JSON.parse(localStorage.getItem('videosWatched')||'[]');
+    function playVideo(videoId) {
+      const video = allVideos.find(v => v.id == videoId);
+      if (!video) return;
 
-    // Play video
-    function playVideo(id,title) {
-      if (!isLoggedIn()) return logout();
-      videosWatched.unshift({ id,title,t:Date.now() });
-      localStorage.setItem('videosWatched',
-        JSON.stringify(videosWatched.slice(0,50)));
-      alert('Playing: ' + title);
+      // Add to watch history
+      const historyItem = {
+        id: video.id,
+        title: video.title,
+        watchedAt: new Date().toISOString()
+      };
+      
+      watchHistory = watchHistory.filter(item => item.id != video.id); // Remove if already exists
+      watchHistory.unshift(historyItem); // Add to beginning
+      watchHistory = watchHistory.slice(0, 50); // Keep only last 50
+      localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+
+      // Show video modal
+      document.getElementById('videoTitle').textContent = video.title;
+      document.getElementById('videoDescription').textContent = video.description || 'No description available';
+      document.getElementById('videoTags').innerHTML = (video.tags || []).map(tag => 
+        `<span class="badge bg-secondary me-1">${tag}</span>`
+      ).join('');
+      
+      if (video.youtubeId) {
+        document.getElementById('videoFrame').src = `https://www.youtube.com/embed/${video.youtubeId}`;
+      }
+
+      new bootstrap.Modal(document.getElementById('videoModal')).show();
     }
 
-    // Populate user info
-    function populateUserInfo() {
-      const user = getSession();
-      const avatar = localStorage.getItem('profileAvatar')||
-                     'https://avatars.githubusercontent.com/u/583231?v=4';
-      const name   = localStorage.getItem('profileName')||user.username;
-      document.getElementById('navAvatar').src = avatar;  
-      document.getElementById('sidebarAvatar').src = avatar;
-      document.getElementById('sidebarName').textContent = name;
-      document.getElementById('sidebarRole').textContent =
-        user.role==='admin'?'Administrator':'Member';
-    }
-
-    // Modals: History & Your Videos
     function showHistory() {
-      const items = videosWatched.map(v=>
-        `${v.title} — ${new Date(v.t).toLocaleString()}`);
-      showList('History',items);
-    }
-    function showYourVideos() {
-      const uploads = JSON.parse(localStorage.getItem('videosUploaded')||'[]');
-      showList('Your Videos',uploads.map(v=>v.title));
-    }
-    function showList(title,items) {
-      document.getElementById('listModalTitle').textContent = title;
-      document.getElementById('listModalBody').innerHTML =
-        items.length
-          ? '<ul>'+items.map(i=>`<li>${i}</li>`).join('')+'</ul>'
-          : '<p class="text-muted">No items to show</p>';
-      new bootstrap.Modal(document.getElementById('listModal')).show();
+      const history = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+      const content = history.length > 0 
+        ? '<ul class="list-group">' + history.map(item => 
+            `<li class="list-group-item d-flex justify-content-between">
+              <span>${item.title}</span>
+              <small class="text-muted">${new Date(item.watchedAt).toLocaleDateString()}</small>
+            </li>`
+          ).join('') + '</ul>'
+        : '<p class="text-muted">No videos watched yet.</p>';
+      
+      showInfoModal('Watch History', content);
+      closeSidebar();
     }
 
-    // Profile editor
-    document.getElementById('editAvatar')
-      .addEventListener('change',e=>{
-        const reader = new FileReader();
-        reader.onload = ()=> document.getElementById('editAvatarPreview').src = reader.result;
-        reader.readAsDataURL(e.target.files[0]);
-      });
-    function saveProfile() {
-      localStorage.setItem('profileAvatar',
-        document.getElementById('editAvatarPreview').src);
-      localStorage.setItem('profileName',
-        document.getElementById('editName').value.trim()||getSession().username);
-      bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
-      populateUserInfo();
+    function showUploads() {
+      const uploads = JSON.parse(localStorage.getItem('videosUploaded') || '[]');
+      const content = uploads.length > 0
+        ? '<ul class="list-group">' + uploads.map(video => 
+            `<li class="list-group-item">
+              <strong>${video.title}</strong><br>
+              <small class="text-muted">${video.genre} • Uploaded ${new Date(video.uploadDate).toLocaleDateString()}</small>
+            </li>`
+          ).join('') + '</ul>'
+        : '<p class="text-muted">No videos uploaded yet.</p>';
+      
+      showInfoModal('Your Videos', content);
+      closeSidebar();
     }
 
-    // Initialization
-    window.addEventListener('load',()=>{
-      // Fail-safe redirect if still loading
-      setTimeout(()=>{
-        if(!document.getElementById('content').classList.contains('d-none')){
+    function editProfile() {
+      showInfoModal('Edit Profile', `
+        <p class="text-muted">Profile editing feature coming soon!</p>
+        <p>Current user: <strong>${currentUser.username}</strong></p>
+        <p>Role: <strong>${currentUser.role}</strong></p>
+      `);
+      closeSidebar();
+    }
+
+    function showInfoModal(title, content) {
+      document.getElementById('infoModalTitle').textContent = title;
+      document.getElementById('infoModalBody').innerHTML = content;
+      new bootstrap.Modal(document.getElementById('infoModal')).show();
+    }
+
+    // Initialize page
+    async function initializePage() {
+      try {
+        // Check authentication
+        if (!isLoggedIn()) {
+          console.log('User not logged in, redirecting...');
+          logout();
           return;
         }
-        logout();
-      },3000);
 
-      if(!isLoggedIn()) return logout();
-      document.getElementById('loading').classList.add('d-none');
-      document.getElementById('content').classList.remove('d-none');
-      populateUserInfo();
-      loadVideos();
+        currentUser = getSession();
+        console.log('Current user:', currentUser);
+
+        // Load watch history
+        watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
+
+        // Update UI
+        document.getElementById('welcomeText').textContent = `Welcome, ${currentUser.username}!`;
+        document.getElementById('sidebarUsername').textContent = currentUser.username;
+        document.getElementById('sidebarRole').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Member';
+
+        // Load videos
+        loadVideos();
+
+        // Hide loading screen
+        document.getElementById('loadingScreen').style.display = 'none';
+
+      } catch (error) {
+        console.error('Error initializing page:', error);
+        logout();
+      }
+    }
+
+    // Auto-redirect timeout
+    setTimeout(() => {
+      if (document.getElementById('loadingScreen').style.display !== 'none') {
+        console.log('Loading timeout, redirecting to login...');
+        logout();
+      }
+    }, 5000);
+
+    // Initialize when page loads
+    window.addEventListener('load', initializePage);
+
+    // Close video modal and stop video
+    document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
+      document.getElementById('videoFrame').src = '';
     });
   </script>
 </body>
