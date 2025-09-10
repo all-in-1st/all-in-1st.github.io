@@ -70,6 +70,11 @@
     .video-card:hover .play-overlay {
       opacity: 1;
     }
+    .search-section {
+      background: white;
+      padding: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
     .sidebar {
       position: fixed;
       top: 0;
@@ -119,6 +124,23 @@
       z-index: 9999;
     }
     .navbar { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .comment-item {
+      border-left: 3px solid #007bff;
+      padding-left: 12px;
+      margin-bottom: 12px;
+    }
+    .avatar-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #dee2e6;
+    }
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6c757d;
+    }
   </style>
 </head>
 <body>
@@ -155,6 +177,42 @@
     </div>
   </section>
 
+  <!-- Search & Filter Section -->
+  <section class="search-section">
+    <div class="container">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search videos by title, tags, or description..." onkeyup="filterVideos()">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select id="genreFilter" class="form-select" onchange="filterVideos()">
+            <option value="">All Genres</option>
+            <option value="Action">Action</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Drama">Drama</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Horror">Horror</option>
+            <option value="Romance">Romance</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Supernatural">Supernatural</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select id="sortFilter" class="form-select" onchange="filterVideos()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="popular">Most Popular</option>
+            <option value="title">By Title A-Z</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Video Gallery -->
   <section class="py-5">
     <div class="container">
@@ -178,6 +236,7 @@
 
       <!-- User Info -->
       <div class="text-center mb-4 pb-4 border-bottom">
+        <img id="sidebarAvatarImg" src="" class="avatar-circle mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem; display: none;" alt="Profile">
         <div class="avatar-circle mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;" id="sidebarAvatar">A</div>
         <h6 class="mb-1" id="sidebarUsername">Username</h6>
         <small class="text-muted" id="sidebarRole">Role</small>
@@ -194,7 +253,7 @@
         <a href="#" class="list-group-item list-group-item-action border-0" onclick="showUploads()">
           <i class="bi bi-collection-play text-primary me-3"></i>Your Videos
         </a>
-        <a href="#" class="list-group-item list-group-item-action border-0" onclick="showProfile()">
+        <a href="#" class="list-group-item list-group-item-action border-0" onclick="showProfileEditor()">
           <i class="bi bi-person-gear text-primary me-3"></i>Edit Profile
         </a>
       </div>
@@ -214,11 +273,68 @@
             <iframe id="videoFrame" src="" allowfullscreen></iframe>
           </div>
           <p id="videoDescription" class="text-muted">Description...</p>
-          <div id="videoTags"></div>
+          <div id="videoTags" class="mb-3"></div>
+          
+          <!-- Comments Section -->
+          <hr>
+          <h6 class="mb-3"><i class="bi bi-chat-dots me-2"></i>Comments</h6>
+          
+          <!-- Add Comment Form -->
+          <div class="mb-3">
+            <div class="input-group">
+              <input type="text" id="commentInput" class="form-control" placeholder="Add a comment..." maxlength="500">
+              <button class="btn btn-primary" onclick="addComment()" id="commentBtn">
+                <i class="bi bi-send"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Comments List -->
+          <div id="commentsList">
+            <!-- Comments will be loaded here -->
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <a href="#" id="watchOnYouTube" target="_blank" class="btn btn-primary">Watch on YouTube</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Editor Modal -->
+  <div class="modal fade" id="profileModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="profileForm">
+            <div class="text-center mb-4">
+              <img id="avatarPreview" src="" class="avatar-preview" alt="Avatar Preview" style="display: none;">
+              <div class="avatar-circle mx-auto" style="width: 100px; height: 100px; font-size: 2.5rem;" id="avatarFallback">A</div>
+              <div class="mt-3">
+                <input type="file" id="avatarInput" class="form-control" accept="image/*" onchange="previewAvatar()">
+                <div class="form-text">Choose a profile picture (optional)</div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Display Name</label>
+              <input type="text" id="displayNameInput" class="form-control" placeholder="Enter your display name..." maxlength="50">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Bio (Optional)</label>
+              <textarea id="bioInput" class="form-control" rows="3" placeholder="Tell others about yourself..." maxlength="200"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
         </div>
       </div>
     </div>
@@ -241,11 +357,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    console.log('🎬 Watch page loaded');
+    console.log('🎬 Enhanced Watch page loaded');
 
     let currentUser = null;
     let allVideos = [];
+    let filteredVideos = [];
     let watchHistory = [];
+    let currentVideoId = null;
 
     // Session Management
     function getUserSession() {
@@ -302,7 +420,6 @@
 
     // Get YouTube thumbnail URL
     function getYouTubeThumbnail(youtubeId) {
-      // Try high quality first, fallback to medium quality
       return `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
     }
 
@@ -320,56 +437,100 @@
     function loadVideos() {
       console.log('📹 Loading videos...');
       
-      // Default videos
+      // Default videos with view counts for sorting
       const defaultVideos = [
         {
           id: 'default_1',
           title: 'Dragon Ball Z Power System Explained',
           description: 'Complete breakdown of power levels, transformations, and fighting techniques in Dragon Ball Z.',
           genre: 'Action',
-          youtubeId: 'SlPhMPnQ58k', // Real DBZ video for thumbnail
-          tags: ['Action', 'Shounen', 'Classic'],
+          youtubeId: 'SlPhMPnQ58k',
+          tags: ['Action', 'Shounen', 'Classic', 'Dragon Ball'],
           uploader: 'All in 1st',
-          uploadDate: '2024-01-15'
+          uploadDate: '2024-01-15',
+          views: 15420
         },
         {
           id: 'default_2', 
           title: 'One Piece World Building Analysis',
           description: 'Deep dive into the incredible world-building and storytelling of Eiichiro Oda.',
           genre: 'Adventure',
-          youtubeId: 'MCWJUSulnro', // Real One Piece video for thumbnail
-          tags: ['Adventure', 'Shounen', 'Epic'],
+          youtubeId: 'MCWJUSulnro',
+          tags: ['Adventure', 'Shounen', 'Epic', 'One Piece'],
           uploader: 'All in 1st',
-          uploadDate: '2024-01-10'
+          uploadDate: '2024-01-10',
+          views: 23100
         }
       ];
 
       // Load uploaded videos
-      const uploadedVideos = JSON.parse(localStorage.getItem('uploadedVideos') || '[]');
+      const uploadedVideos = JSON.parse(localStorage.getItem('uploadedVideos') || '[]')
+        .map(video => ({ ...video, views: video.views || Math.floor(Math.random() * 5000) + 100 }));
+      
       console.log('📤 Uploaded videos found:', uploadedVideos.length);
 
       // Combine videos (uploaded first)
       allVideos = [...uploadedVideos, ...defaultVideos];
+      filteredVideos = [...allVideos];
       
+      renderVideos();
+    }
+
+    // Filter and Search Videos
+    function filterVideos() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      const genreFilter = document.getElementById('genreFilter').value;
+      const sortBy = document.getElementById('sortFilter').value;
+
+      // Filter by search term and genre
+      filteredVideos = allVideos.filter(video => {
+        const matchesSearch = !searchTerm || 
+          video.title.toLowerCase().includes(searchTerm) ||
+          video.description.toLowerCase().includes(searchTerm) ||
+          video.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+          video.uploader.toLowerCase().includes(searchTerm);
+        
+        const matchesGenre = !genreFilter || video.genre === genreFilter;
+        
+        return matchesSearch && matchesGenre;
+      });
+
+      // Sort videos
+      filteredVideos.sort((a, b) => {
+        switch (sortBy) {
+          case 'oldest':
+            return new Date(a.uploadDate) - new Date(b.uploadDate);
+          case 'popular':
+            return (b.views || 0) - (a.views || 0);
+          case 'title':
+            return a.title.localeCompare(b.title);
+          default: // newest
+            return new Date(b.uploadDate) - new Date(a.uploadDate);
+        }
+      });
+
       renderVideos();
     }
 
     function renderVideos() {
       const gallery = document.getElementById('videoGallery');
       
-      if (allVideos.length === 0) {
+      if (filteredVideos.length === 0) {
+        const hasSearch = document.getElementById('searchInput').value.trim() || document.getElementById('genreFilter').value;
         gallery.innerHTML = `
-          <div class="col-12 text-center py-5">
-            <i class="bi bi-film" style="font-size: 4rem; color: #6c757d;"></i>
-            <h4 class="mt-3 text-muted">No videos yet</h4>
-            <p class="text-muted">Upload your first video to get started!</p>
-            <a href="upload.html" class="btn btn-primary">Upload Video</a>
+          <div class="col-12">
+            <div class="no-results">
+              <i class="bi bi-${hasSearch ? 'search' : 'film'}" style="font-size: 4rem; color: #dee2e6;"></i>
+              <h4 class="mt-3">${hasSearch ? 'No videos found' : 'No videos yet'}</h4>
+              <p>${hasSearch ? 'Try adjusting your search or filters' : 'Upload your first video to get started!'}</p>
+              ${!hasSearch ? '<a href="upload.html" class="btn btn-primary">Upload Video</a>' : ''}
+            </div>
           </div>
         `;
         return;
       }
 
-      gallery.innerHTML = allVideos.map(video => `
+      gallery.innerHTML = filteredVideos.map(video => `
         <div class="col-lg-4 col-md-6 mb-4">
           <div class="card video-card" onclick="playVideo('${video.id}')">
             <div class="video-thumbnail">
@@ -388,17 +549,20 @@
               <p class="card-text text-muted">${(video.description || '').substring(0, 100)}${video.description && video.description.length > 100 ? '...' : ''}</p>
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="badge bg-primary">${video.genre}</span>
-                <small class="text-muted">by ${video.uploader}</small>
+                <small class="text-muted">${(video.views || 0).toLocaleString()} views</small>
               </div>
-              <div>
-                ${(video.tags || []).map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  ${(video.tags || []).slice(0, 2).map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
+                </div>
+                <small class="text-muted">by ${video.uploader}</small>
               </div>
             </div>
           </div>
         </div>
       `).join('');
       
-      console.log('✅ Videos rendered:', allVideos.length);
+      console.log('✅ Videos rendered:', filteredVideos.length);
     }
 
     function playVideo(videoId) {
@@ -409,9 +573,21 @@
       }
 
       console.log('▶️ Playing video:', video.title);
+      currentVideoId = videoId;
 
       // Add to watch history
       addToHistory(video);
+
+      // Increment view count
+      video.views = (video.views || 0) + 1;
+      
+      // Update in localStorage if it's an uploaded video
+      const uploadedVideos = JSON.parse(localStorage.getItem('uploadedVideos') || '[]');
+      const uploadedIndex = uploadedVideos.findIndex(v => v.id === videoId);
+      if (uploadedIndex !== -1) {
+        uploadedVideos[uploadedIndex].views = video.views;
+        localStorage.setItem('uploadedVideos', JSON.stringify(uploadedVideos));
+      }
 
       // Show video modal
       document.getElementById('videoTitle').textContent = video.title;
@@ -425,6 +601,9 @@
         document.getElementById('watchOnYouTube').href = `https://www.youtube.com/watch?v=${video.youtubeId}`;
       }
 
+      // Load comments
+      loadComments(videoId);
+
       new bootstrap.Modal(document.getElementById('videoModal')).show();
     }
 
@@ -437,6 +616,125 @@
       });
       watchHistory = watchHistory.slice(0, 50);
       localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+    }
+
+    // Comments System
+    function loadComments(videoId) {
+      const comments = JSON.parse(localStorage.getItem(`comments_${videoId}`) || '[]');
+      const commentsList = document.getElementById('commentsList');
+      
+      if (comments.length === 0) {
+        commentsList.innerHTML = '<p class="text-muted text-center">No comments yet. Be the first to comment!</p>';
+        return;
+      }
+      
+      commentsList.innerHTML = comments.map(comment => `
+        <div class="comment-item">
+          <div class="d-flex justify-content-between align-items-start">
+            <strong>${comment.username}</strong>
+            <small class="text-muted">${new Date(comment.timestamp).toLocaleDateString()}</small>
+          </div>
+          <p class="mb-1">${comment.text}</p>
+        </div>
+      `).join('');
+    }
+
+    function addComment() {
+      const input = document.getElementById('commentInput');
+      const commentText = input.value.trim();
+      
+      if (!commentText || !currentVideoId) return;
+      
+      const comments = JSON.parse(localStorage.getItem(`comments_${currentVideoId}`) || '[]');
+      const newComment = {
+        id: Date.now(),
+        username: getUserProfile().displayName || currentUser.username,
+        text: commentText,
+        timestamp: new Date().toISOString()
+      };
+      
+      comments.unshift(newComment);
+      localStorage.setItem(`comments_${currentVideoId}`, JSON.stringify(comments));
+      
+      input.value = '';
+      loadComments(currentVideoId);
+      
+      console.log('💬 Comment added for video:', currentVideoId);
+    }
+
+    // Allow Enter key to submit comments
+    document.addEventListener('keypress', function(e) {
+      if (e.target.id === 'commentInput' && e.key === 'Enter') {
+        addComment();
+      }
+    });
+
+    // Profile Management
+    function getUserProfile() {
+      try {
+        return JSON.parse(localStorage.getItem('userProfile') || '{}');
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveUserProfile(profile) {
+      localStorage.setItem('userProfile', JSON.stringify(profile));
+    }
+
+    function showProfileEditor() {
+      const profile = getUserProfile();
+      
+      document.getElementById('displayNameInput').value = profile.displayName || currentUser.username;
+      document.getElementById('bioInput').value = profile.bio || '';
+      
+      if (profile.avatar) {
+        document.getElementById('avatarPreview').src = profile.avatar;
+        document.getElementById('avatarPreview').style.display = 'block';
+        document.getElementById('avatarFallback').style.display = 'none';
+      } else {
+        document.getElementById('avatarPreview').style.display = 'none';
+        document.getElementById('avatarFallback').style.display = 'flex';
+        document.getElementById('avatarFallback').textContent = (profile.displayName || currentUser.username).charAt(0).toUpperCase();
+      }
+      
+      new bootstrap.Modal(document.getElementById('profileModal')).show();
+      closeSidebar();
+    }
+
+    function previewAvatar() {
+      const input = document.getElementById('avatarInput');
+      const preview = document.getElementById('avatarPreview');
+      const fallback = document.getElementById('avatarFallback');
+      
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          fallback.style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function saveProfile() {
+      const displayName = document.getElementById('displayNameInput').value.trim();
+      const bio = document.getElementById('bioInput').value.trim();
+      const avatarSrc = document.getElementById('avatarPreview').src;
+      
+      const profile = {
+        displayName: displayName || currentUser.username,
+        bio: bio,
+        avatar: avatarSrc.startsWith('data:') ? avatarSrc : null
+      };
+      
+      saveUserProfile(profile);
+      updateUI();
+      
+      bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+      
+      console.log('✅ Profile updated');
     }
 
     // Sidebar Functions
@@ -474,7 +772,7 @@
             <div class="list-group-item">
               <h6 class="mb-1">${video.title}</h6>
               <p class="mb-1 text-muted">${video.description || 'No description'}</p>
-              <small class="text-muted">Genre: ${video.genre} • Uploaded ${new Date(video.uploadDate).toLocaleDateString()}</small>
+              <small class="text-muted">Genre: ${video.genre} • ${(video.views || 0).toLocaleString()} views • Uploaded ${new Date(video.uploadDate).toLocaleDateString()}</small>
             </div>
           `;
         });
@@ -486,15 +784,22 @@
     }
 
     function showProfile() {
+      const profile = getUserProfile();
       const content = `
         <div class="text-center">
-          <div class="avatar-circle mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">${currentUser.username.charAt(0).toUpperCase()}</div>
-          <h5>${currentUser.username}</h5>
+          ${profile.avatar ? 
+            `<img src="${profile.avatar}" class="avatar-preview mb-3" alt="Profile Picture">` :
+            `<div class="avatar-circle mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem;">${(profile.displayName || currentUser.username).charAt(0).toUpperCase()}</div>`
+          }
+          <h5>${profile.displayName || currentUser.username}</h5>
           <p class="text-muted">${currentUser.role === 'admin' ? 'Administrator' : 'Member'}</p>
+          ${profile.bio ? `<p class="text-muted fst-italic">"${profile.bio}"</p>` : ''}
           <hr>
           <p><strong>Account Type:</strong> ${currentUser.role}</p>
           <p><strong>Login Time:</strong> ${new Date(currentUser.loginTime).toLocaleString()}</p>
-          <p class="text-muted">Profile editing features coming soon!</p>
+          <button class="btn btn-primary btn-sm" onclick="bootstrap.Modal.getInstance(document.getElementById('infoModal')).hide(); showProfileEditor();">
+            Edit Profile
+          </button>
         </div>
       `;
       showInfoModal('Profile', content);
@@ -511,17 +816,44 @@
     function updateUI() {
       if (!currentUser) return;
       
-      const initial = currentUser.username.charAt(0).toUpperCase();
-      document.getElementById('welcomeText').textContent = `Welcome, ${currentUser.username}!`;
-      document.getElementById('userAvatar').textContent = initial;
-      document.getElementById('sidebarAvatar').textContent = initial;
-      document.getElementById('sidebarUsername').textContent = currentUser.username;
+      const profile = getUserProfile();
+      const displayName = profile.displayName || currentUser.username;
+      const initial = displayName.charAt(0).toUpperCase();
+      
+      document.getElementById('welcomeText').textContent = `Welcome, ${displayName}!`;
+      
+      // Update nav avatar
+      if (profile.avatar) {
+        const navImg = document.createElement('img');
+        navImg.src = profile.avatar;
+        navImg.className = 'avatar-circle';
+        navImg.style.width = '40px';
+        navImg.style.height = '40px';
+        navImg.onclick = toggleSidebar;
+        document.getElementById('userAvatar').replaceWith(navImg);
+        navImg.id = 'userAvatar';
+      } else {
+        document.getElementById('userAvatar').textContent = initial;
+      }
+      
+      // Update sidebar
+      if (profile.avatar) {
+        document.getElementById('sidebarAvatarImg').src = profile.avatar;
+        document.getElementById('sidebarAvatarImg').style.display = 'block';
+        document.getElementById('sidebarAvatar').style.display = 'none';
+      } else {
+        document.getElementById('sidebarAvatar').textContent = initial;
+        document.getElementById('sidebarAvatarImg').style.display = 'none';
+        document.getElementById('sidebarAvatar').style.display = 'flex';
+      }
+      
+      document.getElementById('sidebarUsername').textContent = displayName;
       document.getElementById('sidebarRole').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Member';
     }
 
     // Initialize Page
     async function initializePage() {
-      console.log('🚀 Initializing watch page...');
+      console.log('🚀 Initializing enhanced watch page...');
       
       try {
         // Quick auth check
@@ -539,7 +871,7 @@
         // Hide loading screen
         setTimeout(() => {
           document.getElementById('loadingScreen').style.display = 'none';
-          console.log('✅ Page loaded successfully');
+          console.log('✅ Enhanced page loaded successfully');
         }, 500);
         
       } catch (error) {
@@ -563,9 +895,10 @@
     // Stop video when modal closes
     document.getElementById('videoModal').addEventListener('hidden.bs.modal', function() {
       document.getElementById('videoFrame').src = '';
+      currentVideoId = null;
     });
 
-    console.log('📱 Watch page script loaded');
+    console.log('📱 Enhanced Watch page script loaded');
   </script>
 </body>
 </html>
