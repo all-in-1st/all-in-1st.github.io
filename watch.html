@@ -30,14 +30,45 @@
       box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     }
     .video-thumbnail {
-      background: linear-gradient(45deg, #007bff, #6610f2);
       height: 200px;
       border-radius: 12px 12px 0 0;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(45deg, #007bff, #6610f2);
+    }
+    .video-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .video-thumbnail .fallback-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 3rem;
+      display: none;
+    }
+    .video-thumbnail .play-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 3rem;
+      font-size: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .video-card:hover .play-overlay {
+      opacity: 1;
     }
     .sidebar {
       position: fixed;
@@ -269,6 +300,22 @@
       document.getElementById('sidebarOverlay').classList.remove('active');
     }
 
+    // Get YouTube thumbnail URL
+    function getYouTubeThumbnail(youtubeId) {
+      // Try high quality first, fallback to medium quality
+      return `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+    }
+
+    // Handle thumbnail load error
+    function handleThumbnailError(img, video) {
+      console.log('⚠️ Thumbnail failed for:', video.title);
+      const container = img.parentElement;
+      const fallbackIcon = container.querySelector('.fallback-icon');
+      
+      img.style.display = 'none';
+      fallbackIcon.style.display = 'block';
+    }
+
     // Load Videos
     function loadVideos() {
       console.log('📹 Loading videos...');
@@ -280,7 +327,7 @@
           title: 'Dragon Ball Z Power System Explained',
           description: 'Complete breakdown of power levels, transformations, and fighting techniques in Dragon Ball Z.',
           genre: 'Action',
-          youtubeId: 'dQw4w9WgXcQ',
+          youtubeId: 'SlPhMPnQ58k', // Real DBZ video for thumbnail
           tags: ['Action', 'Shounen', 'Classic'],
           uploader: 'All in 1st',
           uploadDate: '2024-01-15'
@@ -290,7 +337,7 @@
           title: 'One Piece World Building Analysis',
           description: 'Deep dive into the incredible world-building and storytelling of Eiichiro Oda.',
           genre: 'Adventure',
-          youtubeId: 'dQw4w9WgXcQ',
+          youtubeId: 'MCWJUSulnro', // Real One Piece video for thumbnail
           tags: ['Adventure', 'Shounen', 'Epic'],
           uploader: 'All in 1st',
           uploadDate: '2024-01-10'
@@ -326,7 +373,15 @@
         <div class="col-lg-4 col-md-6 mb-4">
           <div class="card video-card" onclick="playVideo('${video.id}')">
             <div class="video-thumbnail">
-              <i class="bi bi-play-circle"></i>
+              <img src="${getYouTubeThumbnail(video.youtubeId)}" 
+                   alt="${video.title}"
+                   onerror="handleThumbnailError(this, {title: '${video.title.replace(/'/g, '\\\'')}'})">
+              <div class="fallback-icon">
+                <i class="bi bi-play-circle"></i>
+              </div>
+              <div class="play-overlay">
+                <i class="bi bi-play-fill"></i>
+              </div>
             </div>
             <div class="card-body">
               <h5 class="card-title">${video.title}</h5>
