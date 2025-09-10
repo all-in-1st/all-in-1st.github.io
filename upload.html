@@ -7,90 +7,199 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-    .upload-card { background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .upload-container {
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+    .upload-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    .upload-header {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    .btn-upload {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      border: none;
+      padding: 12px 30px;
+      font-weight: 600;
+    }
+    .btn-upload:hover {
+      background: linear-gradient(135deg, #20c997, #17a2b8);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    }
+    .progress-container {
+      display: none;
+      margin-top: 20px;
+    }
+    .success-animation {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+    .checkmark {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #28a745;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 2rem;
+    }
   </style>
 </head>
 <body>
-  <!-- Navbar -->
+  <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-bold text-primary" href="watch.html">All in 1st</a>
+      <a class="navbar-brand fw-bold text-primary" href="watch.html">
+        <i class="bi bi-arrow-left me-2"></i>All in 1st
+      </a>
       <div class="d-flex">
         <a href="watch.html" class="btn btn-outline-primary">
-          <i class="bi bi-arrow-left me-2"></i>Back to Watch
+          Back to Watch
         </a>
       </div>
     </div>
   </nav>
 
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="upload-card p-5">
-          <div class="text-center mb-4">
-            <i class="bi bi-cloud-upload text-primary" style="font-size: 3rem;"></i>
-            <h2 class="mt-3">Upload Your Video</h2>
-            <p class="text-muted">Share your manga explainer content with the community</p>
+  <div class="upload-container">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+          <div class="upload-card">
+            <!-- Header -->
+            <div class="upload-header">
+              <i class="bi bi-cloud-upload" style="font-size: 3rem;"></i>
+              <h2 class="mt-3 mb-1">Upload Your Video</h2>
+              <p class="mb-0 opacity-75">Share your manga content with the community</p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="p-4" id="uploadFormSection">
+              <div id="alertContainer"></div>
+
+              <form id="uploadForm">
+                <!-- Video Title -->
+                <div class="mb-4">
+                  <label class="form-label fw-bold">
+                    Video Title <span class="text-danger">*</span>
+                  </label>
+                  <input type="text" 
+                         id="videoTitle" 
+                         class="form-control form-control-lg" 
+                         placeholder="Enter an engaging title for your video..."
+                         required>
+                </div>
+
+                <!-- YouTube Link -->
+                <div class="mb-4">
+                  <label class="form-label fw-bold">
+                    YouTube Video Link <span class="text-danger">*</span>
+                  </label>
+                  <input type="url" 
+                         id="youtubeUrl" 
+                         class="form-control form-control-lg" 
+                         placeholder="https://www.youtube.com/watch?v=..."
+                         required>
+                  <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Paste your YouTube video URL here. We'll extract the video ID automatically.
+                  </div>
+                </div>
+
+                <!-- Genre and Tags Row -->
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-4">
+                      <label class="form-label fw-bold">Genre</label>
+                      <select id="videoGenre" class="form-select form-select-lg">
+                        <option value="Action">Action</option>
+                        <option value="Adventure">Adventure</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Horror">Horror</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Sci-Fi">Sci-Fi</option>
+                        <option value="Slice of Life">Slice of Life</option>
+                        <option value="Supernatural">Supernatural</option>
+                        <option value="Thriller">Thriller</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-4">
+                      <label class="form-label fw-bold">Tags</label>
+                      <input type="text" 
+                             id="videoTags" 
+                             class="form-control form-control-lg" 
+                             placeholder="manga, anime, explained...">
+                      <div class="form-text">Separate tags with commas</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                  <label class="form-label fw-bold">Description</label>
+                  <textarea id="videoDescription" 
+                            class="form-control" 
+                            rows="4" 
+                            placeholder="Describe your video content, what viewers will learn, key points covered..."></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-upload btn-lg text-white">
+                    <i class="bi bi-cloud-upload me-2"></i>
+                    <span id="submitBtnText">Upload Video</span>
+                    <div class="spinner-border spinner-border-sm ms-2 d-none" id="uploadSpinner"></div>
+                  </button>
+                </div>
+              </form>
+
+              <!-- Progress Bar -->
+              <div class="progress-container" id="progressContainer">
+                <div class="progress mb-3" style="height: 8px;">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                       id="uploadProgress" 
+                       style="width: 0%"></div>
+                </div>
+                <p class="text-center text-muted mb-0" id="progressText">Uploading...</p>
+              </div>
+            </div>
+
+            <!-- Success Animation -->
+            <div class="success-animation" id="successAnimation">
+              <div class="checkmark">
+                <i class="bi bi-check-lg"></i>
+              </div>
+              <h4 class="text-success mb-2">Upload Successful!</h4>
+              <p class="text-muted mb-3">Your video has been added to the library</p>
+              <a href="watch.html" class="btn btn-primary">
+                View in Library
+              </a>
+            </div>
           </div>
-
-          <div id="alert"></div>
-
-          <form id="uploadForm">
-            <div class="mb-4">
-              <label class="form-label fw-bold">Video Title <span class="text-danger">*</span></label>
-              <input type="text" id="title" class="form-control form-control-lg" placeholder="Enter video title..." required>
-            </div>
-
-            <div class="mb-4">
-              <label class="form-label fw-bold">YouTube Video Link <span class="text-danger">*</span></label>
-              <input type="url" id="youtubeLink" class="form-control form-control-lg" placeholder="https://www.youtube.com/watch?v=..." required>
-              <div class="form-text">
-                <i class="bi bi-info-circle me-1"></i>
-                Paste the full YouTube URL here. We'll extract the video ID automatically.
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
-                <div class="mb-4">
-                  <label class="form-label fw-bold">Genre</label>
-                  <select id="genre" class="form-select form-select-lg">
-                    <option value="Action">Action</option>
-                    <option value="Adventure">Adventure</option>
-                    <option value="Comedy">Comedy</option>
-                    <option value="Drama">Drama</option>
-                    <option value="Fantasy">Fantasy</option>
-                    <option value="Horror">Horror</option>
-                    <option value="Romance">Romance</option>
-                    <option value="Sci-Fi">Sci-Fi</option>
-                    <option value="Slice of Life">Slice of Life</option>
-                    <option value="Supernatural">Supernatural</option>
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-4">
-                  <label class="form-label fw-bold">Tags</label>
-                  <input type="text" id="tags" class="form-control form-control-lg" placeholder="Action, Shounen, Epic...">
-                  <div class="form-text">Separate tags with commas</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="mb-4">
-              <label class="form-label fw-bold">Description</label>
-              <textarea id="description" class="form-control" rows="4" placeholder="Describe your video content, key points covered, and what viewers can expect..."></textarea>
-            </div>
-
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary btn-lg">
-                <i class="bi bi-cloud-upload me-2"></i>
-                <span id="submitText">Upload Video</span>
-                <div class="spinner-border spinner-border-sm ms-2 d-none" id="uploadSpinner"></div>
-              </button>
-            </div>
-          </form>
         </div>
       </div>
     </div>
@@ -98,136 +207,229 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Check if user is logged in
-    function getSession() {
+    console.log('📤 Upload page loaded');
+
+    // Authentication check
+    function getUserSession() {
       try {
-        return JSON.parse(localStorage.getItem('allin1st_session') || sessionStorage.getItem('allin1st_session') || 'null');
-      } catch (e) {
+        const session = localStorage.getItem('allIn1st_user');
+        return session ? JSON.parse(session) : null;
+      } catch (error) {
+        console.error('❌ Session error:', error);
         return null;
       }
     }
 
     function isLoggedIn() {
-      const session = getSession();
+      const session = getUserSession();
       return session && session.isLoggedIn === true;
     }
 
     // Redirect if not logged in
     if (!isLoggedIn()) {
+      console.log('❌ Not logged in, redirecting...');
       window.location.href = 'login.html?next=upload.html';
     }
 
-    const currentUser = getSession();
+    const currentUser = getUserSession();
+    console.log('✅ User authenticated:', currentUser.username);
 
+    // Utility functions
     function showAlert(message, type = 'danger') {
-      document.getElementById('alert').innerHTML = 
-        `<div class="alert alert-${type} alert-dismissible fade show">
+      const container = document.getElementById('alertContainer');
+      container.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
           <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
           ${message}
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>`;
+        </div>
+      `;
+      
+      // Auto-dismiss success messages
+      if (type === 'success') {
+        setTimeout(() => {
+          const alert = container.querySelector('.alert');
+          if (alert) {
+            new bootstrap.Alert(alert).close();
+          }
+        }, 5000);
+      }
     }
 
     function extractYouTubeId(url) {
-      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-      const match = url.match(regExp);
-      return (match && match[7].length === 11) ? match[7] : null;
+      const patterns = [
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\n?#]+)/,
+        /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^&\n?#]+)/,
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\n?#]+)/
+      ];
+      
+      for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) {
+          return match[1];
+        }
+      }
+      return null;
     }
 
+    function generateUniqueId() {
+      return 'video_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function animateProgress() {
+      const progressBar = document.getElementById('uploadProgress');
+      const progressText = document.getElementById('progressText');
+      let progress = 0;
+      
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 95) progress = 95;
+        
+        progressBar.style.width = progress + '%';
+        
+        if (progress < 30) {
+          progressText.textContent = 'Validating video...';
+        } else if (progress < 60) {
+          progressText.textContent = 'Processing upload...';
+        } else if (progress < 90) {
+          progressText.textContent = 'Finalizing...';
+        } else {
+          progressText.textContent = 'Almost done...';
+        }
+        
+        if (progress >= 95) {
+          clearInterval(interval);
+          // Complete the progress bar
+          setTimeout(() => {
+            progressBar.style.width = '100%';
+            progressText.textContent = 'Upload complete!';
+          }, 200);
+        }
+      }, 100);
+      
+      return interval;
+    }
+
+    // Form submission handler
     document.getElementById('uploadForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+      console.log('📤 Starting upload process...');
 
-      const title = document.getElementById('title').value.trim();
-      const youtubeLink = document.getElementById('youtubeLink').value.trim();
-      const genre = document.getElementById('genre').value;
-      const tagsInput = document.getElementById('tags').value.trim();
-      const description = document.getElementById('description').value.trim();
+      // Get form values
+      const title = document.getElementById('videoTitle').value.trim();
+      const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
+      const genre = document.getElementById('videoGenre').value;
+      const tagsInput = document.getElementById('videoTags').value.trim();
+      const description = document.getElementById('videoDescription').value.trim();
 
       // Validation
       if (!title) {
-        showAlert('Please enter a video title.');
+        showAlert('Please enter a video title');
         return;
       }
 
-      if (!youtubeLink) {
-        showAlert('Please enter a YouTube link.');
+      if (!youtubeUrl) {
+        showAlert('Please enter a YouTube URL');
         return;
       }
 
-      const youtubeId = extractYouTubeId(youtubeLink);
+      const youtubeId = extractYouTubeId(youtubeUrl);
       if (!youtubeId) {
-        showAlert('Please enter a valid YouTube URL.');
+        showAlert('Please enter a valid YouTube URL');
         return;
       }
+
+      console.log('✅ Form validation passed');
+      console.log('🔗 YouTube ID extracted:', youtubeId);
 
       // Show loading state
-      const submitText = document.getElementById('submitText');
+      const submitBtn = document.getElementById('submitBtnText');
       const spinner = document.getElementById('uploadSpinner');
-      submitText.textContent = 'Uploading...';
+      const progressContainer = document.getElementById('progressContainer');
+      
+      submitBtn.textContent = 'Uploading...';
       spinner.classList.remove('d-none');
-
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      progressContainer.style.display = 'block';
 
       try {
+        // Start progress animation
+        const progressInterval = animateProgress();
+        
+        // Simulate upload process
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
         // Process tags
-        const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+        const tags = tagsInput 
+          ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+          : [];
 
         // Create video object
         const newVideo = {
-          id: Date.now(), // Use timestamp as unique ID
+          id: generateUniqueId(),
           title: title,
-          description: description || '',
+          description: description,
           genre: genre,
           youtubeId: youtubeId,
           tags: tags,
-          uploadDate: new Date().toISOString(),
-          uploader: currentUser.username
+          uploader: currentUser.username,
+          uploadDate: new Date().toISOString()
         };
 
-        // Get existing uploads
-        const existingUploads = JSON.parse(localStorage.getItem('videosUploaded') || '[]');
+        console.log('📹 New video object created:', newVideo);
+
+        // Get existing uploads and add new video
+        const existingUploads = JSON.parse(localStorage.getItem('uploadedVideos') || '[]');
+        existingUploads.unshift(newVideo); // Add to beginning
+        localStorage.setItem('uploadedVideos', JSON.stringify(existingUploads));
+
+        console.log('💾 Video saved to localStorage');
+        console.log('📊 Total uploaded videos:', existingUploads.length);
+
+        // Complete progress and show success
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Add new video to the beginning
-        existingUploads.unshift(newVideo);
-        
-        // Save back to localStorage
-        localStorage.setItem('videosUploaded', JSON.stringify(existingUploads));
+        // Hide form and show success
+        document.getElementById('uploadFormSection').style.display = 'none';
+        document.getElementById('successAnimation').style.display = 'block';
 
-        console.log('Video uploaded successfully:', newVideo);
-        console.log('All uploads:', existingUploads);
-
-        // Show success message
-        showAlert('Video uploaded successfully! Redirecting to watch page...', 'success');
-
-        // Reset form
-        document.getElementById('uploadForm').reset();
-
-        // Redirect to watch page after 2 seconds
-        setTimeout(() => {
-          window.location.href = 'watch.html';
-        }, 2000);
+        console.log('🎉 Upload completed successfully!');
 
       } catch (error) {
-        console.error('Upload error:', error);
-        showAlert('An error occurred while uploading. Please try again.');
+        console.error('❌ Upload error:', error);
         
-        // Reset button state
-        submitText.textContent = 'Upload Video';
+        // Reset UI on error
+        showAlert('Upload failed. Please try again.');
+        submitBtn.textContent = 'Upload Video';
         spinner.classList.add('d-none');
+        progressContainer.style.display = 'none';
       }
     });
 
-    // Auto-fill demo data (for testing)
+    // Demo data shortcut (Ctrl+Shift+D)
     document.addEventListener('keydown', function(e) {
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-        document.getElementById('title').value = 'Test Manga Explainer';
-        document.getElementById('youtubeLink').value = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
-        document.getElementById('genre').value = 'Action';
-        document.getElementById('tags').value = 'Test, Demo, Action';
-        document.getElementById('description').value = 'This is a test video upload for demonstration purposes.';
+        console.log('🎮 Demo data filled');
+        document.getElementById('videoTitle').value = 'Attack on Titan Season 4 Explained';
+        document.getElementById('youtubeUrl').value = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+        document.getElementById('videoGenre').value = 'Drama';
+        document.getElementById('videoTags').value = 'attack on titan, anime, explained, drama';
+        document.getElementById('videoDescription').value = 'Complete analysis of Attack on Titan\'s final season, covering major plot points, character development, and thematic elements.';
+        
+        showAlert('Demo data loaded! You can now submit the form.', 'info');
       }
     });
+
+    // URL validation on input
+    document.getElementById('youtubeUrl').addEventListener('input', function(e) {
+      const url = e.target.value.trim();
+      if (url && !extractYouTubeId(url)) {
+        e.target.setCustomValidity('Please enter a valid YouTube URL');
+      } else {
+        e.target.setCustomValidity('');
+      }
+    });
+
+    console.log('📱 Upload page script initialized');
   </script>
 </body>
 </html>
