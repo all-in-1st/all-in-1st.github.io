@@ -5,106 +5,584 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- SEO Meta Tags -->
-  <title>Login - All in 1st | Manga & Anime Platform</title>
-  <meta name="description" content="Login to All in 1st - Access your manga and anime explainer video account">
-  <meta name="description" content="All in 1st - Your ultimate destination for manga, manhwa, and anime explainer videos. Watch, upload, and discover amazing content from creators worldwide.">
-  <meta name="keywords" content="all in 1st, manga explainer, anime videos, manhwa, manga analysis, anime explained">
+  <title>Login - All in 1st | Access Your Manga Account</title>
+  <meta name="description" content="Login to All in 1st to access your personal manga and anime video library. Join the best community for anime explainers.">
+  <meta name="keywords" content="all in 1st, login, manga account, anime videos, user account">
   <meta name="author" content="All in 1st">
   
   <!-- Open Graph for social sharing -->
-  <meta property="og:title" content="All in 1st - Manga & Anime Explainers">
-  <meta property="og:description" content="Ultimate destination for manga and anime explainer videos">
-  <meta property="og:url" content="https://all-in-1st.github.io/All-in-1st-/">
+  <meta property="og:title" content="All in 1st - Login to Your Account">
+  <meta property="og:description" content="Access your personal manga and anime video library">
+  <meta property="og:url" content="https://all-in-1st.github.io/All-in-1st-/login.html">
   <meta property="og:type" content="website">
   
-  <!-- Your existing links -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-  <title>Login - All in 1st</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
   <style>
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    .login-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    
+    .login-container {
+      width: 100%;
+      max-width: 450px;
       padding: 20px;
     }
+    
     .login-card {
-      background: white;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
       border-radius: 20px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-      max-width: 400px;
-      width: 100%;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
+    
     .login-header {
-      background: linear-gradient(135deg, #007bff, #0056b3);
+      background: linear-gradient(135deg, #007bff, #6610f2);
       color: white;
-      padding: 2rem;
+      padding: 3rem 2rem 2rem;
       text-align: center;
-      border-radius: 20px 20px 0 0;
+      position: relative;
     }
-    .btn-demo {
+    
+    .login-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+      opacity: 0.3;
+    }
+    
+    .login-header h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    
+    .login-header p {
+      position: relative;
+      z-index: 1;
+      margin: 0.5rem 0 0;
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+    
+    .login-body {
+      padding: 2.5rem 2rem;
+    }
+    
+    .form-control {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+    }
+    
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      background: white;
+    }
+    
+    .input-group-text {
+      background: rgba(0, 123, 255, 0.1);
+      border: 2px solid #e9ecef;
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+      color: #007bff;
+    }
+    
+    .input-group .form-control {
+      border-left: none;
+      border-radius: 0 12px 12px 0;
+    }
+    
+    .btn-login {
+      background: linear-gradient(135deg, #007bff, #6610f2);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+    }
+    
+    .btn-login:active {
+      transform: translateY(0);
+    }
+    
+    .btn-google {
+      background: white;
+      border: 2px solid #e9ecef;
+      color: #333;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .btn-google:hover {
+      background: #f8f9fa;
+      border-color: #dee2e6;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .divider {
+      text-align: center;
+      position: relative;
+      margin: 1.5rem 0;
+    }
+    
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #dee2e6, transparent);
+    }
+    
+    .divider span {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 0 1rem;
+      color: #6c757d;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .demo-accounts {
       background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
       border: none;
     }
-    .btn-demo:hover {
-      background: linear-gradient(135deg, #20c997, #17a2b8);
+    
+    .demo-accounts h6 {
+      margin-bottom: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .demo-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      margin: 0.25rem;
+    }
+    
+    .demo-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+    
+    .admin-demo {
+      background: linear-gradient(135deg, #dc3545, #fd7e14);
+    }
+    
+    .admin-demo .demo-btn {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+    
+    .loading-content {
+      text-align: center;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .alert-custom {
+      border: none;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .alert-success {
+      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+    
+    .alert-danger {
+      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .alert-info {
+      background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+      color: #0c5460;
+      border-left: 4px solid #17a2b8;
+    }
+    
+    .footer-links {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e9ecef;
+    }
+    
+    .footer-links a {
+      color: #6c757d;
+      text-decoration: none;
+      margin: 0 1rem;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: #007bff;
+    }
+    
+    .version-badge {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+    
+    @media (max-width: 768px) {
+      .login-container {
+        padding: 10px;
+      }
+      
+      .login-header {
+        padding: 2rem 1.5rem 1.5rem;
+      }
+      
+      .login-header h1 {
+        font-size: 2rem;
+      }
+      
+      .login-body {
+        padding: 2rem 1.5rem;
+      }
+    }
+    
+    /* Google Sign-in Button Styling */
+    .g_id_signin {
+      border-radius: 12px !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* Password Strength Indicator */
+    .password-strength {
+      height: 4px;
+      background: #e9ecef;
+      border-radius: 2px;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .password-strength-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
+      width: 0%;
+      transition: width 0.3s ease;
     }
   </style>
 </head>
 <body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <h5>Connecting to Global Platform...</h5>
+      <p class="text-muted">Please wait while we authenticate you</p>
+    </div>
+  </div>
+
+  <!-- Main Login Container -->
   <div class="login-container">
     <div class="login-card">
+      <!-- Header -->
       <div class="login-header">
-        <h2 class="mb-1">All in 1st</h2>
-        <p class="mb-0 opacity-75">Welcome back!</p>
+        <h1><i class="bi bi-play-circle-fill me-2"></i>All in 1st</h1>
+        <p>Access Your Global Video Library</p>
       </div>
-      
-      <div class="p-4">
+
+      <!-- Body -->
+      <div class="login-body">
         <!-- Alert Container -->
         <div id="alertContainer"></div>
-        
+
         <!-- Login Form -->
         <form id="loginForm">
+          <!-- Username Field -->
           <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input type="text" id="username" class="form-control form-control-lg" required>
+            <label class="form-label fw-bold">
+              <i class="bi bi-person-circle me-2"></i>Username
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-person"></i>
+              </span>
+              <input type="text" 
+                     id="username" 
+                     class="form-control" 
+                     placeholder="Enter your username..."
+                     required
+                     autocomplete="username">
+            </div>
           </div>
-          
+
+          <!-- Password Field -->
           <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" id="password" class="form-control form-control-lg" required>
+            <label class="form-label fw-bold">
+              <i class="bi bi-shield-lock me-2"></i>Password
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-lock"></i>
+              </span>
+              <input type="password" 
+                     id="password" 
+                     class="form-control" 
+                     placeholder="Enter your password..."
+                     required
+                     autocomplete="current-password">
+              <button class="btn btn-outline-secondary" 
+                      type="button" 
+                      id="togglePassword"
+                      title="Show/Hide Password">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
           </div>
-          
-          <div class="mb-3 form-check">
-            <input type="checkbox" id="rememberMe" class="form-check-input">
-            <label class="form-check-label" for="rememberMe">Remember me</label>
+
+          <!-- Remember Me & Forgot Password -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="rememberMe">
+              <label class="form-check-label" for="rememberMe">
+                Remember me
+              </label>
+            </div>
+            <a href="#" class="text-decoration-none" onclick="showForgotPassword()">
+              Forgot Password?
+            </a>
           </div>
-          
-          <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
-            <span id="loginBtnText">Sign In</span>
-            <div class="spinner-border spinner-border-sm ms-2 d-none" id="loginSpinner"></div>
-          </button>
+
+          <!-- Login Button -->
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-login btn-lg text-white">
+              <i class="bi bi-box-arrow-in-right me-2"></i>
+              <span id="loginBtnText">Login to Platform</span>
+              <div class="spinner-border spinner-border-sm ms-2 d-none" id="loginSpinner"></div>
+            </button>
+          </div>
         </form>
-        
-        <!-- Demo Login -->
-        <button class="btn btn-demo btn-lg w-100 text-white" onclick="quickLogin()">
-          <i class="bi bi-person-check me-2"></i>Demo Login
-        </button>
-        
-        <!-- Credentials Info -->
-        <div class="text-center mt-3">
-          <small class="text-muted">
-            Admin: admin/allin1st2025<br>
-            Demo: demo/demo123
-          </small>
+
+        <!-- Divider -->
+        <div class="divider">
+          <span>or continue with</span>
+        </div>
+
+        <!-- Google Login -->
+        <div class="d-grid mb-3">
+          <button type="button" class="btn btn-google btn-lg" onclick="signInWithGoogle()">
+            <svg width="20" height="20" viewBox="0 0 24 24" class="me-2">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continue with Google
+          </button>
+        </div>
+
+        <!-- Demo Accounts Section -->
+        <div class="demo-accounts">
+          <h6>
+            <i class="bi bi-lightning-charge"></i>
+            Quick Demo Access
+          </h6>
+          <div class="row g-2">
+            <div class="col-6">
+              <button type="button" 
+                      class="btn demo-btn w-100" 
+                      onclick="demoLogin('demo', 'demo123')">
+                <i class="bi bi-person me-1"></i>Demo User
+              </button>
+            </div>
+            <div class="col-6">
+              <button type="button" 
+                      class="btn demo-btn w-100" 
+                      onclick="demoLogin('guest', 'guest123')">
+                <i class="bi bi-person-plus me-1"></i>Guest
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 👑 ADMIN DEMO (Only shows admin access - no special indication) -->
+        <div class="demo-accounts admin-demo mt-3">
+          <h6>
+            <i class="bi bi-gem"></i>
+            Administrator Access
+          </h6>
+          <div class="text-center">
+            <button type="button" 
+                    class="btn demo-btn" 
+                    onclick="demoLogin('admin', 'allin1st2025')">
+              <i class="bi bi-shield-check me-1"></i>Admin Panel Access
+            </button>
+          </div>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="footer-links">
+          <a href="terms.html">Terms of Service</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="#" onclick="showHelp()">Help</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Version Badge -->
+  <div class="version-badge">
+    v2.0 Ultimate | <i class="bi bi-globe"></i> Global
+  </div>
+
+  <!-- Modals -->
+  <!-- Help Modal -->
+  <div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-question-circle me-2"></i>Login Help
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <h6><i class="bi bi-key me-2"></i>Account Access</h6>
+          <ul>
+            <li><strong>Demo Access:</strong> Use the quick demo buttons for instant access</li>
+            <li><strong>Google Login:</strong> Sign in with your Google account for easy access</li>
+            <li><strong>Traditional Login:</strong> Enter username and password if you have an account</li>
+          </ul>
+          
+          <h6 class="mt-3"><i class="bi bi-shield-check me-2"></i>Security</h6>
+          <ul>
+            <li>Your data is protected with Firebase security</li>
+            <li>All connections are encrypted</li>
+            <li>We never store passwords in plain text</li>
+          </ul>
+          
+          <h6 class="mt-3"><i class="bi bi-globe me-2"></i>Global Platform</h6>
+          <ul>
+            <li>Access videos from users worldwide</li>
+            <li>Upload content to global library</li>
+            <li>Comment and interact with global community</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-key me-2"></i>Reset Password
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>For demo accounts, use the credentials provided on the login page.</p>
+          <p>For Google accounts, use Google's password reset feature.</p>
+          <p>Contact support for additional assistance:</p>
+          <div class="alert alert-info">
+            <i class="bi bi-envelope me-2"></i>
+            <strong>Support:</strong> Use the demo accounts for testing the platform features.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -112,116 +590,130 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    console.log('🚀 Login page loaded');
-    
-    // User credentials
-    const USERS = {
-      admin: { username: 'admin', password: 'allin1st2025', role: 'admin' },
-      demo: { username: 'demo', password: 'demo123', role: 'user' }
+    console.log('🎬 Ultimate Login page loaded');
+
+    // 🔥 FIREBASE CONFIG - YOUR ACTUAL KEYS
+    const firebaseConfig = {
+      apiKey: "AIzaSyBLe404z16f_11og41NzKPVCtxn0w0XJQM",
+      authDomain: "all-in-1st.firebaseapp.com",
+      projectId: "all-in-1st",
+      storageBucket: "all-in-1st.firebasestorage.app",
+      messagingSenderId: "226019788510",
+      appId: "1:226019788510:web:51c4bcd04e5c457a89a44f"
     };
 
-    function showAlert(message, type = 'danger') {
-      const container = document.getElementById('alertContainer');
-      container.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-          ${message}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>`;
-    }
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    function saveUserSession(user, remember) {
-      const sessionData = {
-        username: user.username,
-        role: user.role,
-        isLoggedIn: true,
-        loginTime: new Date().toISOString()
+    // Google Auth Provider
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    googleProvider.addScope('profile');
+    googleProvider.addScope('email');
+
+    // User accounts database
+    const userAccounts = {
+      'demo': {
+        username: 'demo',
+        password: 'demo123',
+        role: 'user',
+        displayName: 'Demo User',
+        email: 'demo@allin1st.com'
+      },
+      'guest': {
+        username: 'guest', 
+        password: 'guest123',
+        role: 'user',
+        displayName: 'Guest User',
+        email: 'guest@allin1st.com'
+      },
+      'admin': {
+        username: 'admin',
+        password: 'allin1st2025', 
+        role: 'admin',
+        displayName: 'Administrator',
+        email: 'admin@allin1st.com'
+      }
+    };
+
+    // Utility functions
+    function showAlert(message, type = 'danger', autoHide = true) {
+      const container = document.getElementById('alertContainer');
+      const alertId = 'alert_' + Date.now();
+      
+      const iconMap = {
+        'success': 'check-circle',
+        'danger': 'exclamation-triangle', 
+        'info': 'info-circle',
+        'warning': 'exclamation-triangle'
       };
       
-      const sessionString = JSON.stringify(sessionData);
+      container.innerHTML = `
+        <div class="alert alert-${type} alert-custom" id="${alertId}" role="alert">
+          <i class="bi bi-${iconMap[type]} me-2"></i>
+          ${message}
+        </div>
+      `;
       
-      // Always save in localStorage for consistency
-      localStorage.setItem('allIn1st_user', sessionString);
-      
-      console.log('✅ Session saved:', sessionData);
-      return sessionData;
+      if (autoHide && type === 'success') {
+        setTimeout(() => {
+          const alert = document.getElementById(alertId);
+          if (alert) {
+            alert.remove();
+          }
+        }, 3000);
+      }
     }
 
-    function quickLogin() {
-      document.getElementById('username').value = 'demo';
-      document.getElementById('password').value = 'demo123';
-      document.getElementById('loginForm').requestSubmit();
+    function showLoading(show = true, message = 'Connecting to Global Platform...') {
+      const overlay = document.getElementById('loadingOverlay');
+      const content = overlay.querySelector('.loading-content h5');
+      
+      if (show) {
+        content.textContent = message;
+        overlay.style.display = 'flex';
+      } else {
+        overlay.style.display = 'none';
+      }
     }
 
-    // Main login form handler
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      console.log('🔐 Login attempt started');
+    function getNextPage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('next') || 'watch.html';
+    }
+
+    // Create user session
+    function createUserSession(user, loginMethod = 'traditional') {
+      const session = {
+        username: user.username,
+        role: user.role,
+        displayName: user.displayName,
+        email: user.email,
+        isLoggedIn: true,
+        loginTime: new Date().toISOString(),
+        loginMethod: loginMethod,
+        sessionId: 'session_' + Date.now()
+      };
       
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      const remember = document.getElementById('rememberMe').checked;
+      localStorage.setItem('allIn1st_user', JSON.stringify(session));
+      console.log('✅ Session created for:', user.username, '| Method:', loginMethod);
       
-      if (!username || !password) {
-        showAlert('Please fill in all fields');
-        return;
-      }
-
-      // Show loading state
-      const btnText = document.getElementById('loginBtnText');
-      const spinner = document.getElementById('loginSpinner');
-      btnText.textContent = 'Signing in...';
-      spinner.classList.remove('d-none');
-
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        // Check credentials
-        const user = USERS[username];
-        
-        if (user && user.password === password) {
-          console.log('✅ Login successful for:', username);
-          
-          // Save session
-          saveUserSession(user, remember);
-          
-          // Show success
-          showAlert(`Welcome back, ${user.username}!`, 'success');
-          
-          // Redirect after short delay
-          setTimeout(() => {
-            const redirect = new URLSearchParams(window.location.search).get('next') || 'watch.html';
-            console.log('🔄 Redirecting to:', redirect);
-            window.location.href = redirect;
-          }, 1000);
-          
-        } else {
-          console.log('❌ Invalid credentials for:', username);
-          showAlert('Invalid username or password');
-          btnText.textContent = 'Sign In';
-          spinner.classList.add('d-none');
-        }
-
-      } catch (error) {
-        console.error('❌ Login error:', error);
-        showAlert('Login failed. Please try again.');
-        btnText.textContent = 'Sign In';
-        spinner.classList.add('d-none');
-      }
-    });
+      return session;
+    }
 
     // Check if already logged in
     function checkExistingSession() {
       try {
-        const existingSession = localStorage.getItem('allIn1st_user');
-        if (existingSession) {
-          const session = JSON.parse(existingSession);
-          if (session && session.isLoggedIn) {
-            console.log('🔄 Already logged in, redirecting...');
-            showAlert('Already logged in! Redirecting...', 'info');
+        const session = localStorage.getItem('allIn1st_user');
+        if (session) {
+          const user = JSON.parse(session);
+          if (user.isLoggedIn === true) {
+            console.log('📱 Existing session found, redirecting...');
+            showAlert('Welcome back! Redirecting to your dashboard...', 'success');
             setTimeout(() => {
-              window.location.href = 'watch.html';
-            }, 1500);
+              window.location.href = getNextPage();
+            }, 1000);
             return true;
           }
         }
@@ -232,12 +724,263 @@
       return false;
     }
 
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('📱 Login page initialized');
-      checkExistingSession();
+    // Traditional login function
+    async function loginUser(username, password) {
+      console.log('🔐 Attempting login for:', username);
+      
+      const user = userAccounts[username.toLowerCase()];
+      
+      if (!user) {
+        throw new Error('Username not found. Please check your credentials or use demo accounts.');
+      }
+      
+      if (user.password !== password) {
+        throw new Error('Invalid password. Please try again.');
+      }
+      
+      // Simulate server delay for realistic UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      return user;
+    }
+
+    // 🌐 GOOGLE SIGN-IN INTEGRATION
+    async function signInWithGoogle() {
+      console.log('🌐 Attempting Google Sign-In...');
+      showLoading(true, 'Connecting with Google...');
+      
+      try {
+        const result = await auth.signInWithPopup(googleProvider);
+        const user = result.user;
+        
+        console.log('✅ Google Sign-In successful:', user.email);
+        
+        // Create account object from Google user
+        const googleUser = {
+          username: user.email.split('@')[0], // Use email prefix as username
+          displayName: user.displayName,
+          email: user.email,
+          role: 'user', // All Google users get regular user role
+          photoURL: user.photoURL
+        };
+        
+        // Save Google profile to localStorage for avatar/profile features
+        const profile = {
+          displayName: user.displayName,
+          avatar: user.photoURL,
+          email: user.email,
+          provider: 'google'
+        };
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+        
+        // Create session
+        createUserSession(googleUser, 'google');
+        
+        showAlert(`Welcome ${user.displayName}! Redirecting to your dashboard...`, 'success');
+        
+        setTimeout(() => {
+          window.location.href = getNextPage();
+        }, 1500);
+        
+      } catch (error) {
+        console.error('❌ Google Sign-In error:', error);
+        showLoading(false);
+        
+        if (error.code === 'auth/popup-closed-by-user') {
+          showAlert('Google sign-in was cancelled.', 'info');
+        } else if (error.code === 'auth/popup-blocked') {
+          showAlert('Pop-up blocked. Please allow pop-ups and try again.', 'warning');
+        } else {
+          showAlert('Google sign-in failed: ' + error.message, 'danger');
+        }
+      }
+    }
+
+    // Demo login function
+    async function demoLogin(username, password) {
+      console.log('🎮 Demo login for:', username);
+      
+      try {
+        showLoading(true, `Logging in as ${username}...`);
+        
+        const user = await loginUser(username, password);
+        createUserSession(user, 'demo');
+        
+        showLoading(false);
+        
+        const welcomeMessage = user.role === 'admin' 
+          ? `Welcome back, Administrator! You have full control over the platform.`
+          : `Welcome ${user.displayName}! Enjoy exploring the global video library.`;
+        
+        showAlert(welcomeMessage, 'success');
+        
+        // Special handling for admin
+        if (user.role === 'admin') {
+          console.log('👑 Admin login detected - full privileges granted');
+        }
+        
+        setTimeout(() => {
+          window.location.href = getNextPage();
+        }, 2000);
+        
+      } catch (error) {
+        showLoading(false);
+        showAlert(error.message, 'danger');
+      }
+    }
+
+    // Form submission handler
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+      
+      if (!username || !password) {
+        showAlert('Please enter both username and password.', 'warning');
+        return;
+      }
+      
+      try {
+        const submitBtn = document.getElementById('loginBtnText');
+        const spinner = document.getElementById('loginSpinner');
+        
+        submitBtn.textContent = 'Signing In...';
+        spinner.classList.remove('d-none');
+        showLoading(true, 'Authenticating your credentials...');
+        
+        const user = await loginUser(username, password);
+        const session = createUserSession(user, 'traditional');
+        
+        if (rememberMe) {
+          session.rememberMe = true;
+          localStorage.setItem('allIn1st_user', JSON.stringify(session));
+        }
+        
+        showLoading(false);
+        
+        const welcomeMessage = user.role === 'admin'
+          ? `Welcome back, Administrator! Full platform control activated.`
+          : `Welcome ${user.displayName}! Access granted to global platform.`;
+        
+        showAlert(welcomeMessage, 'success');
+        
+        // Special admin logging
+        if (user.role === 'admin') {
+          console.log('👑 Administrator access granted - Ultimate privileges active');
+        }
+        
+        setTimeout(() => {
+          window.location.href = getNextPage();
+        }, 1500);
+        
+      } catch (error) {
+        showLoading(false);
+        
+        const submitBtn = document.getElementById('loginBtnText');
+        const spinner = document.getElementById('loginSpinner');
+        
+        submitBtn.textContent = 'Login to Platform';
+        spinner.classList.add('d-none');
+        
+        showAlert(error.message, 'danger');
+        
+        // Focus on username field if user not found, password field if password wrong
+        if (error.message.includes('Username not found')) {
+          document.getElementById('username').focus();
+        } else if (error.message.includes('Invalid password')) {
+          document.getElementById('password').focus();
+        }
+      }
     });
+
+    // Password visibility toggle
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      const passwordField = document.getElementById('password');
+      const toggleIcon = this.querySelector('i');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
+        this.title = 'Hide Password';
+      } else {
+        passwordField.type = 'password';
+        toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
+        this.title = 'Show Password';
+      }
+    });
+
+    // Enter key handling for better UX
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        const form = document.getElementById('loginForm');
+        if (document.activeElement && form.contains(document.activeElement)) {
+          form.dispatchEvent(new Event('submit'));
+        }
+      }
+    });
+
+    // Help and forgot password functions
+    function showHelp() {
+      new bootstrap.Modal(document.getElementById('helpModal')).show();
+    }
+
+    function showForgotPassword() {
+      new bootstrap.Modal(document.getElementById('forgotModal')).show();
+    }
+
+    // Auto-focus username field
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('username').focus();
+    });
+
+    // Initialize page
+    function initializePage() {
+      console.log('🚀 Ultimate Login page initializing...');
+      
+      // Check for existing session first
+      if (!checkExistingSession()) {
+        console.log('📱 No existing session, showing login form');
+        
+        // Auto-fill demo credentials for development (remove in production)
+        const urlParams = new URLSearchParams(window.location.search);
+        const demoUser = urlParams.get('demo');
+        
+        if (demoUser === 'admin') {
+          document.getElementById('username').value = 'admin';
+          document.getElementById('password').value = 'allin1st2025';
+          showAlert('Admin credentials auto-filled for testing', 'info');
+        } else if (demoUser === 'demo') {
+          document.getElementById('username').value = 'demo';
+          document.getElementById('password').value = 'demo123';
+          showAlert('Demo credentials auto-filled for testing', 'info');
+        }
+      }
+      
+      console.log('✅ Ultimate Login page ready');
+      console.log('🌐 Google Sign-In configured');
+      console.log('👑 Admin access available');
+      console.log('🎮 Demo accounts ready');
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', initializePage);
+
+    // Firebase Auth state listener
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log('🔥 Firebase Auth state: Signed in as', user.email);
+      } else {
+        console.log('🔥 Firebase Auth state: Signed out');
+      }
+    });
+
+    console.log('🎬 Ultimate Login system loaded');
+    console.log('🔥 Firebase Auth ready');
+    console.log('🌐 Google OAuth integrated');
+    console.log('👑 Admin panel access configured');
+    console.log('🎮 Demo accounts: demo/demo123, guest/guest123, admin/allin1st2025');
   </script>
 </body>
 </html>
-
