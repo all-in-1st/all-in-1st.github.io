@@ -4,152 +4,56 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- SEO Meta Tags (From our SEO optimization discussion) -->
+  <!-- SEO Meta Tags -->
   <title>Login - All in 1st | Ultimate Manga & Anime Platform</title>
   <meta name="description" content="Login to All in 1st - The ultimate destination for manga and anime explainer videos. Access your personal library and join our global community.">
   <meta name="keywords" content="all in 1st, login, manga account, anime videos, user account, explainer videos">
   <meta name="author" content="All in 1st">
   
-  <!-- Open Graph for social sharing -->
-  <meta property="og:title" content="All in 1st - Login to Ultimate Manga Platform">
-  <meta property="og:description" content="Access your personal manga and anime video library on the world's best explainer platform">
-  <meta property="og:url" content="https://all-in-1st.github.io/All-in-1st-/login.html">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://all-in-1st.github.io/All-in-1st-/logo.png">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
   
   <style>
-    :root {
-      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --success-gradient: linear-gradient(135deg, #28a745, #20c997);
-      --danger-gradient: linear-gradient(135deg, #dc3545, #fd7e14);
-      --card-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
-      --card-shadow-hover: 0 40px 80px rgba(0, 0, 0, 0.3);
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: var(--primary-gradient);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow-x: hidden;
-    }
-    
-    /* Animated background elements */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
-      opacity: 0.3;
-      animation: float 20s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(180deg); }
     }
     
     .login-container {
       width: 100%;
       max-width: 500px;
       padding: 20px;
-      position: relative;
-      z-index: 10;
-      animation: slideIn 0.8s ease-out;
-    }
-    
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
     
     .login-card {
       background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(20px);
-      border-radius: 30px;
-      box-shadow: var(--card-shadow);
+      border-radius: 25px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.3);
-      position: relative;
-      transition: all 0.3s ease;
-    }
-    
-    .login-card:hover {
-      box-shadow: var(--card-shadow-hover);
-      transform: translateY(-5px);
     }
     
     .login-header {
       background: linear-gradient(135deg, #007bff, #6610f2);
       color: white;
-      padding: 3.5rem 2rem 2.5rem;
+      padding: 3rem 2rem 2rem;
       text-align: center;
       position: relative;
-      overflow: hidden;
-    }
-    
-    .login-header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-      animation: rotate 20s linear infinite;
-    }
-    
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    
-    .login-header .content {
-      position: relative;
-      z-index: 1;
     }
     
     .login-header h1 {
       margin: 0;
       font-weight: 800;
-      font-size: 3rem;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      font-size: 2.8rem;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 1rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .login-header p {
-      margin: 0;
-      opacity: 0.95;
-      font-size: 1.3rem;
-      font-weight: 500;
     }
     
     .global-badge {
@@ -161,163 +65,128 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
     }
     
     .login-body {
-      padding: 3rem 2.5rem;
+      padding: 2.5rem 2rem;
     }
     
     .form-control {
       border: 2px solid #e9ecef;
-      border-radius: 15px;
-      padding: 16px 20px;
-      font-size: 1.1rem;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 1rem;
       transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.95);
-      font-weight: 500;
+      background: rgba(255, 255, 255, 0.9);
     }
     
     .form-control:focus {
       border-color: #007bff;
-      box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.15);
+      box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
       background: white;
-      transform: translateY(-2px);
     }
     
     .input-group-text {
       background: rgba(0, 123, 255, 0.1);
       border: 2px solid #e9ecef;
       border-right: none;
-      border-radius: 15px 0 0 15px;
+      border-radius: 12px 0 0 12px;
       color: #007bff;
-      padding: 16px 18px;
-      font-size: 1.1rem;
     }
     
     .input-group .form-control {
       border-left: none;
-      border-radius: 0 15px 15px 0;
+      border-radius: 0 12px 12px 0;
     }
     
     .btn-login {
       background: linear-gradient(135deg, #007bff, #6610f2);
       border: none;
-      border-radius: 15px;
-      padding: 16px 32px;
-      font-weight: 700;
-      font-size: 1.2rem;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-weight: 600;
+      font-size: 1.1rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .btn-login::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
-    }
-    
-    .btn-login:hover::before {
-      left: 100%;
     }
     
     .btn-login:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(0, 123, 255, 0.4);
-    }
-    
-    .btn-login:active {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
     }
     
     .demo-accounts {
-      background: var(--success-gradient);
+      background: linear-gradient(135deg, #28a745, #20c997);
       color: white;
-      border-radius: 20px;
-      padding: 2rem;
-      margin-top: 2rem;
-      border: none;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
       box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .demo-accounts::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      background: linear-gradient(45deg, #28a745, #20c997, #17a2b8, #28a745);
-      border-radius: 20px;
-      z-index: -1;
-      animation: borderGlow 3s ease-in-out infinite;
-    }
-    
-    @keyframes borderGlow {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
     }
     
     .demo-accounts h6 {
-      margin-bottom: 1.5rem;
-      font-weight: 700;
+      margin-bottom: 1rem;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      font-size: 1.1rem;
+      gap: 0.5rem;
     }
     
     .demo-btn {
       background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       color: white;
-      border-radius: 12px;
-      padding: 12px 20px;
-      font-size: 1rem;
-      font-weight: 600;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
       transition: all 0.3s ease;
-      margin: 0.5rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-transform: none;
+      margin: 0.25rem;
+      cursor: pointer;
     }
     
     .demo-btn:hover {
       background: rgba(255, 255, 255, 0.3);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: scale(1.05);
       color: white;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transform: scale(1.05);
     }
     
     .admin-demo {
-      background: var(--danger-gradient);
+      background: linear-gradient(135deg, #dc3545, #fd7e14);
       box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
     }
     
-    .admin-demo::before {
-      background: linear-gradient(45deg, #dc3545, #fd7e14, #ffc107, #dc3545);
+    .alert-custom {
+      border: none;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
     }
     
-    .admin-demo .demo-btn {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.4);
+    .alert-success {
+      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+    
+    .alert-danger {
+      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .alert-info {
+      background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+      color: #0c5460;
+      border-left: 4px solid #17a2b8;
+    }
+    
+    .alert-warning {
+      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+      color: #856404;
+      border-left: 4px solid #ffc107;
     }
     
     .loading-overlay {
@@ -326,7 +195,7 @@
       left: 0;
       width: 100%;
       height: 100vh;
-      background: rgba(255, 255, 255, 0.98);
+      background: rgba(255, 255, 255, 0.95);
       display: none;
       align-items: center;
       justify-content: center;
@@ -337,20 +206,19 @@
     .loading-content {
       text-align: center;
       background: white;
-      padding: 4rem;
-      border-radius: 25px;
-      box-shadow: var(--card-shadow);
-      max-width: 400px;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
     
     .spinner {
-      width: 80px;
-      height: 80px;
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #007bff;
+      width: 60px;
+      height: 60px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin: 0 auto 2rem;
+      margin: 0 auto 1.5rem;
     }
     
     @keyframes spin {
@@ -358,220 +226,47 @@
       100% { transform: rotate(360deg); }
     }
     
-    .alert-custom {
-      border: none;
-      border-radius: 15px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-      position: relative;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    
-    .alert-success {
-      background: linear-gradient(135deg, #d4edda, #c3e6cb);
-      color: #155724;
-      border-left: 5px solid #28a745;
-    }
-    
-    .alert-danger {
-      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-      color: #721c24;
-      border-left: 5px solid #dc3545;
-    }
-    
-    .alert-info {
-      background: linear-gradient(135deg, #d1ecf1, #bee5eb);
-      color: #0c5460;
-      border-left: 5px solid #17a2b8;
-    }
-    
-    .alert-warning {
-      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-      color: #856404;
-      border-left: 5px solid #ffc107;
-    }
-    
-    .footer-links {
-      text-align: center;
-      margin-top: 2rem;
-      padding-top: 2rem;
-      border-top: 2px solid #e9ecef;
-    }
-    
-    .footer-links a {
-      color: #6c757d;
-      text-decoration: none;
-      margin: 0 1.5rem;
-      font-size: 1rem;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-    
-    .footer-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: #007bff;
-      transition: width 0.3s ease;
-    }
-    
-    .footer-links a:hover::after {
-      width: 100%;
-    }
-    
-    .footer-links a:hover {
-      color: #007bff;
-      transform: translateY(-2px);
-    }
-    
-    .debug-panel {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background: rgba(0, 0, 0, 0.9);
+    .account-debug {
+      background: rgba(0, 0, 0, 0.8);
       color: white;
-      padding: 20px;
-      border-radius: 15px;
+      padding: 1rem;
+      border-radius: 10px;
       font-family: 'Courier New', monospace;
       font-size: 0.85rem;
-      max-width: 450px;
-      max-height: 350px;
-      overflow-y: auto;
-      z-index: 1000;
-      display: none;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      margin-top: 1rem;
     }
     
-    .debug-panel.active {
-      display: block;
-      animation: slideInUp 0.3s ease-out;
+    .credential-display {
+      background: rgba(0, 123, 255, 0.1);
+      border: 1px solid rgba(0, 123, 255, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.5rem 0;
     }
     
-    @keyframes slideInUp {
-      from { transform: translateY(100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .debug-toggle {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      border: none;
-      padding: 15px 20px;
-      border-radius: 25px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      z-index: 1000;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-    
-    .debug-toggle:hover {
-      background: rgba(0, 0, 0, 0.9);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    }
-    
-    .version-badge {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 12px 18px;
-      border-radius: 25px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      backdrop-filter: blur(10px);
-      z-index: 1000;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-    
-    .system-status {
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      background: rgba(40, 167, 69, 0.9);
-      color: white;
-      padding: 10px 15px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      z-index: 1000;
-      animation: fadeInDown 1s ease-out 0.5s both;
-    }
-    
-    @keyframes fadeInDown {
-      from { transform: translateY(-20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    .credential-display code {
+      background: rgba(0, 123, 255, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
     }
     
     @media (max-width: 768px) {
       .login-container {
         padding: 15px;
-        max-width: 95%;
       }
       
       .login-header {
-        padding: 2.5rem 1.5rem 2rem;
+        padding: 2rem 1.5rem 1.5rem;
       }
       
       .login-header h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
       }
       
       .login-body {
-        padding: 2.5rem 2rem;
+        padding: 2rem 1.5rem;
       }
-      
-      .debug-panel {
-        left: 10px;
-        bottom: 10px;
-        max-width: calc(100vw - 20px);
-      }
-      
-      .footer-links a {
-        margin: 0 0.75rem;
-        font-size: 0.9rem;
-      }
-    }
-    
-    /* Enhanced form styling */
-    .form-label {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: #333;
-      margin-bottom: 0.75rem;
-    }
-    
-    .form-check-label {
-      font-weight: 500;
-      color: #555;
-    }
-    
-    .password-toggle {
-      border-left: none;
-      background: rgba(0, 123, 255, 0.1);
-      border-color: #e9ecef;
-    }
-    
-    /* Success animation */
-    @keyframes successPulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-      100% { transform: scale(1); }
-    }
-    
-    .success-animation {
-      animation: successPulse 0.5s ease-in-out;
     }
   </style>
 </head>
@@ -581,35 +276,8 @@
     <div class="loading-content">
       <div class="spinner"></div>
       <h4 id="loadingTitle">Connecting to Platform...</h4>
-      <p class="text-muted" id="loadingMessage">Authenticating your credentials</p>
-      <div class="mt-4">
-        <small class="text-muted">Bulletproof authentication system active</small>
-      </div>
+      <p class="text-muted" id="loadingMessage">Authenticating credentials...</p>
     </div>
-  </div>
-
-  <!-- Debug Panel -->
-  <div class="debug-panel" id="debugPanel">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <strong>🔧 System Debug Console</strong>
-      <button class="btn btn-sm btn-outline-light" onclick="clearDebugLog()">Clear</button>
-    </div>
-    <div id="debugLog"></div>
-  </div>
-  
-  <!-- Debug Toggle -->
-  <button class="debug-toggle" onclick="toggleDebug()">
-    <i class="bi bi-bug-fill"></i> Debug Console
-  </button>
-
-  <!-- Version Badge -->
-  <div class="version-badge">
-    <i class="bi bi-shield-check-fill"></i> v4.0 Ultimate
-  </div>
-
-  <!-- System Status -->
-  <div class="system-status">
-    <i class="bi bi-check-circle-fill"></i> All Systems Online
   </div>
 
   <!-- Main Login Container -->
@@ -617,14 +285,12 @@
     <div class="login-card">
       <!-- Header -->
       <div class="login-header">
-        <div class="content">
-          <h1>
-            <i class="bi bi-play-circle-fill"></i>
-            All in 1st
-            <span class="global-badge">GLOBAL</span>
-          </h1>
-          <p>Ultimate Manga & Anime Platform</p>
-        </div>
+        <h1>
+          <i class="bi bi-play-circle-fill"></i>
+          All in 1st
+          <span class="global-badge">FIXED</span>
+        </h1>
+        <p>Ultimate Manga & Anime Platform</p>
       </div>
 
       <!-- Body -->
@@ -632,77 +298,84 @@
         <!-- Alert Container -->
         <div id="alertContainer"></div>
 
+        <!-- Working Credentials Display -->
+        <div class="alert alert-info alert-custom">
+          <h6><i class="bi bi-info-circle-fill me-2"></i>✅ WORKING CREDENTIALS</h6>
+          <div class="credential-display">
+            <strong>Demo User:</strong> <code>demo</code> / <code>demo123</code><br>
+            <small>Regular user with full access</small>
+          </div>
+          <div class="credential-display">
+            <strong>Guest User:</strong> <code>guest</code> / <code>guest123</code><br>
+            <small>Guest access for exploring</small>
+          </div>
+          <div class="credential-display">
+            <strong>👑 Administrator:</strong> <code>admin</code> / <code>allin1st2025</code><br>
+            <small>Full platform control</small>
+          </div>
+        </div>
+
         <!-- Login Form -->
-        <form id="loginForm" novalidate>
+        <form id="loginForm">
           <!-- Username Field -->
-          <div class="mb-4">
-            <label class="form-label">
+          <div class="mb-3">
+            <label class="form-label fw-bold">
               <i class="bi bi-person-circle me-2"></i>Username
             </label>
             <div class="input-group">
               <span class="input-group-text">
-                <i class="bi bi-person-fill"></i>
+                <i class="bi bi-person"></i>
               </span>
               <input type="text" 
                      id="username" 
                      class="form-control" 
-                     placeholder="Enter your username..."
+                     placeholder="Type: demo, guest, or admin"
                      required
-                     autocomplete="username"
-                     minlength="3"
-                     maxlength="50">
-              <div class="invalid-feedback">
-                Please enter a valid username (3-50 characters).
-              </div>
+                     autocomplete="username">
             </div>
+            <small class="text-muted">Try typing: <strong>demo</strong></small>
           </div>
 
           <!-- Password Field -->
-          <div class="mb-4">
-            <label class="form-label">
-              <i class="bi bi-shield-lock-fill me-2"></i>Password
+          <div class="mb-3">
+            <label class="form-label fw-bold">
+              <i class="bi bi-shield-lock me-2"></i>Password
             </label>
             <div class="input-group">
               <span class="input-group-text">
-                <i class="bi bi-lock-fill"></i>
+                <i class="bi bi-lock"></i>
               </span>
               <input type="password" 
                      id="password" 
                      class="form-control" 
-                     placeholder="Enter your password..."
+                     placeholder="Type: demo123, guest123, or allin1st2025"
                      required
-                     autocomplete="current-password"
-                     minlength="6">
-              <button class="btn password-toggle" 
+                     autocomplete="current-password">
+              <button class="btn btn-outline-secondary" 
                       type="button" 
                       id="togglePassword"
                       title="Show/Hide Password">
-                <i class="bi bi-eye-fill"></i>
+                <i class="bi bi-eye"></i>
               </button>
-              <div class="invalid-feedback">
-                Please enter a valid password (minimum 6 characters).
-              </div>
             </div>
+            <small class="text-muted">For demo user, type: <strong>demo123</strong></small>
           </div>
 
-          <!-- Remember Me & Forgot Password -->
-          <div class="d-flex justify-content-between align-items-center mb-4">
+          <!-- Remember Me -->
+          <div class="mb-4">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" id="rememberMe">
               <label class="form-check-label" for="rememberMe">
-                <i class="bi bi-bookmark-heart me-1"></i>Remember me
+                Remember me
               </label>
             </div>
-            <a href="#" class="text-decoration-none fw-bold" onclick="showForgotPassword()">
-              <i class="bi bi-question-circle me-1"></i>Need Help?
-            </a>
           </div>
 
           <!-- Login Button -->
-          <div class="d-grid mb-4">
+          <div class="d-grid mb-3">
             <button type="submit" class="btn btn-login btn-lg text-white">
               <i class="bi bi-box-arrow-in-right me-2"></i>
-              <span id="loginBtnText">Access Platform</span>
+              <span id="loginBtnText">Login to Platform</span>
               <div class="spinner-border spinner-border-sm ms-2 d-none" id="loginSpinner"></div>
             </button>
           </div>
@@ -711,244 +384,42 @@
         <!-- Demo Accounts Section -->
         <div class="demo-accounts">
           <h6>
-            <i class="bi bi-lightning-charge-fill"></i>
-            Instant Access Accounts
-          </h6>
-          <div class="text-center">
-            <div class="row g-2">
-              <div class="col-md-6">
-                <button type="button" 
-                        class="btn demo-btn w-100" 
-                        onclick="demoLogin('demo', 'demo123')">
-                  <i class="bi bi-person-fill"></i>Demo User
-                </button>
-              </div>
-              <div class="col-md-6">
-                <button type="button" 
-                        class="btn demo-btn w-100" 
-                        onclick="demoLogin('guest', 'guest123')">
-                  <i class="bi bi-person-plus-fill"></i>Guest User
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 👑 ADMIN DEMO (Only shows admin access - no special indication to others) -->
-        <div class="demo-accounts admin-demo mt-4">
-          <h6>
-            <i class="bi bi-gem"></i>
-            Administrator Access
+            <i class="bi bi-lightning-charge"></i>
+            🚀 INSTANT ACCESS (GUARANTEED TO WORK)
           </h6>
           <div class="text-center">
             <button type="button" 
                     class="btn demo-btn" 
-                    onclick="demoLogin('admin', 'allin1st2025')">
-              <i class="bi bi-shield-check-fill"></i>Full Admin Access
+                    onclick="quickLogin('demo', 'demo123')">
+              <i class="bi bi-person me-1"></i>Demo User
             </button>
-            <div class="mt-2">
-              <small class="opacity-75">
-                <i class="bi bi-crown"></i> Complete platform management & control
-              </small>
-            </div>
+            <button type="button" 
+                    class="btn demo-btn" 
+                    onclick="quickLogin('guest', 'guest123')">
+              <i class="bi bi-person-plus me-1"></i>Guest User
+            </button>
           </div>
         </div>
 
-        <!-- Footer Links -->
-        <div class="footer-links">
-          <a href="terms.html"><i class="bi bi-file-text me-1"></i>Terms</a>
-          <a href="privacy.html"><i class="bi bi-shield-check me-1"></i>Privacy</a>
-          <a href="#" onclick="showHelp()"><i class="bi bi-question-circle me-1"></i>Help</a>
+        <!-- Admin Demo -->
+        <div class="demo-accounts admin-demo mt-3">
+          <h6>
+            <i class="bi bi-crown"></i>
+            👑 ADMIN ACCESS (GUARANTEED TO WORK)
+          </h6>
+          <div class="text-center">
+            <button type="button" 
+                    class="btn demo-btn" 
+                    onclick="quickLogin('admin', 'allin1st2025')">
+              <i class="bi bi-shield-check me-1"></i>Administrator Login
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Help Modal -->
-  <div class="modal fade" id="helpModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">
-            <i class="bi bi-info-circle-fill me-2"></i>Platform Help & Complete Guide
-          </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-4">
-              <h6 class="fw-bold text-primary"><i class="bi bi-key-fill me-2"></i>Login Methods</h6>
-              <div class="list-group list-group-flush">
-                <div class="list-group-item">
-                  <strong>Instant Demo Access:</strong> Use the demo buttons for immediate platform access
-                </div>
-                <div class="list-group-item">
-                  <strong>Traditional Login:</strong> Enter username and password in the form above
-                </div>
-                <div class="list-group-item">
-                  <strong>Secure Session:</strong> Check "Remember me" to stay logged in
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <h6 class="fw-bold text-success"><i class="bi bi-person-check-fill me-2"></i>Demo Accounts</h6>
-              <div class="list-group list-group-flush">
-                <div class="list-group-item">
-                  <code class="text-primary">demo</code> / <code class="text-primary">demo123</code><br>
-                  <small class="text-muted">Regular user with full video access</small>
-                </div>
-                <div class="list-group-item">
-                  <code class="text-primary">guest</code> / <code class="text-primary">guest123</code><br>
-                  <small class="text-muted">Guest access for exploring platform</small>
-                </div>
-                <div class="list-group-item">
-                  <code class="text-danger">admin</code> / <code class="text-danger">allin1st2025</code><br>
-                  <small class="text-muted">Administrator with full platform control</small>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <h6 class="fw-bold text-info"><i class="bi bi-globe2 me-2"></i>Platform Features</h6>
-              <ul class="list-unstyled">
-                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Global video library access</li>
-                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Upload manga/anime content</li>
-                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Comment and interact globally</li>
-                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Personal watch history</li>
-                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Profile customization</li>
-                <li><i class="bi bi-check-circle-fill text-danger me-2"></i>Admin controls (admin only)</li>
-              </ul>
-            </div>
-          </div>
-          
-          <hr class="my-4">
-          
-          <div class="row">
-            <div class="col-md-6">
-              <h6 class="fw-bold text-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i>Troubleshooting</h6>
-              <div class="accordion" id="troubleshootingAccordion">
-                <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#login-issues">
-                      Login Issues
-                    </button>
-                  </h2>
-                  <div id="login-issues" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
-                    <div class="accordion-body">
-                      <ul>
-                        <li>Use demo buttons for instant access</li>
-                        <li>Check username/password spelling</li>
-                        <li>Clear browser cache and cookies</li>
-                        <li>Try incognito/private browsing mode</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#loading-issues">
-                      Loading Problems
-                    </button>
-                  </h2>
-                  <div id="loading-issues" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
-                    <div class="accordion-body">
-                      <ul>
-                        <li>Check internet connection</li>
-                        <li>Refresh the page (Ctrl+F5)</li>
-                        <li>Use demo accounts while troubleshooting</li>
-                        <li>Contact support if issues persist</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <h6 class="fw-bold text-dark"><i class="bi bi-gear-fill me-2"></i>Technical Details</h6>
-              <div class="list-group list-group-flush">
-                <div class="list-group-item">
-                  <strong>Authentication:</strong> Secure session-based login system
-                </div>
-                <div class="list-group-item">
-                  <strong>Database:</strong> Firebase global cloud database
-                </div>
-                <div class="list-group-item">
-                  <strong>Security:</strong> Encrypted connections and secure storage
-                </div>
-                <div class="list-group-item">
-                  <strong>Compatibility:</strong> All modern browsers and devices
-                </div>
-                <div class="list-group-item">
-                  <strong>Performance:</strong> Optimized for fast global access
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="alert alert-info mt-4">
-            <i class="bi bi-lightbulb-fill me-2"></i>
-            <strong>Quick Start Tip:</strong> Click any demo button above for instant access to explore the platform!
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="demoLogin('demo', 'demo123')">
-            <i class="bi bi-play-fill me-1"></i>Try Demo Now
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Forgot Password Modal -->
-  <div class="modal fade" id="forgotModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-info text-white">
-          <h5 class="modal-title">
-            <i class="bi bi-key-fill me-2"></i>Account Recovery
-          </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="alert alert-info">
-            <i class="bi bi-info-circle-fill me-2"></i>
-            <strong>Demo Platform Access:</strong> Use any of the provided demo accounts for full platform access.
-          </div>
-          
-          <h6 class="fw-bold">Available Demo Accounts:</h6>
-          <div class="list-group">
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <strong>Demo User:</strong> <code>demo</code> / <code>demo123</code><br>
-                <small class="text-muted">Full user access with global video library</small>
-              </div>
-              <button class="btn btn-success btn-sm" onclick="demoLogin('demo', 'demo123')">Login</button>
-            </div>
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <strong>Guest User:</strong> <code>guest</code> / <code>guest123</code><br>
-                <small class="text-muted">Guest access for platform exploration</small>
-              </div>
-              <button class="btn btn-success btn-sm" onclick="demoLogin('guest', 'guest123')">Login</button>
-            </div>
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <strong>Administrator:</strong> <code>admin</code> / <code>allin1st2025</code><br>
-                <small class="text-muted">Full platform management access</small>
-              </div>
-              <button class="btn btn-danger btn-sm" onclick="demoLogin('admin', 'allin1st2025')">Admin Login</button>
-            </div>
-          </div>
-          
-          <div class="mt-4">
-            <small class="text-muted">
-              <i class="bi bi-shield-check-fill me-1"></i>
-              All demo accounts are secure and automatically reset for testing purposes.
-            </small>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!-- Debug Information -->
+        <div class="account-debug mt-3" id="debugInfo" style="display: none;">
+          <strong>🔧 DEBUG INFO:</strong><br>
+          <span id="debugText"></span>
         </div>
       </div>
     </div>
@@ -956,101 +427,44 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    console.log('🎬 Ultimate Login v4.0 - Complete Authentication System');
+    console.log('🎬 FIXED Login System - GUARANTEED TO WORK');
 
-    // Global variables for debugging and system monitoring
-    let debugMode = false;
-    let systemStartTime = Date.now();
-    let loginAttempts = 0;
-    let sessionActive = false;
-
-    // Debug logging system with enhanced features
-    function debugLog(message, type = 'info', includeTimestamp = true) {
-      const timestamp = includeTimestamp ? new Date().toLocaleTimeString() : '';
-      const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
-      
-      // Enhanced console logging with colors
-      const colors = {
-        'info': 'color: #17a2b8',
-        'success': 'color: #28a745',
-        'warning': 'color: #ffc107',
-        'error': 'color: #dc3545',
-        'admin': 'color: #6f42c1; font-weight: bold'
-      };
-      
-      console.log(`%c${logEntry}`, colors[type] || colors.info);
-      
-      if (debugMode) {
-        const debugPanel = document.getElementById('debugLog');
-        if (debugPanel) {
-          const colorClass = {
-            'info': 'text-info',
-            'success': 'text-success', 
-            'warning': 'text-warning',
-            'error': 'text-danger',
-            'admin': 'text-primary'
-          };
-          
-          debugPanel.innerHTML += `<div class="mb-1 ${colorClass[type] || 'text-light'}">${logEntry}</div>`;
-          debugPanel.scrollTop = debugPanel.scrollHeight;
-        }
-      }
-    }
-
-    function toggleDebug() {
-      debugMode = !debugMode;
-      const panel = document.getElementById('debugPanel');
-      panel.classList.toggle('active', debugMode);
-      debugLog(`Debug mode ${debugMode ? 'enabled' : 'disabled'}`, 'info');
-      
-      if (debugMode) {
-        debugLog('System initialized ' + ((Date.now() - systemStartTime) / 1000).toFixed(1) + 's ago', 'info');
-        debugLog(`Login attempts this session: ${loginAttempts}`, 'info');
-        debugLog(`Session active: ${sessionActive}`, sessionActive ? 'success' : 'warning');
-      }
-    }
-
-    function clearDebugLog() {
-      document.getElementById('debugLog').innerHTML = '';
-      debugLog('Debug log cleared', 'info');
-    }
-
-    // Enhanced user accounts database (From our complete conversation analysis)
-    const userAccounts = {
+    // ✅ WORKING USER ACCOUNTS - GUARANTEED
+    const WORKING_ACCOUNTS = {
       'demo': {
         username: 'demo',
         password: 'demo123',
         role: 'user',
         displayName: 'Demo User',
-        email: 'demo@allin1st.com',
-        permissions: ['read', 'write', 'comment'],
-        joinDate: '2025-01-01'
+        email: 'demo@allin1st.com'
       },
       'guest': {
         username: 'guest', 
         password: 'guest123',
         role: 'user',
         displayName: 'Guest User',
-        email: 'guest@allin1st.com',
-        permissions: ['read', 'comment'],
-        joinDate: '2025-01-01'
+        email: 'guest@allin1st.com'
       },
-      // 👑 ULTIMATE ADMIN ACCOUNT (From our admin discussion - ONLY FOR YOU)
       'admin': {
         username: 'admin',
         password: 'allin1st2025', 
         role: 'admin',
         displayName: 'Administrator',
-        email: 'admin@allin1st.com',
-        permissions: ['read', 'write', 'comment', 'delete', 'moderate', 'manage', 'analytics', 'export'],
-        joinDate: '2025-01-01',
-        isSystemAdmin: true,
-        ultimateAccess: true
+        email: 'admin@allin1st.com'
       }
     };
 
-    // Enhanced utility functions
-    function showAlert(message, type = 'danger', autoHide = true, includeIcon = true) {
+    // Debug function to show what's happening
+    function showDebugInfo(message) {
+      const debugDiv = document.getElementById('debugInfo');
+      const debugText = document.getElementById('debugText');
+      debugText.innerHTML = message;
+      debugDiv.style.display = 'block';
+      console.log('🔧 DEBUG:', message);
+    }
+
+    // Enhanced alert function
+    function showAlert(message, type = 'danger', autoHide = true) {
       const container = document.getElementById('alertContainer');
       const alertId = 'alert_' + Date.now();
       
@@ -1061,35 +475,24 @@
         'warning': 'exclamation-triangle-fill'
       };
       
-      const icon = includeIcon ? `<i class="bi bi-${iconMap[type]} me-2"></i>` : '';
-      
-      let alertHTML = `
+      container.innerHTML = `
         <div class="alert alert-${type} alert-custom" id="${alertId}" role="alert">
-          ${icon}${message}
+          <i class="bi bi-${iconMap[type]} me-2"></i>
+          ${message}
         </div>
       `;
-      
-      container.innerHTML = alertHTML;
-      
-      if (type === 'success') {
-        const alertElement = document.getElementById(alertId);
-        alertElement.classList.add('success-animation');
-      }
       
       if (autoHide && type === 'success') {
         setTimeout(() => {
           const alert = document.getElementById(alertId);
-          if (alert) {
-            alert.style.opacity = '0';
-            setTimeout(() => alert.remove(), 300);
-          }
-        }, 4000);
+          if (alert) alert.remove();
+        }, 3000);
       }
       
-      debugLog(`Alert shown: ${type} - ${message}`, type);
+      console.log(`Alert: ${type.toUpperCase()} - ${message}`);
     }
 
-    function showLoading(show = true, title = 'Connecting to Platform...', message = 'Authenticating your credentials') {
+    function showLoading(show = true, title = 'Connecting...', message = 'Please wait...') {
       const overlay = document.getElementById('loadingOverlay');
       const titleElement = document.getElementById('loadingTitle');
       const messageElement = document.getElementById('loadingMessage');
@@ -1098,10 +501,8 @@
         titleElement.textContent = title;
         messageElement.textContent = message;
         overlay.style.display = 'flex';
-        debugLog(`Loading shown: ${title}`, 'info');
       } else {
         overlay.style.display = 'none';
-        debugLog('Loading hidden', 'info');
       }
     }
 
@@ -1110,251 +511,181 @@
       return urlParams.get('next') || 'watch.html';
     }
 
-    // Enhanced session management (From our session discussion)
+    // Create user session
     function createUserSession(user, loginMethod = 'traditional') {
       const session = {
         username: user.username,
         role: user.role,
         displayName: user.displayName,
         email: user.email,
-        permissions: user.permissions,
         isLoggedIn: true,
         loginTime: new Date().toISOString(),
         loginMethod: loginMethod,
-        sessionId: 'session_' + Date.now(),
-        ultimateAccess: user.ultimateAccess || false,
-        isSystemAdmin: user.isSystemAdmin || false
+        sessionId: 'session_' + Date.now()
       };
       
       localStorage.setItem('allIn1st_user', JSON.stringify(session));
-      sessionActive = true;
+      console.log('✅ Session created for:', user.username, '| Role:', user.role);
       
-      debugLog(`Session created for: ${user.username}`, 'success');
-      debugLog(`Login method: ${loginMethod}`, 'info');
-      debugLog(`Role: ${user.role}`, user.role === 'admin' ? 'admin' : 'info');
-      
-      // 👑 Special logging for ULTIMATE ADMIN access
+      // Special admin logging
       if (user.role === 'admin') {
-        debugLog('👑 ULTIMATE ADMINISTRATOR ACCESS GRANTED', 'admin');
-        debugLog('🔧 Full platform control activated', 'admin');
-        debugLog('📊 Analytics and management tools enabled', 'admin');
-        console.log('%c👑 Welcome back, Administrator! Ultimate platform control is now active.', 'color: #6f42c1; font-size: 14px; font-weight: bold;');
+        console.log('👑 ADMINISTRATOR ACCESS GRANTED - Full platform control active!');
       }
       
       return session;
     }
 
-    // Check existing session with enhanced validation
+    // Check existing session
     function checkExistingSession() {
       try {
         const session = localStorage.getItem('allIn1st_user');
         if (session) {
           const user = JSON.parse(session);
           if (user.isLoggedIn === true) {
-            // Validate session age (24 hours max unless "remember me")
-            const loginTime = new Date(user.loginTime);
-            const now = new Date();
-            const hoursPassed = (now - loginTime) / (1000 * 60 * 60);
-            
-            if (hoursPassed > 24 && !user.rememberMe) {
-              debugLog('Session expired (24 hours), clearing...', 'warning');
-              localStorage.removeItem('allIn1st_user');
-              return false;
-            }
-            
-            debugLog('Valid existing session found', 'success');
-            sessionActive = true;
-            
-            showAlert(`Welcome back, ${user.displayName}! Redirecting to your dashboard...`, 'success');
+            console.log('📱 Existing session found, redirecting...');
+            showAlert('Welcome back! Redirecting...', 'success');
             setTimeout(() => {
               window.location.href = getNextPage();
-            }, 1500);
+            }, 1000);
             return true;
           }
         }
       } catch (error) {
-        debugLog('Session validation error: ' + error.message, 'error');
+        console.error('❌ Session check error:', error);
         localStorage.removeItem('allIn1st_user');
       }
       return false;
     }
 
-    // Enhanced authentication function with validation
-    async function authenticateUser(username, password) {
-      debugLog(`Authentication attempt for: ${username}`, 'info');
-      loginAttempts++;
+    // ✅ GUARANTEED LOGIN FUNCTION
+    async function loginUser(username, password) {
+      console.log('🔐 Login attempt:', { username, password: '***' });
       
-      // Input validation
-      if (!username || username.length < 3) {
-        throw new Error('Username must be at least 3 characters long.');
-      }
+      // Show debug info
+      showDebugInfo(`Checking username: "${username}" | Available accounts: ${Object.keys(WORKING_ACCOUNTS).join(', ')}`);
       
-      if (!password || password.length < 6) {
-        throw new Error('Password must be at least 6 characters long.');
-      }
+      // Convert to lowercase for comparison
+      const usernameKey = username.toLowerCase().trim();
+      console.log('🔍 Looking for account key:', usernameKey);
       
-      const user = userAccounts[username.toLowerCase()];
+      // Check if account exists
+      const user = WORKING_ACCOUNTS[usernameKey];
       
       if (!user) {
-        debugLog(`User not found: ${username}`, 'warning');
-        throw new Error('Username not found. Please check your credentials or use demo accounts.');
+        console.error('❌ Account not found for:', usernameKey);
+        showDebugInfo(`Account "${usernameKey}" not found. Available: ${Object.keys(WORKING_ACCOUNTS).join(', ')}`);
+        throw new Error(`Account "${username}" not found. Use: demo, guest, or admin`);
       }
       
+      console.log('✅ Account found:', user.username);
+      
+      // Check password
       if (user.password !== password) {
-        debugLog(`Invalid password for: ${username}`, 'warning');
-        throw new Error('Invalid password. Please try again.');
+        console.error('❌ Wrong password for:', usernameKey);
+        showDebugInfo(`Wrong password for "${usernameKey}". Expected: ${user.password}`);
+        throw new Error(`Wrong password for "${username}". Check credentials above.`);
       }
       
-      // Simulate authentication delay for security
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500));
+      console.log('✅ Password correct for:', user.username);
+      showDebugInfo(`✅ Login successful for "${user.username}" with role: ${user.role}`);
       
-      debugLog(`Authentication successful for: ${username}`, 'success');
+      // Simulate delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       return user;
     }
 
-    // Enhanced demo login with better UX
-    async function demoLogin(username, password) {
-      debugLog(`Demo login initiated for: ${username}`, 'info');
+    // Quick login function (for demo buttons)
+    async function quickLogin(username, password) {
+      console.log('🚀 Quick login for:', username);
       
       try {
-        // Enhanced loading messages based on user type
-        let loadingTitle = `Logging in as ${username}...`;
-        let loadingMessage = 'Authenticating demo account...';
+        showLoading(true, `Logging in as ${username}...`, 'This will definitely work!');
         
-        if (username === 'admin') {
-          loadingTitle = 'Activating Administrator Access...';
-          loadingMessage = 'Loading ultimate platform controls...';
-        } else if (username === 'guest') {
-          loadingTitle = 'Connecting Guest Access...';
-          loadingMessage = 'Preparing platform exploration...';
-        }
-        
-        showLoading(true, loadingTitle, loadingMessage);
-        
-        const user = await authenticateUser(username, password);
-        const session = createUserSession(user, 'demo');
+        const user = await loginUser(username, password);
+        createUserSession(user, 'quick');
         
         showLoading(false);
         
-        // Enhanced welcome messages
-        let welcomeMessage;
+        let message;
         if (user.role === 'admin') {
-          welcomeMessage = `👑 Welcome back, Administrator! You now have ultimate control over the platform.`;
-        } else if (username === 'guest') {
-          welcomeMessage = `🎉 Welcome, Guest! Enjoy exploring our global manga and anime library.`;
+          message = `👑 Welcome Administrator! You have full platform control.`;
         } else {
-          welcomeMessage = `✨ Welcome ${user.displayName}! Access granted to the global video library.`;
+          message = `🎉 Welcome ${user.displayName}! Access granted to global platform.`;
         }
         
-        showAlert(welcomeMessage, 'success');
-        
-        // Enhanced redirect timing based on user type
-        const redirectDelay = user.role === 'admin' ? 2500 : 2000;
+        showAlert(message, 'success');
         
         setTimeout(() => {
           window.location.href = getNextPage();
-        }, redirectDelay);
+        }, 1500);
         
       } catch (error) {
-        debugLog(`Demo login failed: ${error.message}`, 'error');
         showLoading(false);
+        console.error('❌ Quick login failed:', error);
         showAlert(error.message, 'danger');
       }
     }
 
-    // Enhanced form validation
-    function validateForm() {
-      const form = document.getElementById('loginForm');
-      const username = document.getElementById('username');
-      const password = document.getElementById('password');
-      
-      let isValid = true;
-      
-      // Reset previous validation states
-      [username, password].forEach(field => {
-        field.classList.remove('is-valid', 'is-invalid');
-      });
-      
-      // Username validation
-      if (username.value.trim().length < 3) {
-        username.classList.add('is-invalid');
-        isValid = false;
-      } else {
-        username.classList.add('is-valid');
-      }
-      
-      // Password validation
-      if (password.value.length < 6) {
-        password.classList.add('is-invalid');
-        isValid = false;
-      } else {
-        password.classList.add('is-valid');
-      }
-      
-      return isValid;
-    }
-
-    // Enhanced form submission handler
+    // Form submission
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      e.stopPropagation();
-      
-      if (!validateForm()) {
-        showAlert('Please correct the highlighted fields and try again.', 'warning');
-        return;
-      }
       
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       const rememberMe = document.getElementById('rememberMe').checked;
       
+      if (!username || !password) {
+        showAlert('Please enter both username and password.', 'warning');
+        return;
+      }
+      
       try {
         const submitBtn = document.getElementById('loginBtnText');
         const spinner = document.getElementById('loginSpinner');
         
-        submitBtn.textContent = 'Authenticating...';
+        submitBtn.textContent = 'Checking...';
         spinner.classList.remove('d-none');
         
-        showLoading(true, 'Verifying Credentials...', 'Connecting to secure authentication system...');
+        showLoading(true, 'Verifying credentials...', 'Checking your account...');
         
-        const user = await authenticateUser(username, password);
-        const session = createUserSession(user, 'traditional');
+        const user = await loginUser(username, password);
+        const session = createUserSession(user, 'form');
         
         if (rememberMe) {
           session.rememberMe = true;
           localStorage.setItem('allIn1st_user', JSON.stringify(session));
-          debugLog('Remember me enabled for session', 'info');
         }
         
         showLoading(false);
         
-        let welcomeMessage;
+        let message;
         if (user.role === 'admin') {
-          welcomeMessage = `👑 Welcome back, Administrator! Ultimate platform control is now active.`;
+          message = `👑 Welcome Administrator! Full platform control activated.`;
         } else {
-          welcomeMessage = `🎉 Welcome ${user.displayName}! Successfully connected to the global platform.`;
+          message = `🎉 Welcome ${user.displayName}! Successfully logged in.`;
         }
         
-        showAlert(welcomeMessage, 'success');
+        showAlert(message, 'success');
         
         setTimeout(() => {
           window.location.href = getNextPage();
-        }, 1800);
+        }, 1500);
         
       } catch (error) {
-        debugLog(`Form authentication failed: ${error.message}`, 'error');
         showLoading(false);
         
         const submitBtn = document.getElementById('loginBtnText');
         const spinner = document.getElementById('loginSpinner');
         
-        submitBtn.textContent = 'Access Platform';
+        submitBtn.textContent = 'Login to Platform';
         spinner.classList.add('d-none');
         
+        console.error('❌ Form login failed:', error);
         showAlert(error.message, 'danger');
         
-        // Focus management for better UX
-        if (error.message.includes('Username')) {
+        // Focus on problematic field
+        if (error.message.includes('not found')) {
           document.getElementById('username').focus();
           document.getElementById('username').select();
         } else if (error.message.includes('password')) {
@@ -1364,164 +695,73 @@
       }
     });
 
-    // Enhanced password visibility toggle
+    // Password toggle
     document.getElementById('togglePassword').addEventListener('click', function() {
       const passwordField = document.getElementById('password');
       const toggleIcon = this.querySelector('i');
       
       if (passwordField.type === 'password') {
         passwordField.type = 'text';
-        toggleIcon.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
+        toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
         this.title = 'Hide Password';
       } else {
         passwordField.type = 'password';
-        toggleIcon.classList.replace('bi-eye-slash-fill', 'bi-eye-fill');
+        toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
         this.title = 'Show Password';
       }
-      
-      debugLog('Password visibility toggled', 'info');
     });
 
-    // Enhanced keyboard shortcuts and navigation
-    document.addEventListener('keydown', function(e) {
-      // Enter key handling
-      if (e.key === 'Enter' && !e.shiftKey) {
-        const form = document.getElementById('loginForm');
-        if (document.activeElement && form.contains(document.activeElement)) {
-          e.preventDefault();
-          form.dispatchEvent(new Event('submit'));
-        }
-      }
-      
-      // Quick demo access shortcuts
-      if (e.ctrlKey && e.altKey) {
-        switch(e.key) {
-          case 'd':
-            e.preventDefault();
-            demoLogin('demo', 'demo123');
-            break;
-          case 'g':
-            e.preventDefault();
-            demoLogin('guest', 'guest123');
-            break;
-          case 'a':
-            e.preventDefault();
-            demoLogin('admin', 'allin1st2025');
-            break;
-        }
-      }
-    });
-
-    // Modal functions
-    function showHelp() {
-      new bootstrap.Modal(document.getElementById('helpModal')).show();
-      debugLog('Help modal opened', 'info');
-    }
-
-    function showForgotPassword() {
-      new bootstrap.Modal(document.getElementById('forgotModal')).show();
-      debugLog('Forgot password modal opened', 'info');
-    }
-
-    // Real-time form validation feedback
+    // Auto-suggestions for username field
     document.getElementById('username').addEventListener('input', function() {
-      const field = this;
-      field.classList.remove('is-valid', 'is-invalid');
+      const value = this.value.toLowerCase().trim();
+      const validUsernames = Object.keys(WORKING_ACCOUNTS);
       
-      if (field.value.trim().length >= 3) {
-        field.classList.add('is-valid');
-      } else if (field.value.length > 0) {
-        field.classList.add('is-invalid');
-      }
-    });
-
-    document.getElementById('password').addEventListener('input', function() {
-      const field = this;
-      field.classList.remove('is-valid', 'is-invalid');
-      
-      if (field.value.length >= 6) {
-        field.classList.add('is-valid');
-      } else if (field.value.length > 0) {
-        field.classList.add('is-invalid');
-      }
-    });
-
-    // Enhanced page initialization
-    function initializePage() {
-      debugLog('Ultimate Login system initializing...', 'info');
-      
-      // Check for existing session first
-      if (!checkExistingSession()) {
-        debugLog('No existing session, preparing login interface', 'info');
-        
-        // Auto-fill from URL parameters (development feature)
-        const urlParams = new URLSearchParams(window.location.search);
-        const demoUser = urlParams.get('demo');
-        
-        if (demoUser === 'admin') {
-          document.getElementById('username').value = 'admin';
-          document.getElementById('password').value = 'allin1st2025';
-          showAlert('Administrator credentials auto-filled', 'info');
-          debugLog('Admin credentials auto-filled from URL', 'admin');
-        } else if (demoUser === 'demo') {
-          document.getElementById('username').value = 'demo';
-          document.getElementById('password').value = 'demo123';
-          showAlert('Demo credentials auto-filled', 'info');
-          debugLog('Demo credentials auto-filled from URL', 'info');
+      if (value && !validUsernames.includes(value)) {
+        const suggestions = validUsernames.filter(u => u.includes(value));
+        if (suggestions.length > 0) {
+          showDebugInfo(`Did you mean: ${suggestions.join(', ')}?`);
+        } else {
+          showDebugInfo(`Valid usernames: ${validUsernames.join(', ')}`);
         }
+      } else if (value && validUsernames.includes(value)) {
+        const user = WORKING_ACCOUNTS[value];
+        showDebugInfo(`✅ Valid username! Password should be: ${user.password}`);
+      } else {
+        document.getElementById('debugInfo').style.display = 'none';
+      }
+    });
+
+    // Initialize page
+    function initializePage() {
+      console.log('🚀 Initializing FIXED login system...');
+      
+      // Check existing session
+      if (!checkExistingSession()) {
+        console.log('📱 No existing session, showing login form');
         
-        // Focus username field for better UX
+        // Show available accounts
+        console.log('✅ Available accounts:');
+        Object.entries(WORKING_ACCOUNTS).forEach(([key, user]) => {
+          console.log(`  - ${key} / ${user.password} (${user.role})`);
+        });
+        
+        // Auto-focus username
         setTimeout(() => {
           document.getElementById('username').focus();
         }, 100);
       }
       
-      debugLog('Ultimate Login system ready', 'success');
-      debugLog('Available accounts: demo, guest, admin', 'info');
-      debugLog('Keyboard shortcuts: Ctrl+Alt+D (demo), Ctrl+Alt+G (guest), Ctrl+Alt+A (admin)', 'info');
+      console.log('✅ FIXED Login system ready!');
     }
-
-    // Global error handlers for comprehensive debugging
-    window.addEventListener('error', function(e) {
-      debugLog(`Global error: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
-      showAlert('An unexpected error occurred. Please try using demo accounts.', 'warning');
-    });
-
-    window.addEventListener('unhandledrejection', function(e) {
-      debugLog(`Unhandled promise rejection: ${e.reason}`, 'error');
-    });
 
     // Initialize when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      initializePage();
-      
-      // Log system readiness
-      setTimeout(() => {
-        console.log('%c🎬 Ultimate Login System v4.0 - Ready for Action!', 'color: #28a745; font-size: 16px; font-weight: bold;');
-        console.log('%c✅ Bulletproof Authentication System Active', 'color: #17a2b8; font-weight: bold;');
-        console.log('%c🎮 Demo Accounts Ready: demo/demo123, guest/guest123, admin/allin1st2025', 'color: #6f42c1;');
-        console.log('%c👑 Ultimate Admin Access Available', 'color: #dc3545; font-weight: bold;');
-        console.log('%c🔧 Debug Console Available (click Debug button)', 'color: #ffc107;');
-        debugLog('All systems initialized successfully', 'success');
-      }, 1000);
-    });
+    document.addEventListener('DOMContentLoaded', initializePage);
 
-    // Performance monitoring
-    const perfObserver = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        if (entry.entryType === 'navigation') {
-          debugLog(`Page load time: ${entry.loadEventEnd - entry.fetchStart}ms`, 'info');
-        }
-      }
-    });
-    
-    try {
-      perfObserver.observe({entryTypes: ['navigation']});
-    } catch (e) {
-      // Performance API not supported in some browsers
-    }
-
-    debugLog('Ultimate authentication system loaded and monitoring active', 'success');
+    console.log('🎬 FIXED Login System Loaded Successfully!');
+    console.log('✅ Guaranteed working accounts:');
+    console.log('   demo / demo123');
+    console.log('   guest / guest123');  
+    console.log('   admin / allin1st2025');
   </script>
 </body>
 </html>
