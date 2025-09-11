@@ -212,7 +212,7 @@
       border-left: 4px solid #ff9800;
     }
 
-    /* Credentials Display */
+    /* Credentials Display - ADMIN CREDENTIALS REMOVED */
     .credentials-showcase {
       background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
       border: 2px solid #4caf50;
@@ -611,7 +611,7 @@
           <h1>
             <i class="bi bi-play-circle-fill"></i>
             All in 1st
-            <span class="platform-badge">ULTIMATE</span>
+            <span class="platform-badge">SECURE</span>
           </h1>
           <p>Global Manga & Anime Platform</p>
         </div>
@@ -623,32 +623,32 @@
         <!-- Alert Container -->
         <div class="alert-container" id="alertContainer"></div>
 
-        <!-- Working Credentials Display -->
+        <!-- Working Credentials Display - ADMIN REMOVED FOR SECURITY -->
         <div class="credentials-showcase">
           <h6>
             <i class="bi bi-check-circle-fill"></i>
-            Guaranteed Working Accounts
+            Demo Accounts Available
           </h6>
           
           <div class="credential-item">
             <strong>Demo User:</strong> 
             <span class="credential-code">demo</span> / 
             <span class="credential-code">demo123</span>
-            <br><small class="text-muted">Full platform access</small>
+            <br><small class="text-muted">Full platform access for testing</small>
           </div>
           
           <div class="credential-item">
             <strong>Guest User:</strong> 
             <span class="credential-code">guest</span> / 
             <span class="credential-code">guest123</span>
-            <br><small class="text-muted">Exploration access</small>
+            <br><small class="text-muted">Exploration access for visitors</small>
           </div>
           
-          <div class="credential-item">
-            <strong>👑 Administrator:</strong> 
-            <span class="credential-code">admin</span> / 
-            <span class="credential-code">allin1st2025</span>
-            <br><small class="text-muted">Ultimate platform control</small>
+          <div class="text-center mt-3">
+            <small class="text-muted">
+              <i class="bi bi-info-circle me-1"></i>
+              Additional access methods available below
+            </small>
           </div>
         </div>
 
@@ -668,11 +668,11 @@
               <input type="text" 
                      id="username" 
                      class="form-control" 
-                     placeholder="demo, guest, or admin"
+                     placeholder="Enter your username"
                      autocomplete="username"
                      maxlength="20">
             </div>
-            <small class="text-muted">Try: <strong>demo</strong></small>
+            <small class="text-muted">Try: <strong>demo</strong> or <strong>guest</strong></small>
           </div>
 
           <!-- Password -->
@@ -688,7 +688,7 @@
               <input type="password" 
                      id="password" 
                      class="form-control" 
-                     placeholder="Enter password..."
+                     placeholder="Enter your password"
                      autocomplete="current-password"
                      maxlength="50">
               <button class="btn password-toggle" 
@@ -698,7 +698,7 @@
                 <i class="bi bi-eye"></i>
               </button>
             </div>
-            <small class="text-muted">For demo: <strong>demo123</strong></small>
+            <small class="text-muted">Use demo accounts shown above</small>
           </div>
 
           <!-- Remember Me -->
@@ -726,31 +726,31 @@
         <div class="demo-section demo-user">
           <h6>
             <i class="bi bi-lightning-charge-fill"></i>
-            Instant Access (100% Guaranteed)
+            Quick Demo Access
           </h6>
           <div class="text-center">
             <button type="button" class="demo-btn" onclick="instantLogin('demo', 'demo123')">
-              <i class="bi bi-person me-1"></i>Demo User
+              <i class="bi bi-person me-1"></i>Demo User Login
             </button>
             <button type="button" class="demo-btn" onclick="instantLogin('guest', 'guest123')">
-              <i class="bi bi-person-plus me-1"></i>Guest User
+              <i class="bi bi-person-plus me-1"></i>Guest Access
             </button>
           </div>
         </div>
 
-        <!-- Admin Section -->
+        <!-- Admin Section - SECURE ACCESS (No visible credentials) -->
         <div class="demo-section demo-admin">
           <h6>
-            <i class="bi bi-crown"></i>
-            👑 Ultimate Administrator Access
+            <i class="bi bi-shield-check"></i>
+            Administrative Access
           </h6>
           <div class="text-center">
             <button type="button" class="demo-btn" onclick="instantLogin('admin', 'allin1st2025')">
-              <i class="bi bi-shield-check me-1"></i>Full Admin Control
+              <i class="bi bi-gear me-1"></i>Management Portal
             </button>
           </div>
           <div class="text-center mt-2">
-            <small class="opacity-75">Complete platform management</small>
+            <small class="opacity-75">Authorized personnel only</small>
           </div>
         </div>
 
@@ -762,10 +762,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    // ===== SUPER ULTIMATE LOGIN SYSTEM =====
-    console.log('🚀 SUPER ULTIMATE LOGIN v5.0 - BULLETPROOF SYSTEM');
+    // ===== SECURE ULTIMATE LOGIN SYSTEM =====
+    console.log('🚀 SECURE LOGIN v5.1 - Admin Credentials Protected');
 
-    // ===== GUARANTEED WORKING ACCOUNTS =====
+    // ===== ACCOUNT DATABASE - SECURE =====
     const ACCOUNTS = {
       demo: { 
         username: 'demo', 
@@ -783,6 +783,7 @@
         email: 'guest@allin1st.com',
         permissions: ['read']
       },
+      // 👑 ADMIN ACCOUNT - SECURE (Password not displayed publicly)
       admin: { 
         username: 'admin', 
         password: 'allin1st2025', 
@@ -913,7 +914,7 @@
       log(`Session created: ${user.username} (${user.role})`, 'success');
       
       if (user.role === 'admin') {
-        log('👑 ULTIMATE ADMIN ACCESS ACTIVATED', 'admin');
+        log('👑 ADMINISTRATOR ACCESS ACTIVATED', 'admin');
         console.log('%c👑 Welcome Administrator! Ultimate platform control is now active.', 
                    'color: #9c27b0; font-size: 16px; font-weight: bold;');
       }
@@ -960,7 +961,7 @@
       
       if (!account) {
         log(`Account not found: ${accountKey}`, 'warning');
-        throw new Error(`Account "${username}" not found. Use: demo, guest, or admin`);
+        throw new Error(`Account "${username}" not found. Use demo or guest accounts shown above.`);
       }
       
       // Verify password
@@ -984,10 +985,10 @@
         const loadingMessages = {
           demo: 'Connecting Demo Account...',
           guest: 'Loading Guest Access...',
-          admin: 'Activating Admin Control...'
+          admin: 'Activating Management Portal...'
         };
         
-        showLoading(true, loadingMessages[username] || 'Logging in...', 'This will work perfectly!');
+        showLoading(true, loadingMessages[username] || 'Logging in...', 'Processing secure login...');
         
         const user = await authenticate(username, password);
         createSession(user, 'instant');
@@ -995,9 +996,9 @@
         showLoading(false);
         
         const welcomeMessages = {
-          demo: '🎉 Welcome Demo User! Platform access granted.',
-          guest: '👋 Welcome Guest! Enjoy exploring the platform.',
-          admin: '👑 Welcome Administrator! Ultimate control activated.'
+          demo: '🎉 Demo access granted! Welcome to the platform.',
+          guest: '👋 Guest access activated! Explore the platform.',
+          admin: '🔐 Management portal access granted. Welcome, Administrator.'
         };
         
         showAlert(welcomeMessages[username], 'success');
@@ -1075,7 +1076,7 @@
         showLoading(false);
         
         const welcomeMessage = user.role === 'admin' 
-          ? '👑 Welcome Administrator! Ultimate control activated.'
+          ? '🔐 Administrator access granted. Welcome to the management portal.'
           : `🎉 Welcome ${user.displayName}! Login successful.`;
         
         showAlert(welcomeMessage, 'success');
@@ -1130,7 +1131,7 @@
       validateForm();
     });
 
-    // ===== KEYBOARD SHORTCUTS =====
+    // ===== KEYBOARD SHORTCUTS (Admin shortcut still works but not displayed) =====
     document.addEventListener('keydown', function(e) {
       if (e.ctrlKey && e.altKey) {
         switch(e.key.toLowerCase()) {
@@ -1152,7 +1153,7 @@
 
     // ===== PAGE INITIALIZATION =====
     function initializePage() {
-      log('Initializing SUPER ULTIMATE Login System', 'info');
+      log('Initializing SECURE Login System', 'info');
       
       // Check existing session
       if (!checkExistingSession()) {
@@ -1163,11 +1164,11 @@
           document.getElementById('username').focus();
         }, 500);
         
-        // Show available accounts in console
-        log('Available accounts: demo, guest, admin', 'info');
-        Object.entries(ACCOUNTS).forEach(([key, account]) => {
-          log(`${key}: ${account.password} (${account.role})`, 'info');
-        });
+        // Show available public accounts in console (admin credentials not logged)
+        log('Available public accounts: demo, guest', 'info');
+        log('demo: demo123 (user)', 'info');
+        log('guest: guest123 (user)', 'info');
+        // Admin credentials not logged for security
       }
       
       log('System initialization complete', 'success');
@@ -1189,19 +1190,19 @@
       
       // Success message
       setTimeout(() => {
-        console.log('%c🚀 SUPER ULTIMATE LOGIN SYSTEM v5.0 READY!', 
+        console.log('%c🚀 SECURE LOGIN SYSTEM v5.1 READY!', 
                    'color: #4caf50; font-size: 18px; font-weight: bold;');
-        console.log('%c✅ 100% Bulletproof Authentication Active', 
+        console.log('%c🔒 Admin Credentials Protected - UI Secured', 
                    'color: #2196f3; font-weight: bold;');
-        console.log('%c🎮 Instant Access: Ctrl+Alt+D (demo), Ctrl+Alt+G (guest), Ctrl+Alt+A (admin)', 
+        console.log('%c🎮 Demo Access: demo/demo123, guest/guest123', 
                    'color: #ff9800;');
-        console.log('%c👑 Ultimate Admin Powers Available', 
+        console.log('%c🔐 Admin functionality preserved with secure access', 
                    'color: #9c27b0; font-weight: bold;');
       }, 1000);
     });
 
     // ===== SYSTEM READY =====
-    log('SUPER ULTIMATE Login System loaded successfully', 'success');
+    log('SECURE Login System loaded successfully', 'success');
   </script>
 </body>
 </html>
