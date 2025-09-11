@@ -3,27 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
-  <!-- SEO Meta Tags -->
- <title>Watch Videos - All in 1st | Manga & Anime Explainers</title>
- <meta name="description" content="Watch amazing manga and anime explainer videos on All in 1st platform">
-  <meta name="description" content="All in 1st - Your ultimate destination for manga, manhwa, and anime explainer videos. Watch, upload, and discover amazing content from creators worldwide.">
-  <meta name="keywords" content="all in 1st, manga explainer, anime videos, manhwa, manga analysis, anime explained">
-  <meta name="author" content="All in 1st">
-  
-  <!-- Open Graph for social sharing -->
-  <meta property="og:title" content="All in 1st - Manga & Anime Explainers">
-  <meta property="og:description" content="Ultimate destination for manga and anime explainer videos">
-  <meta property="og:url" content="https://all-in-1st.github.io/All-in-1st-/">
-  <meta property="og:type" content="website">
-  
-  <!-- Your existing links -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
   <title>Watch - All in 1st</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -147,17 +134,18 @@
       padding-left: 12px;
       margin-bottom: 12px;
     }
-    .avatar-preview {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #dee2e6;
-    }
     .no-results {
       text-align: center;
       padding: 60px 20px;
       color: #6c757d;
+    }
+    .global-badge {
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
     }
   </style>
 </head>
@@ -166,15 +154,17 @@
   <div id="loadingScreen" class="loading-screen">
     <div class="text-center">
       <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
-      <h4 class="text-primary">Loading your videos...</h4>
-      <p class="text-muted">Please wait a moment</p>
+      <h4 class="text-primary">Loading global video library...</h4>
+      <p class="text-muted">Connecting to worldwide database</p>
     </div>
   </div>
 
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
     <div class="container">
-      <a class="navbar-brand fw-bold text-primary" href="index.html">All in 1st</a>
+      <a class="navbar-brand fw-bold text-primary" href="index.html">
+        All in 1st <span class="global-badge">GLOBAL</span>
+      </a>
       
       <div class="d-flex align-items-center">
         <span class="me-3" id="welcomeText">Welcome!</span>
@@ -187,11 +177,16 @@
   <!-- Hero Section -->
   <section class="hero-section">
     <div class="container text-center">
-      <h1 class="display-4 fw-bold mb-3">Your Video Library</h1>
-      <p class="lead">Discover and share amazing manga content</p>
-      <a href="upload.html" class="btn btn-light btn-lg">
-        <i class="bi bi-plus-circle me-2"></i>Upload New Video
-      </a>
+      <h1 class="display-4 fw-bold mb-3">Global Video Library</h1>
+      <p class="lead">Watch videos uploaded by users worldwide!</p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="upload.html" class="btn btn-light btn-lg">
+          <i class="bi bi-plus-circle me-2"></i>Upload to Global Library
+        </a>
+        <button class="btn btn-outline-light btn-lg" onclick="refreshVideos()">
+          <i class="bi bi-arrow-clockwise me-2"></i>Refresh Videos
+        </button>
+      </div>
     </div>
   </section>
 
@@ -202,7 +197,7 @@
         <div class="col-md-6">
           <div class="input-group">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="text" id="searchInput" class="form-control" placeholder="Search videos by title, tags, or description..." onkeyup="filterVideos()">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search global videos by title, tags, or uploader..." onkeyup="filterVideos()">
           </div>
         </div>
         <div class="col-md-3">
@@ -234,44 +229,45 @@
   <!-- Video Gallery -->
   <section class="py-5">
     <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>All Videos <span class="badge bg-primary" id="videoCount">0</span></h2>
+        <small class="text-muted">Videos from users worldwide</small>
+      </div>
       <div class="row" id="videoGallery">
         <!-- Videos will be loaded here -->
       </div>
     </div>
   </section>
 
+  <!-- Sidebar and Modals remain the same as before -->
   <!-- Sidebar Overlay -->
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="p-4">
-      <!-- Sidebar Header -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="mb-0">Account</h5>
         <button class="btn-close" onclick="closeSidebar()"></button>
       </div>
 
-      <!-- User Info -->
       <div class="text-center mb-4 pb-4 border-bottom">
-        <img id="sidebarAvatarImg" src="" class="avatar-circle mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem; display: none;" alt="Profile">
         <div class="avatar-circle mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;" id="sidebarAvatar">A</div>
         <h6 class="mb-1" id="sidebarUsername">Username</h6>
         <small class="text-muted" id="sidebarRole">Role</small>
       </div>
 
-      <!-- Menu Items -->
       <div class="list-group list-group-flush">
         <a href="upload.html" class="list-group-item list-group-item-action border-0">
-          <i class="bi bi-cloud-upload text-primary me-3"></i>Upload Video
+          <i class="bi bi-cloud-upload text-primary me-3"></i>Upload to Global Library
         </a>
         <a href="#" class="list-group-item list-group-item-action border-0" onclick="showHistory()">
           <i class="bi bi-clock-history text-primary me-3"></i>Watch History
         </a>
-        <a href="#" class="list-group-item list-group-item-action border-0" onclick="showUploads()">
-          <i class="bi bi-collection-play text-primary me-3"></i>Your Videos
+        <a href="#" class="list-group-item list-group-item-action border-0" onclick="showMyUploads()">
+          <i class="bi bi-collection-play text-primary me-3"></i>My Uploads
         </a>
-        <a href="#" class="list-group-item list-group-item-action border-0" onclick="showProfileEditor()">
+        <a href="#" class="list-group-item list-group-item-action border-0" onclick="showProfile()">
           <i class="bi bi-person-gear text-primary me-3"></i>Edit Profile
         </a>
       </div>
@@ -297,7 +293,6 @@
           <hr>
           <h6 class="mb-3"><i class="bi bi-chat-dots me-2"></i>Comments</h6>
           
-          <!-- Add Comment Form -->
           <div class="mb-3">
             <div class="input-group">
               <input type="text" id="commentInput" class="form-control" placeholder="Add a comment..." maxlength="500">
@@ -307,52 +302,11 @@
             </div>
           </div>
           
-          <!-- Comments List -->
-          <div id="commentsList">
-            <!-- Comments will be loaded here -->
-          </div>
+          <div id="commentsList"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <a href="#" id="watchOnYouTube" target="_blank" class="btn btn-primary">Watch on YouTube</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Profile Editor Modal -->
-  <div class="modal fade" id="profileModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Profile</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="profileForm">
-            <div class="text-center mb-4">
-              <img id="avatarPreview" src="" class="avatar-preview" alt="Avatar Preview" style="display: none;">
-              <div class="avatar-circle mx-auto" style="width: 100px; height: 100px; font-size: 2.5rem;" id="avatarFallback">A</div>
-              <div class="mt-3">
-                <input type="file" id="avatarInput" class="form-control" accept="image/*" onchange="previewAvatar()">
-                <div class="form-text">Choose a profile picture (optional)</div>
-              </div>
-            </div>
-            
-            <div class="mb-3">
-              <label class="form-label">Display Name</label>
-              <input type="text" id="displayNameInput" class="form-control" placeholder="Enter your display name..." maxlength="50">
-            </div>
-            
-            <div class="mb-3">
-              <label class="form-label">Bio (Optional)</label>
-              <textarea id="bioInput" class="form-control" rows="3" placeholder="Tell others about yourself..." maxlength="200"></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
         </div>
       </div>
     </div>
@@ -366,16 +320,28 @@
           <h5 class="modal-title" id="infoTitle">Title</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body" id="infoBody">
-          Content will be loaded here...
-        </div>
+        <div class="modal-body" id="infoBody"></div>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    console.log('🎬 Enhanced Watch page loaded');
+    console.log('🌍 Global Watch page loaded');
+
+    // 🔥 FIREBASE CONFIG - REPLACE WITH YOUR KEYS!
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY_HERE",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
     let currentUser = null;
     let allVideos = [];
@@ -383,7 +349,7 @@
     let watchHistory = [];
     let currentVideoId = null;
 
-    // Session Management
+    // Session Management (same as before)
     function getUserSession() {
       try {
         const session = localStorage.getItem('allIn1st_user');
@@ -408,18 +374,12 @@
       window.location.href = 'login.html?next=watch.html';
     }
 
-    // Authentication Check
     function checkAuth() {
-      console.log('🔐 Checking authentication...');
-      
       if (!isLoggedIn()) {
-        console.log('❌ Not logged in, redirecting...');
         logout();
         return false;
       }
-      
       currentUser = getUserSession();
-      console.log('✅ User authenticated:', currentUser.username);
       return true;
     }
 
@@ -441,57 +401,64 @@
       return `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
     }
 
-    // Handle thumbnail load error
-    function handleThumbnailError(img, video) {
-      console.log('⚠️ Thumbnail failed for:', video.title);
+    function handleThumbnailError(img) {
       const container = img.parentElement;
       const fallbackIcon = container.querySelector('.fallback-icon');
-      
       img.style.display = 'none';
       fallbackIcon.style.display = 'block';
     }
 
-    // Load Videos
-    function loadVideos() {
-      console.log('📹 Loading videos...');
+    // 🌍 LOAD VIDEOS FROM FIREBASE (GLOBAL DATABASE)
+    async function loadVideos() {
+      console.log('🌍 Loading videos from global Firebase database...');
       
-      // Default videos with view counts for sorting
-      const defaultVideos = [
-        {
-          id: 'default_1',
-          title: 'Dragon Ball Z Power System Explained',
-          description: 'Complete breakdown of power levels, transformations, and fighting techniques in Dragon Ball Z.',
-          genre: 'Action',
-          youtubeId: 'SlPhMPnQ58k',
-          tags: ['Action', 'Shounen', 'Classic', 'Dragon Ball'],
-          uploader: 'All in 1st',
-          uploadDate: '2024-01-15',
-          views: 15420
-        },
-        {
-          id: 'default_2', 
-          title: 'One Piece World Building Analysis',
-          description: 'Deep dive into the incredible world-building and storytelling of Eiichiro Oda.',
-          genre: 'Adventure',
-          youtubeId: 'MCWJUSulnro',
-          tags: ['Adventure', 'Shounen', 'Epic', 'One Piece'],
-          uploader: 'All in 1st',
-          uploadDate: '2024-01-10',
-          views: 23100
-        }
-      ];
+      try {
+        const snapshot = await db.collection("videos")
+          .orderBy("uploadDate", "desc")
+          .get();
+        
+        allVideos = [];
+        snapshot.forEach((doc) => {
+          const video = doc.data();
+          video.id = doc.id;
+          
+          // Convert Firebase Timestamp to Date string
+          if (video.uploadDate && video.uploadDate.toDate) {
+            video.uploadDate = video.uploadDate.toDate().toISOString();
+          }
+          
+          allVideos.push(video);
+        });
+        
+        filteredVideos = [...allVideos];
+        
+        console.log('✅ Loaded', allVideos.length, 'videos from global database');
+        document.getElementById('videoCount').textContent = allVideos.length;
+        
+        renderVideos();
+        
+      } catch (error) {
+        console.error('❌ Error loading videos from Firebase:', error);
+        
+        // Show error message
+        document.getElementById('videoGallery').innerHTML = `
+          <div class="col-12 text-center py-5">
+            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-warning">Connection Error</h4>
+            <p class="text-muted">Unable to load videos from global database</p>
+            <button class="btn btn-primary" onclick="loadVideos()">Try Again</button>
+          </div>
+        `;
+      }
+    }
 
-      // Load uploaded videos
-      const uploadedVideos = JSON.parse(localStorage.getItem('uploadedVideos') || '[]')
-        .map(video => ({ ...video, views: video.views || Math.floor(Math.random() * 5000) + 100 }));
-      
-      console.log('📤 Uploaded videos found:', uploadedVideos.length);
-
-      // Combine videos (uploaded first)
-      allVideos = [...uploadedVideos, ...defaultVideos];
-      filteredVideos = [...allVideos];
-      
-      renderVideos();
+    // Refresh videos from database
+    async function refreshVideos() {
+      document.getElementById('loadingScreen').style.display = 'flex';
+      await loadVideos();
+      setTimeout(() => {
+        document.getElementById('loadingScreen').style.display = 'none';
+      }, 500);
     }
 
     // Filter and Search Videos
@@ -500,13 +467,12 @@
       const genreFilter = document.getElementById('genreFilter').value;
       const sortBy = document.getElementById('sortFilter').value;
 
-      // Filter by search term and genre
       filteredVideos = allVideos.filter(video => {
         const matchesSearch = !searchTerm || 
           video.title.toLowerCase().includes(searchTerm) ||
-          video.description.toLowerCase().includes(searchTerm) ||
-          video.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
-          video.uploader.toLowerCase().includes(searchTerm);
+          (video.description && video.description.toLowerCase().includes(searchTerm)) ||
+          (video.tags && video.tags.some(tag => tag.toLowerCase().includes(searchTerm))) ||
+          (video.uploader && video.uploader.toLowerCase().includes(searchTerm));
         
         const matchesGenre = !genreFilter || video.genre === genreFilter;
         
@@ -538,10 +504,10 @@
         gallery.innerHTML = `
           <div class="col-12">
             <div class="no-results">
-              <i class="bi bi-${hasSearch ? 'search' : 'film'}" style="font-size: 4rem; color: #dee2e6;"></i>
-              <h4 class="mt-3">${hasSearch ? 'No videos found' : 'No videos yet'}</h4>
-              <p>${hasSearch ? 'Try adjusting your search or filters' : 'Upload your first video to get started!'}</p>
-              ${!hasSearch ? '<a href="upload.html" class="btn btn-primary">Upload Video</a>' : ''}
+              <i class="bi bi-${hasSearch ? 'search' : 'globe'}" style="font-size: 4rem; color: #dee2e6;"></i>
+              <h4 class="mt-3">${hasSearch ? 'No videos found' : 'No global videos yet'}</h4>
+              <p>${hasSearch ? 'Try adjusting your search or filters' : 'Be the first to upload to the global library!'}</p>
+              ${!hasSearch ? '<a href="upload.html" class="btn btn-primary">Upload First Video</a>' : ''}
             </div>
           </div>
         `;
@@ -554,7 +520,7 @@
             <div class="video-thumbnail">
               <img src="${getYouTubeThumbnail(video.youtubeId)}" 
                    alt="${video.title}"
-                   onerror="handleThumbnailError(this, {title: '${video.title.replace(/'/g, '\\\'')}'})">
+                   onerror="handleThumbnailError(this)">
               <div class="fallback-icon">
                 <i class="bi bi-play-circle"></i>
               </div>
@@ -573,38 +539,39 @@
                 <div>
                   ${(video.tags || []).slice(0, 2).map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
                 </div>
-                <small class="text-muted">by ${video.uploader}</small>
+                <small class="text-muted">
+                  <i class="bi bi-person-circle me-1"></i>${video.uploader}
+                  ${video.uploaderRole === 'admin' ? '<i class="bi bi-shield-check text-primary"></i>' : ''}
+                </small>
               </div>
             </div>
           </div>
         </div>
       `).join('');
-      
-      console.log('✅ Videos rendered:', filteredVideos.length);
     }
 
-    function playVideo(videoId) {
-      const video = allVideos.find(v => v.id == videoId);
-      if (!video) {
-        console.error('❌ Video not found:', videoId);
-        return;
-      }
+    // Play video and increment view count in Firebase
+    async function playVideo(videoId) {
+      const video = allVideos.find(v => v.id === videoId);
+      if (!video) return;
 
       console.log('▶️ Playing video:', video.title);
       currentVideoId = videoId;
 
-      // Add to watch history
+      // Add to local watch history
       addToHistory(video);
 
-      // Increment view count
-      video.views = (video.views || 0) + 1;
-      
-      // Update in localStorage if it's an uploaded video
-      const uploadedVideos = JSON.parse(localStorage.getItem('uploadedVideos') || '[]');
-      const uploadedIndex = uploadedVideos.findIndex(v => v.id === videoId);
-      if (uploadedIndex !== -1) {
-        uploadedVideos[uploadedIndex].views = video.views;
-        localStorage.setItem('uploadedVideos', JSON.stringify(uploadedVideos));
+      try {
+        // 🔥 INCREMENT VIEW COUNT IN FIREBASE
+        await db.collection("videos").doc(videoId).update({
+          views: firebase.firestore.FieldValue.increment(1)
+        });
+        
+        // Update local copy
+        video.views = (video.views || 0) + 1;
+        
+      } catch (error) {
+        console.error('Error updating view count:', error);
       }
 
       // Show video modal
@@ -619,9 +586,7 @@
         document.getElementById('watchOnYouTube').href = `https://www.youtube.com/watch?v=${video.youtubeId}`;
       }
 
-      // Load comments
       loadComments(videoId);
-
       new bootstrap.Modal(document.getElementById('videoModal')).show();
     }
 
@@ -636,126 +601,62 @@
       localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
     }
 
-    // Comments System
-    function loadComments(videoId) {
-      const comments = JSON.parse(localStorage.getItem(`comments_${videoId}`) || '[]');
-      const commentsList = document.getElementById('commentsList');
-      
-      if (comments.length === 0) {
-        commentsList.innerHTML = '<p class="text-muted text-center">No comments yet. Be the first to comment!</p>';
-        return;
-      }
-      
-      commentsList.innerHTML = comments.map(comment => `
-        <div class="comment-item">
-          <div class="d-flex justify-content-between align-items-start">
-            <strong>${comment.username}</strong>
-            <small class="text-muted">${new Date(comment.timestamp).toLocaleDateString()}</small>
+    // Comments system (Firebase-based)
+    async function loadComments(videoId) {
+      try {
+        const doc = await db.collection("videos").doc(videoId).get();
+        const video = doc.data();
+        const comments = video.comments || [];
+        
+        const commentsList = document.getElementById('commentsList');
+        
+        if (comments.length === 0) {
+          commentsList.innerHTML = '<p class="text-muted text-center">No comments yet. Be the first to comment!</p>';
+          return;
+        }
+        
+        commentsList.innerHTML = comments.slice(0, 10).map(comment => `
+          <div class="comment-item">
+            <div class="d-flex justify-content-between align-items-start">
+              <strong>${comment.username}</strong>
+              <small class="text-muted">${new Date(comment.timestamp).toLocaleDateString()}</small>
+            </div>
+            <p class="mb-1">${comment.text}</p>
           </div>
-          <p class="mb-1">${comment.text}</p>
-        </div>
-      `).join('');
+        `).join('');
+        
+      } catch (error) {
+        console.error('Error loading comments:', error);
+      }
     }
 
-    function addComment() {
+    async function addComment() {
       const input = document.getElementById('commentInput');
       const commentText = input.value.trim();
       
       if (!commentText || !currentVideoId) return;
       
-      const comments = JSON.parse(localStorage.getItem(`comments_${currentVideoId}`) || '[]');
-      const newComment = {
-        id: Date.now(),
-        username: getUserProfile().displayName || currentUser.username,
-        text: commentText,
-        timestamp: new Date().toISOString()
-      };
-      
-      comments.unshift(newComment);
-      localStorage.setItem(`comments_${currentVideoId}`, JSON.stringify(comments));
-      
-      input.value = '';
-      loadComments(currentVideoId);
-      
-      console.log('💬 Comment added for video:', currentVideoId);
-    }
-
-    // Allow Enter key to submit comments
-    document.addEventListener('keypress', function(e) {
-      if (e.target.id === 'commentInput' && e.key === 'Enter') {
-        addComment();
-      }
-    });
-
-    // Profile Management
-    function getUserProfile() {
       try {
-        return JSON.parse(localStorage.getItem('userProfile') || '{}');
-      } catch (error) {
-        return {};
-      }
-    }
-
-    function saveUserProfile(profile) {
-      localStorage.setItem('userProfile', JSON.stringify(profile));
-    }
-
-    function showProfileEditor() {
-      const profile = getUserProfile();
-      
-      document.getElementById('displayNameInput').value = profile.displayName || currentUser.username;
-      document.getElementById('bioInput').value = profile.bio || '';
-      
-      if (profile.avatar) {
-        document.getElementById('avatarPreview').src = profile.avatar;
-        document.getElementById('avatarPreview').style.display = 'block';
-        document.getElementById('avatarFallback').style.display = 'none';
-      } else {
-        document.getElementById('avatarPreview').style.display = 'none';
-        document.getElementById('avatarFallback').style.display = 'flex';
-        document.getElementById('avatarFallback').textContent = (profile.displayName || currentUser.username).charAt(0).toUpperCase();
-      }
-      
-      new bootstrap.Modal(document.getElementById('profileModal')).show();
-      closeSidebar();
-    }
-
-    function previewAvatar() {
-      const input = document.getElementById('avatarInput');
-      const preview = document.getElementById('avatarPreview');
-      const fallback = document.getElementById('avatarFallback');
-      
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-          fallback.style.display = 'none';
+        const newComment = {
+          username: currentUser.username,
+          text: commentText,
+          timestamp: new Date().toISOString()
         };
-        reader.readAsDataURL(input.files[0]);
+        
+        // Add comment to Firebase
+        await db.collection("videos").doc(currentVideoId).update({
+          comments: firebase.firestore.FieldValue.arrayUnion(newComment)
+        });
+        
+        input.value = '';
+        loadComments(currentVideoId);
+        
+      } catch (error) {
+        console.error('Error adding comment:', error);
       }
     }
 
-    function saveProfile() {
-      const displayName = document.getElementById('displayNameInput').value.trim();
-      const bio = document.getElementById('bioInput').value.trim();
-      const avatarSrc = document.getElementById('avatarPreview').src;
-      
-      const profile = {
-        displayName: displayName || currentUser.username,
-        bio: bio,
-        avatar: avatarSrc.startsWith('data:') ? avatarSrc : null
-      };
-      
-      saveUserProfile(profile);
-      updateUI();
-      
-      bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
-      
-      console.log('✅ Profile updated');
-    }
-
-    // Sidebar Functions
+    // Sidebar functions
     function showHistory() {
       const history = JSON.parse(localStorage.getItem('watchHistory') || '[]');
       let content = '<div class="list-group">';
@@ -767,7 +668,7 @@
           content += `
             <div class="list-group-item">
               <h6 class="mb-1">${item.title}</h6>
-              <small class="text-muted">Watched on ${new Date(item.watchedAt).toLocaleDateString()}</small>
+              <small class="text-muted">Watched ${new Date(item.watchedAt).toLocaleDateString()}</small>
             </div>
           `;
         });
@@ -778,46 +679,54 @@
       closeSidebar();
     }
 
-    function showUploads() {
-      const uploads = JSON.parse(localStorage.getItem('uploadedVideos') || '[]');
-      let content = '<div class="list-group">';
-      
-      if (uploads.length === 0) {
-        content += '<p class="text-muted">No videos uploaded yet. <a href="upload.html">Upload your first video</a>!</p>';
-      } else {
-        uploads.forEach(video => {
-          content += `
-            <div class="list-group-item">
-              <h6 class="mb-1">${video.title}</h6>
-              <p class="mb-1 text-muted">${video.description || 'No description'}</p>
-              <small class="text-muted">Genre: ${video.genre} • ${(video.views || 0).toLocaleString()} views • Uploaded ${new Date(video.uploadDate).toLocaleDateString()}</small>
-            </div>
-          `;
-        });
+    async function showMyUploads() {
+      try {
+        const snapshot = await db.collection("videos")
+          .where("uploader", "==", currentUser.username)
+          .orderBy("uploadDate", "desc")
+          .get();
+        
+        let content = '<div class="list-group">';
+        
+        if (snapshot.empty) {
+          content += '<p class="text-muted">No videos uploaded yet. <a href="upload.html">Upload your first video</a>!</p>';
+        } else {
+          snapshot.forEach(doc => {
+            const video = doc.data();
+            content += `
+              <div class="list-group-item">
+                <h6 class="mb-1">${video.title}</h6>
+                <p class="mb-1 text-muted">${video.description || 'No description'}</p>
+                <small class="text-muted">
+                  ${video.genre} • ${(video.views || 0).toLocaleString()} views • 
+                  ${video.uploadDate ? new Date(video.uploadDate).toLocaleDateString() : 'Recently'}
+                </small>
+              </div>
+            `;
+          });
+        }
+        
+        content += '</div>';
+        showInfoModal('My Global Uploads', content);
+        
+      } catch (error) {
+        console.error('Error loading uploads:', error);
+        showInfoModal('My Uploads', '<p class="text-muted">Error loading your uploads.</p>');
       }
       
-      content += '</div>';
-      showInfoModal('Your Videos', content);
       closeSidebar();
     }
 
     function showProfile() {
-      const profile = getUserProfile();
       const content = `
         <div class="text-center">
-          ${profile.avatar ? 
-            `<img src="${profile.avatar}" class="avatar-preview mb-3" alt="Profile Picture">` :
-            `<div class="avatar-circle mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem;">${(profile.displayName || currentUser.username).charAt(0).toUpperCase()}</div>`
-          }
-          <h5>${profile.displayName || currentUser.username}</h5>
-          <p class="text-muted">${currentUser.role === 'admin' ? 'Administrator' : 'Member'}</p>
-          ${profile.bio ? `<p class="text-muted fst-italic">"${profile.bio}"</p>` : ''}
+          <div class="avatar-circle mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">${currentUser.username.charAt(0).toUpperCase()}</div>
+          <h5>${currentUser.username}</h5>
+          <p class="text-muted">${currentUser.role === 'admin' ? 'Administrator' : 'Global Member'}</p>
           <hr>
           <p><strong>Account Type:</strong> ${currentUser.role}</p>
           <p><strong>Login Time:</strong> ${new Date(currentUser.loginTime).toLocaleString()}</p>
-          <button class="btn btn-primary btn-sm" onclick="bootstrap.Modal.getInstance(document.getElementById('infoModal')).hide(); showProfileEditor();">
-            Edit Profile
-          </button>
+          <p class="text-success"><i class="bi bi-globe me-1"></i>Connected to Global Database</p>
         </div>
       `;
       showInfoModal('Profile', content);
@@ -834,62 +743,36 @@
     function updateUI() {
       if (!currentUser) return;
       
-      const profile = getUserProfile();
-      const displayName = profile.displayName || currentUser.username;
-      const initial = displayName.charAt(0).toUpperCase();
-      
-      document.getElementById('welcomeText').textContent = `Welcome, ${displayName}!`;
-      
-      // Update nav avatar
-      if (profile.avatar) {
-        const navImg = document.createElement('img');
-        navImg.src = profile.avatar;
-        navImg.className = 'avatar-circle';
-        navImg.style.width = '40px';
-        navImg.style.height = '40px';
-        navImg.onclick = toggleSidebar;
-        document.getElementById('userAvatar').replaceWith(navImg);
-        navImg.id = 'userAvatar';
-      } else {
-        document.getElementById('userAvatar').textContent = initial;
-      }
-      
-      // Update sidebar
-      if (profile.avatar) {
-        document.getElementById('sidebarAvatarImg').src = profile.avatar;
-        document.getElementById('sidebarAvatarImg').style.display = 'block';
-        document.getElementById('sidebarAvatar').style.display = 'none';
-      } else {
-        document.getElementById('sidebarAvatar').textContent = initial;
-        document.getElementById('sidebarAvatarImg').style.display = 'none';
-        document.getElementById('sidebarAvatar').style.display = 'flex';
-      }
-      
-      document.getElementById('sidebarUsername').textContent = displayName;
-      document.getElementById('sidebarRole').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Member';
+      const initial = currentUser.username.charAt(0).toUpperCase();
+      document.getElementById('welcomeText').textContent = `Welcome, ${currentUser.username}!`;
+      document.getElementById('userAvatar').textContent = initial;
+      document.getElementById('sidebarAvatar').textContent = initial;
+      document.getElementById('sidebarUsername').textContent = currentUser.username;
+      document.getElementById('sidebarRole').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Global Member';
     }
+
+    // Allow Enter key for comments
+    document.addEventListener('keypress', function(e) {
+      if (e.target.id === 'commentInput' && e.key === 'Enter') {
+        addComment();
+      }
+    });
 
     // Initialize Page
     async function initializePage() {
-      console.log('🚀 Initializing enhanced watch page...');
+      console.log('🚀 Initializing global watch page...');
       
       try {
-        // Quick auth check
         if (!checkAuth()) return;
         
-        // Load watch history
         watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
-        
-        // Update UI
         updateUI();
         
-        // Load videos
-        loadVideos();
+        await loadVideos();
         
-        // Hide loading screen
         setTimeout(() => {
           document.getElementById('loadingScreen').style.display = 'none';
-          console.log('✅ Enhanced page loaded successfully');
+          console.log('✅ Global page loaded successfully');
         }, 500);
         
       } catch (error) {
@@ -898,39 +781,24 @@
       }
     }
 
-    // Auto-logout after timeout
+    // Auto-logout timeout
     setTimeout(() => {
       const loadingScreen = document.getElementById('loadingScreen');
       if (loadingScreen.style.display !== 'none') {
         console.log('⏰ Loading timeout, redirecting...');
         logout();
       }
-    }, 8000);
+    }, 10000);
 
     // Event Listeners
     document.addEventListener('DOMContentLoaded', initializePage);
 
-    // Stop video when modal closes
     document.getElementById('videoModal').addEventListener('hidden.bs.modal', function() {
       document.getElementById('videoFrame').src = '';
       currentVideoId = null;
     });
 
-    console.log('📱 Enhanced Watch page script loaded');
+    console.log('📱 Global Watch page script loaded');
   </script>
-  <!-- Add this before the closing </body> tag -->
-<footer class="bg-dark text-white text-center py-3 mt-5">
-  <div class="container">
-    <p class="mb-0">© 2025 All in 1st. All rights reserved.</p>
-    <small class="text-muted">
-      This website and its content are the exclusive property of All in 1st. 
-      Unauthorized reproduction is prohibited.
-    </small>
-  </div>
-</footer>
-
 </body>
 </html>
-
-
-
