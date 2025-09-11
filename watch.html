@@ -799,7 +799,363 @@
     });
 
     console.log('📱 Global Watch page script loaded');
+    // Add this to your watch.html Firebase script section - ADMIN POWERS
+
+// 🛡️ ADMIN-ONLY FUNCTIONS - Add after your existing functions
+
+// Check if current user is admin
+function isAdmin() {
+  return currentUser && currentUser.role === 'admin';
+}
+
+// 🗑️ DELETE ANY VIDEO (Admin Only)
+async function deleteVideo(videoId, videoTitle) {
+  if (!isAdmin()) {
+    alert('❌ Admin access required');
+    return;
+  }
+  
+  if (!confirm(`⚠️ DELETE "${videoTitle}"?\n\nThis action cannot be undone!`)) {
+    return;
+  }
+  
+  try {
+    await db.collection("videos").doc(videoId).delete();
+    alert('✅ Video deleted successfully!');
+    
+    // Remove from local array and refresh display
+    allVideos = allVideos.filter(v => v.id !== videoId);
+    filterVideos();
+    
+    console.log('🗑️ Admin deleted video:', videoTitle);
+  } catch (error) {
+    alert('❌ Error deleting video: ' + error.message);
+  }
+}
+
+// 📌 FEATURE/UNFEATURE VIDEO (Admin Only)
+async function toggleFeatureVideo(videoId) {
+  if (!isAdmin()) {
+    alert('❌ Admin access required');
+    return;
+  }
+  
+  try {
+    const video = allVideos.find(v => v.id === videoId);
+    const newFeaturedStatus = !video.featured;
+    
+    await db.collection("videos").doc(videoId).update({
+      featured: newFeaturedStatus,
+      featuredDate: newFeaturedStatus ? firebase.firestore.FieldValue.serverTimestamp() : null
+    });
+    
+    video.featured = newFeaturedStatus;
+    
+    alert(newFeaturedStatus ? '⭐ Video featured!' : '📌 Video unfeatured');
+    renderVideos();
+    
+  } catch (error) {
+    alert('❌ Error updating video: ' + error.message);
+  }
+}
+
+// 👑 ADMIN DASHBOARD - View Site Statistics
+async function showAdminDashboard() {
+  if (!isAdmin()) {
+    alert('❌ Admin access required');
+    return;
+  }
+  
+  try {
+    const videosSnapshot = await db.collection("videos").get();
+    const totalVideos = videosSnapshot.size;
+    
+    let totalViews = 0;
+    let uploaderCounts = {};
+    let genreCounts = {};
+    
+    videosSnapshot.forEach(doc => {
+      const video = doc.data();
+      totalViews += (video.views || 0);
+      
+      // Count by uploader
+      uploaderCounts[video.uploader] = (uploaderCounts[video.uploader] || 0) + 1;
+      
+      // Count by genre
+      genreCounts[video.genre] = (genreCounts[video.genre] || 0) + 1;
+    });
+    
+    const topUploaders = Object.entries(uploaderCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+    
+    const topGenres = Object.entries(genreCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+    
+    const dashboardHTML = `
+      <div class="row text-center mb-4">
+        <div class="col-md-3">
+          <div class="card bg-primary text-white">
+            <div class="card-body">
+              <h3>${totalVideos}</h3>
+              <p>Total Videos</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-success text-white">
+            <div class="card-body">
+              <h3>${totalViews.toLocaleString()}</h3>
+              <p>Total Views</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-warning text-white">
+            <div class="card-body">
+              <h3>${Object.keys(uploaderCounts).length}</h3>
+              <p>Active Users</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-info text-white">
+            <div class="card-body">
+              <h3>${Object.keys(genreCounts).length}</h3>
+              <p>Genres</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <h5>🏆 Top Uploaders</h5>
+          <div class="list-group">
+            ${topUploaders.map(([user, count]) => `
+              <div class="list-group-item d-flex justify-content-between">
+                <span>${user}</span>
+                <badge class="badge bg-primary">${count} videos</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h5>📊 Popular Genres</h5>
+          <div class="list-group">
+            ${topGenres.map(([genre, count]) => `
+              <div class="list-group-item d-flex justify-content-between">
+                <span>${genre}</span>
+                <span class="badge bg-secondary">${count} videos</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      
+      <hr>
+      <div class="text-center">
+        <button class="btn btn-danger" onclick="showAdminTools()">🛠️ Admin Tools</button>
+      </div>
+    `;
+    
+    showInfoModal('👑 Admin Dashboard', dashboardHTML);
+    
+  } catch (error) {
+    alert('❌ Error loading dashboard: ' + error.message);
+  }
+  
+  closeSidebar();
+}
+
+// 🛠️ ADMIN TOOLS PANEL
+function showAdminTools() {
+  if (!isAdmin()) return;
+  
+  const toolsHTML = `
+    <div class="d-grid gap-2">
+      <button class="btn btn-warning" onclick="bulkDeleteConfirm()">
+        🗑️ Bulk Delete Low-View Videos
+      </button>
+      <button class="btn btn-info" onclick="exportVideoData()">
+        📊 Export All Video Data
+      </button>
+      <button class="btn btn-success" onclick="showFeaturedVideos()">
+        ⭐ Manage Featured Videos
+      </button>
+      <button class="btn btn-secondary" onclick="showUserActivity()">
+        👥 User Activity Report
+      </button>
+    </div>
+  `;
+  
+  showInfoModal('🛠️ Admin Tools', toolsHTML);
+}
+
+// 📊 EXPORT VIDEO DATA (Admin Only)
+async function exportVideoData() {
+  if (!isAdmin()) return;
+  
+  try {
+    const snapshot = await db.collection("videos").get();
+    const csvData = ['Title,Uploader,Genre,Views,Upload Date,Description'];
+    
+    snapshot.forEach(doc => {
+      const video = doc.data();
+      const row = [
+        `"${video.title}"`,
+        video.uploader,
+        video.genre,
+        video.views || 0,
+        video.uploadDate ? new Date(video.uploadDate).toLocaleDateString() : 'Unknown',
+        `"${(video.description || '').replace(/"/g, '""')}"`
+      ];
+      csvData.push(row.join(','));
+    });
+    
+    const csvContent = csvData.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `all-in-1st-videos-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    
+    window.URL.revokeObjectURL(url);
+    alert('✅ Video data exported successfully!');
+    
+  } catch (error) {
+    alert('❌ Export failed: ' + error.message);
+  }
+}
+
+// Update renderVideos function to add admin controls
+function renderVideosWithAdminControls() {
+  const gallery = document.getElementById('videoGallery');
+  
+  if (filteredVideos.length === 0) {
+    const hasSearch = document.getElementById('searchInput').value.trim() || document.getElementById('genreFilter').value;
+    gallery.innerHTML = `
+      <div class="col-12">
+        <div class="no-results">
+          <i class="bi bi-${hasSearch ? 'search' : 'globe'}" style="font-size: 4rem; color: #dee2e6;"></i>
+          <h4 class="mt-3">${hasSearch ? 'No videos found' : 'No global videos yet'}</h4>
+          <p>${hasSearch ? 'Try adjusting your search or filters' : 'Be the first to upload to the global library!'}</p>
+          ${!hasSearch ? '<a href="upload.html" class="btn btn-primary">Upload First Video</a>' : ''}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  gallery.innerHTML = filteredVideos.map(video => `
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card video-card" onclick="playVideo('${video.id}')">
+        ${video.featured ? '<div class="position-absolute top-0 end-0 m-2"><span class="badge bg-warning">⭐ FEATURED</span></div>' : ''}
+        
+        <!-- ADMIN CONTROLS -->
+        ${isAdmin() ? `
+          <div class="position-absolute top-0 start-0 m-2">
+            <div class="btn-group-vertical" role="group">
+              <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteVideo('${video.id}', '${video.title.replace(/'/g, '\\\'')}')" title="Delete Video">
+                <i class="bi bi-trash"></i>
+              </button>
+              <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); toggleFeatureVideo('${video.id}')" title="${video.featured ? 'Unfeature' : 'Feature'} Video">
+                <i class="bi bi-${video.featured ? 'star-fill' : 'star'}"></i>
+              </button>
+            </div>
+          </div>
+        ` : ''}
+        
+        <div class="video-thumbnail">
+          <img src="${getYouTubeThumbnail(video.youtubeId)}" 
+               alt="${video.title}"
+               onerror="handleThumbnailError(this)">
+          <div class="fallback-icon">
+            <i class="bi bi-play-circle"></i>
+          </div>
+          <div class="play-overlay">
+            <i class="bi bi-play-fill"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">${video.title}</h5>
+          <p class="card-text text-muted">${(video.description || '').substring(0, 100)}${video.description && video.description.length > 100 ? '...' : ''}</p>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge bg-primary">${video.genre}</span>
+            <small class="text-muted">${(video.views || 0).toLocaleString()} views</small>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              ${(video.tags || []).slice(0, 2).map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
+            </div>
+            <small class="text-muted">
+              <i class="bi bi-person-circle me-1"></i>${video.uploader}
+              ${video.uploaderRole === 'admin' ? '<i class="bi bi-shield-check text-primary"></i>' : ''}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ADD ADMIN PANEL TO SIDEBAR
+// Replace your existing sidebar list-group with this:
+const adminSidebarHTML = `
+<div class="list-group list-group-flush">
+  <a href="upload.html" class="list-group-item list-group-item-action border-0">
+    <i class="bi bi-cloud-upload text-primary me-3"></i>Upload to Global Library
+  </a>
+  <a href="#" class="list-group-item list-group-item-action border-0" onclick="showHistory()">
+    <i class="bi bi-clock-history text-primary me-3"></i>Watch History
+  </a>
+  <a href="#" class="list-group-item list-group-item-action border-0" onclick="showMyUploads()">
+    <i class="bi bi-collection-play text-primary me-3"></i>My Uploads
+  </a>
+  
+  ${isAdmin() ? `
+    <hr>
+    <h6 class="px-3 text-muted">👑 ADMIN PANEL</h6>
+    <a href="#" class="list-group-item list-group-item-action border-0 bg-warning bg-opacity-10" onclick="showAdminDashboard()">
+      <i class="bi bi-speedometer2 text-warning me-3"></i>Admin Dashboard
+    </a>
+    <a href="#" class="list-group-item list-group-item-action border-0 bg-danger bg-opacity-10" onclick="showAdminTools()">
+      <i class="bi bi-tools text-danger me-3"></i>Admin Tools
+    </a>
+  ` : ''}
+  
+  <hr>
+  <a href="#" class="list-group-item list-group-item-action border-0" onclick="showProfile()">
+    <i class="bi bi-person-gear text-primary me-3"></i>Edit Profile
+  </a>
+</div>
+`;
+
+// Update the updateUI function to include admin sidebar
+function updateUIWithAdmin() {
+  if (!currentUser) return;
+  
+  const initial = currentUser.username.charAt(0).toUpperCase();
+  document.getElementById('welcomeText').textContent = `Welcome, ${currentUser.username}!`;
+  document.getElementById('userAvatar').textContent = initial;
+  document.getElementById('sidebarAvatar').textContent = initial;
+  document.getElementById('sidebarUsername').textContent = currentUser.username;
+  document.getElementById('sidebarRole').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Global Member';
+  
+  // Update sidebar with admin controls
+  const sidebarContent = document.querySelector('.sidebar .list-group');
+  if (sidebarContent) {
+    sidebarContent.innerHTML = adminSidebarHTML.match(/<div class="list-group[^>]*>(.+?)<\/div>/s)[1];
+  }
+}
+
+// REPLACE your existing renderVideos() with renderVideosWithAdminControls()
+// REPLACE your existing updateUI() with updateUIWithAdmin()
   </script>
 </body>
 </html>
+
 
