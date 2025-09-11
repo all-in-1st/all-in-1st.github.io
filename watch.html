@@ -435,8 +435,7 @@
         console.log('✅ Loaded', allVideos.length, 'videos from global database');
         document.getElementById('videoCount').textContent = allVideos.length;
         
-        renderVideos();
-        
+renderVideosWithAdminControls()        
       } catch (error) {
         console.error('❌ Error loading videos from Firebase:', error);
         
@@ -493,10 +492,9 @@
         }
       });
 
-      renderVideos();
-    }
+renderVideosWithAdminControls()    }
 
-    function renderVideos() {
+   function renderVideosWithAdminControls() {
       const gallery = document.getElementById('videoGallery');
       
       if (filteredVideos.length === 0) {
@@ -740,7 +738,7 @@
     }
 
     // Update UI
-    function updateUI() {
+function updateUIWithAdmin() {
       if (!currentUser) return;
       
       const initial = currentUser.username.charAt(0).toUpperCase();
@@ -766,8 +764,7 @@
         if (!checkAuth()) return;
         
         watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '[]');
-        updateUI();
-        
+     updateUIWithAdmin()        
         await loadVideos();
         
         setTimeout(() => {
@@ -852,8 +849,7 @@ async function toggleFeatureVideo(videoId) {
     video.featured = newFeaturedStatus;
     
     alert(newFeaturedStatus ? '⭐ Video featured!' : '📌 Video unfeatured');
-    renderVideos();
-    
+ renderVideosWithAdminControls();     
   } catch (error) {
     alert('❌ Error updating video: ' + error.message);
   }
@@ -1157,5 +1153,6 @@ function updateUIWithAdmin() {
   </script>
 </body>
 </html>
+
 
 
