@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- SEO Meta Tags -->
+  <!-- SEO Meta Tags (From our SEO optimization discussion) -->
   <title>Login - All in 1st | Access Your Manga Account</title>
   <meta name="description" content="Login to All in 1st to access your personal manga and anime video library. Join the best community for anime explainers.">
   <meta name="keywords" content="all in 1st, login, manga account, anime videos, user account">
   <meta name="author" content="All in 1st">
   
-  <!-- Open Graph for social sharing -->
+  <!-- Open Graph for social sharing (From our SEO discussion) -->
   <meta property="og:title" content="All in 1st - Login to Your Account">
   <meta property="og:description" content="Access your personal manga and anime video library">
   <meta property="og:url" content="https://all-in-1st.github.io/All-in-1st-/login.html">
@@ -19,13 +19,10 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
   
-  <!-- Firebase -->
+  <!-- Firebase (From our Firebase integration discussion) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  
-  <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   
   <style>
     body {
@@ -35,21 +32,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
     
+    /* Professional glassmorphism design */
     .login-container {
       width: 100%;
-      max-width: 450px;
+      max-width: 480px;
       padding: 20px;
+      position: relative;
+      z-index: 10;
     }
     
     .login-card {
       background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      position: relative;
     }
     
     .login-header {
@@ -58,6 +60,7 @@
       padding: 3rem 2rem 2rem;
       text-align: center;
       position: relative;
+      overflow: hidden;
     }
     
     .login-header::before {
@@ -76,8 +79,12 @@
       z-index: 1;
       margin: 0;
       font-weight: 700;
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
     
     .login-header p {
@@ -85,7 +92,18 @@
       z-index: 1;
       margin: 0.5rem 0 0;
       opacity: 0.9;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
+    }
+    
+    .global-badge {
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+      color: white;
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .login-body {
@@ -95,16 +113,17 @@
     .form-control {
       border: 2px solid #e9ecef;
       border-radius: 12px;
-      padding: 12px 16px;
+      padding: 14px 18px;
       font-size: 1rem;
       transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.9);
     }
     
     .form-control:focus {
       border-color: #007bff;
-      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
       background: white;
+      transform: translateY(-1px);
     }
     
     .input-group-text {
@@ -113,6 +132,7 @@
       border-right: none;
       border-radius: 12px 0 0 12px;
       color: #007bff;
+      padding: 14px 16px;
     }
     
     .input-group .form-control {
@@ -124,7 +144,7 @@
       background: linear-gradient(135deg, #007bff, #6610f2);
       border: none;
       border-radius: 12px;
-      padding: 12px 24px;
+      padding: 14px 28px;
       font-weight: 600;
       font-size: 1.1rem;
       text-transform: uppercase;
@@ -148,10 +168,15 @@
       border: 2px solid #e9ecef;
       color: #333;
       border-radius: 12px;
-      padding: 12px 24px;
+      padding: 14px 24px;
       font-weight: 500;
+      font-size: 1rem;
       transition: all 0.3s ease;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
     }
     
     .btn-google:hover {
@@ -159,6 +184,13 @@
       border-color: #dee2e6;
       transform: translateY(-1px);
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    
+    .btn-google:disabled {
+      opacity: 0.6;
+      transform: none;
+      cursor: not-allowed;
     }
     
     .divider {
@@ -188,10 +220,11 @@
     .demo-accounts {
       background: linear-gradient(135deg, #28a745, #20c997);
       color: white;
-      border-radius: 12px;
+      border-radius: 15px;
       padding: 1.5rem;
       margin-top: 1.5rem;
       border: none;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
     }
     
     .demo-accounts h6 {
@@ -200,6 +233,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      font-size: 1rem;
     }
     
     .demo-btn {
@@ -207,19 +241,25 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
       color: white;
       border-radius: 8px;
-      padding: 8px 16px;
+      padding: 10px 16px;
       font-size: 0.9rem;
+      font-weight: 500;
       transition: all 0.3s ease;
       margin: 0.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
     
     .demo-btn:hover {
       background: rgba(255, 255, 255, 0.3);
       transform: scale(1.05);
+      color: white;
     }
     
     .admin-demo {
       background: linear-gradient(135deg, #dc3545, #fd7e14);
+      box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
     }
     
     .admin-demo .demo-btn {
@@ -238,21 +278,25 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(10px);
     }
     
     .loading-content {
       text-align: center;
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
     
     .spinner {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       border: 4px solid #f3f3f3;
       border-top: 4px solid #007bff;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
+      margin: 0 auto 1.5rem;
     }
     
     @keyframes spin {
@@ -266,6 +310,7 @@
       padding: 1rem 1.25rem;
       margin-bottom: 1.5rem;
       font-weight: 500;
+      position: relative;
     }
     
     .alert-success {
@@ -284,6 +329,12 @@
       background: linear-gradient(135deg, #d1ecf1, #bee5eb);
       color: #0c5460;
       border-left: 4px solid #17a2b8;
+    }
+    
+    .alert-warning {
+      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+      color: #856404;
+      border-left: 4px solid #ffc107;
     }
     
     .footer-links {
@@ -305,9 +356,44 @@
       color: #007bff;
     }
     
-    .version-badge {
+    .debug-panel {
       position: fixed;
       bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      max-width: 400px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .debug-panel.active {
+      display: block;
+    }
+    
+    .debug-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    
+    .version-badge {
+      position: fixed;
+      top: 20px;
       right: 20px;
       background: rgba(0, 0, 0, 0.7);
       color: white;
@@ -328,34 +414,48 @@
       }
       
       .login-header h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
       }
       
       .login-body {
         padding: 2rem 1.5rem;
       }
+      
+      .debug-panel {
+        left: 10px;
+        bottom: 10px;
+        max-width: calc(100vw - 20px);
+      }
     }
     
-    /* Google Sign-in Button Styling */
-    .g_id_signin {
-      border-radius: 12px !important;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+    /* Google Icon */
+    .google-icon {
+      width: 20px;
+      height: 20px;
     }
     
-    /* Password Strength Indicator */
-    .password-strength {
-      height: 4px;
-      background: #e9ecef;
-      border-radius: 2px;
-      margin-top: 0.5rem;
-      overflow: hidden;
+    /* Error details styling */
+    .error-details {
+      background: rgba(220, 53, 69, 0.1);
+      border: 1px solid rgba(220, 53, 69, 0.2);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
     }
     
-    .password-strength-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
-      width: 0%;
-      transition: width 0.3s ease;
+    .error-code {
+      font-weight: bold;
+      color: #dc3545;
+    }
+    
+    .fallback-methods {
+      background: linear-gradient(135deg, #17a2b8, #138496);
+      color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -364,9 +464,31 @@
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-content">
       <div class="spinner"></div>
-      <h5>Connecting to Global Platform...</h5>
-      <p class="text-muted">Please wait while we authenticate you</p>
+      <h5 id="loadingTitle">Connecting to Global Platform...</h5>
+      <p class="text-muted" id="loadingMessage">Please wait while we authenticate you</p>
+      <div class="mt-3">
+        <small class="text-muted">If this takes too long, try demo accounts below</small>
+      </div>
     </div>
+  </div>
+
+  <!-- Debug Panel -->
+  <div class="debug-panel" id="debugPanel">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <strong>🔧 Debug Console</strong>
+      <button class="btn btn-sm btn-outline-light" onclick="clearDebugLog()">Clear</button>
+    </div>
+    <div id="debugLog"></div>
+  </div>
+  
+  <!-- Debug Toggle -->
+  <button class="debug-toggle" onclick="toggleDebug()">
+    <i class="bi bi-bug"></i> Debug
+  </button>
+
+  <!-- Version Badge -->
+  <div class="version-badge">
+    v3.0 Ultimate | <i class="bi bi-shield-check"></i> Secure
   </div>
 
   <!-- Main Login Container -->
@@ -374,8 +496,12 @@
     <div class="login-card">
       <!-- Header -->
       <div class="login-header">
-        <h1><i class="bi bi-play-circle-fill me-2"></i>All in 1st</h1>
-        <p>Access Your Global Video Library</p>
+        <h1>
+          <i class="bi bi-play-circle-fill"></i>
+          All in 1st
+          <span class="global-badge">GLOBAL</span>
+        </h1>
+        <p>Ultimate Manga & Anime Platform</p>
       </div>
 
       <!-- Body -->
@@ -455,16 +581,30 @@
           <span>or continue with</span>
         </div>
 
-        <!-- Google Login -->
+        <!-- Google Login with Fallback -->
         <div class="d-grid mb-3">
-          <button type="button" class="btn btn-google btn-lg" onclick="signInWithGoogle()">
-            <svg width="20" height="20" viewBox="0 0 24 24" class="me-2">
+          <button type="button" class="btn btn-google btn-lg" id="googleLoginBtn" onclick="attemptGoogleLogin()">
+            <svg class="google-icon" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            Continue with Google
+            <span id="googleBtnText">Continue with Google</span>
+          </button>
+        </div>
+
+        <!-- Google Error Fallback -->
+        <div class="fallback-methods" id="googleFallback" style="display: none;">
+          <h6><i class="bi bi-exclamation-triangle me-2"></i>Google Login Issue Detected</h6>
+          <p class="mb-2">Don't worry! You can still access the platform using:</p>
+          <ul class="mb-3">
+            <li>Demo accounts below (instant access)</li>
+            <li>Traditional username/password</li>
+            <li>Try Google login again after a few minutes</li>
+          </ul>
+          <button class="btn btn-outline-light btn-sm" onclick="retryGoogleSetup()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Retry Google Login
           </button>
         </div>
 
@@ -479,14 +619,14 @@
               <button type="button" 
                       class="btn demo-btn w-100" 
                       onclick="demoLogin('demo', 'demo123')">
-                <i class="bi bi-person me-1"></i>Demo User
+                <i class="bi bi-person"></i>Demo User
               </button>
             </div>
             <div class="col-6">
               <button type="button" 
                       class="btn demo-btn w-100" 
                       onclick="demoLogin('guest', 'guest123')">
-                <i class="bi bi-person-plus me-1"></i>Guest
+                <i class="bi bi-person-plus"></i>Guest
               </button>
             </div>
           </div>
@@ -502,8 +642,11 @@
             <button type="button" 
                     class="btn demo-btn" 
                     onclick="demoLogin('admin', 'allin1st2025')">
-              <i class="bi bi-shield-check me-1"></i>Admin Panel Access
+              <i class="bi bi-shield-check"></i>Admin Panel Access
             </button>
+          </div>
+          <div class="mt-2 text-center">
+            <small class="opacity-75">Full platform management capabilities</small>
           </div>
         </div>
 
@@ -517,43 +660,57 @@
     </div>
   </div>
 
-  <!-- Version Badge -->
-  <div class="version-badge">
-    v2.0 Ultimate | <i class="bi bi-globe"></i> Global
-  </div>
-
   <!-- Modals -->
   <!-- Help Modal -->
   <div class="modal fade" id="helpModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
-            <i class="bi bi-question-circle me-2"></i>Login Help
+            <i class="bi bi-question-circle me-2"></i>Login Help & Troubleshooting
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <h6><i class="bi bi-key me-2"></i>Account Access</h6>
-          <ul>
-            <li><strong>Demo Access:</strong> Use the quick demo buttons for instant access</li>
-            <li><strong>Google Login:</strong> Sign in with your Google account for easy access</li>
-            <li><strong>Traditional Login:</strong> Enter username and password if you have an account</li>
-          </ul>
+          <div class="row">
+            <div class="col-md-6">
+              <h6><i class="bi bi-key me-2"></i>Login Methods</h6>
+              <ul>
+                <li><strong>Demo Access:</strong> Use quick demo buttons for instant access</li>
+                <li><strong>Google Login:</strong> Sign in with Google account (if enabled)</li>
+                <li><strong>Traditional:</strong> Username and password</li>
+              </ul>
+              
+              <h6 class="mt-3"><i class="bi bi-shield-check me-2"></i>Demo Accounts</h6>
+              <ul>
+                <li><code>demo</code> / <code>demo123</code> - Regular user</li>
+                <li><code>guest</code> / <code>guest123</code> - Guest access</li>
+                <li><code>admin</code> / <code>allin1st2025</code> - Administrator</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6><i class="bi bi-exclamation-triangle me-2"></i>Troubleshooting</h6>
+              <ul>
+                <li><strong>Google Login Fails:</strong> Use demo accounts instead</li>
+                <li><strong>Page Won't Load:</strong> Check internet connection</li>
+                <li><strong>Stuck Loading:</strong> Refresh and try demo login</li>
+                <li><strong>Forgot Password:</strong> Use demo accounts for testing</li>
+              </ul>
+              
+              <h6 class="mt-3"><i class="bi bi-globe me-2"></i>Platform Features</h6>
+              <ul>
+                <li>Global video library access</li>
+                <li>Upload content worldwide</li>
+                <li>Comment and interact</li>
+                <li>Admin controls (admin only)</li>
+              </ul>
+            </div>
+          </div>
           
-          <h6 class="mt-3"><i class="bi bi-shield-check me-2"></i>Security</h6>
-          <ul>
-            <li>Your data is protected with Firebase security</li>
-            <li>All connections are encrypted</li>
-            <li>We never store passwords in plain text</li>
-          </ul>
-          
-          <h6 class="mt-3"><i class="bi bi-globe me-2"></i>Global Platform</h6>
-          <ul>
-            <li>Access videos from users worldwide</li>
-            <li>Upload content to global library</li>
-            <li>Comment and interact with global community</li>
-          </ul>
+          <div class="alert alert-info mt-3">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>Quick Start:</strong> Click any demo button above for instant access to the platform!
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -573,12 +730,29 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <p>For demo accounts, use the credentials provided on the login page.</p>
-          <p>For Google accounts, use Google's password reset feature.</p>
-          <p>Contact support for additional assistance:</p>
           <div class="alert alert-info">
-            <i class="bi bi-envelope me-2"></i>
-            <strong>Support:</strong> Use the demo accounts for testing the platform features.
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>For Demo Platform:</strong> Use the provided demo accounts for full access.
+          </div>
+          
+          <h6>Available Demo Accounts:</h6>
+          <div class="list-group">
+            <div class="list-group-item">
+              <strong>Demo User:</strong> <code>demo</code> / <code>demo123</code>
+            </div>
+            <div class="list-group-item">
+              <strong>Guest User:</strong> <code>guest</code> / <code>guest123</code>
+            </div>
+            <div class="list-group-item">
+              <strong>Administrator:</strong> <code>admin</code> / <code>allin1st2025</code>
+            </div>
+          </div>
+          
+          <div class="mt-3">
+            <small class="text-muted">
+              <i class="bi bi-shield-check me-1"></i>
+              All accounts are secure and reset automatically for demo purposes.
+            </small>
           </div>
         </div>
         <div class="modal-footer">
@@ -590,9 +764,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    console.log('🎬 Ultimate Login page loaded');
+    console.log('🎬 Ultimate Login v3.0 - Full Error Analysis System');
 
-    // 🔥 FIREBASE CONFIG - YOUR ACTUAL KEYS
+    // 🔥 FIREBASE CONFIG - YOUR ACTUAL KEYS (From our Firebase setup)
     const firebaseConfig = {
       apiKey: "AIzaSyBLe404z16f_11og41NzKPVCtxn0w0XJQM",
       authDomain: "all-in-1st.firebaseapp.com",
@@ -602,17 +776,91 @@
       appId: "1:226019788510:web:51c4bcd04e5c457a89a44f"
     };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    // Global variables for debugging and error handling
+    let debugMode = false;
+    let firebaseInitialized = false;
+    let authInitialized = false;
+    let googleProvider = null;
+    let db = null;
+    let auth = null;
 
-    // Google Auth Provider
-    const googleProvider = new firebase.auth.GoogleAuthProvider();
-    googleProvider.addScope('profile');
-    googleProvider.addScope('email');
+    // Debug logging system
+    function debugLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+      
+      console.log(logEntry);
+      
+      if (debugMode) {
+        const debugPanel = document.getElementById('debugLog');
+        if (debugPanel) {
+          debugPanel.innerHTML += `<div class="mb-1 text-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'light'}">${logEntry}</div>`;
+          debugPanel.scrollTop = debugPanel.scrollHeight;
+        }
+      }
+    }
 
-    // User accounts database
+    function toggleDebug() {
+      debugMode = !debugMode;
+      const panel = document.getElementById('debugPanel');
+      panel.classList.toggle('active', debugMode);
+      debugLog('Debug mode ' + (debugMode ? 'enabled' : 'disabled'), 'info');
+    }
+
+    function clearDebugLog() {
+      document.getElementById('debugLog').innerHTML = '';
+      debugLog('Debug log cleared', 'info');
+    }
+
+    // Initialize Firebase with comprehensive error handling
+    function initializeFirebase() {
+      try {
+        debugLog('Initializing Firebase...', 'info');
+        
+        if (typeof firebase === 'undefined') {
+          throw new Error('Firebase SDK not loaded');
+        }
+
+        firebase.initializeApp(firebaseConfig);
+        firebaseInitialized = true;
+        debugLog('Firebase initialized successfully', 'success');
+
+        // Initialize Firestore
+        try {
+          db = firebase.firestore();
+          debugLog('Firestore initialized', 'success');
+        } catch (firestoreError) {
+          debugLog('Firestore initialization failed: ' + firestoreError.message, 'error');
+        }
+
+        // Initialize Auth
+        try {
+          auth = firebase.auth();
+          authInitialized = true;
+          debugLog('Firebase Auth initialized', 'success');
+
+          // Initialize Google Provider
+          try {
+            googleProvider = new firebase.auth.GoogleAuthProvider();
+            googleProvider.addScope('profile');
+            googleProvider.addScope('email');
+            debugLog('Google Auth Provider initialized', 'success');
+          } catch (googleError) {
+            debugLog('Google Provider initialization failed: ' + googleError.message, 'error');
+          }
+
+        } catch (authError) {
+          debugLog('Firebase Auth initialization failed: ' + authError.message, 'error');
+        }
+
+      } catch (error) {
+        debugLog('Firebase initialization failed: ' + error.message, 'error');
+        firebaseInitialized = false;
+        showGoogleFallback('Firebase initialization failed');
+      }
+    }
+
+    // User accounts database (From our demo accounts discussion)
     const userAccounts = {
       'demo': {
         username: 'demo',
@@ -628,6 +876,7 @@
         displayName: 'Guest User',
         email: 'guest@allin1st.com'
       },
+      // 👑 ADMIN ACCOUNT (From our admin discussion - only for you)
       'admin': {
         username: 'admin',
         password: 'allin1st2025', 
@@ -638,7 +887,7 @@
     };
 
     // Utility functions
-    function showAlert(message, type = 'danger', autoHide = true) {
+    function showAlert(message, type = 'danger', autoHide = true, includeDetails = false) {
       const container = document.getElementById('alertContainer');
       const alertId = 'alert_' + Date.now();
       
@@ -649,12 +898,14 @@
         'warning': 'exclamation-triangle'
       };
       
-      container.innerHTML = `
+      let alertHTML = `
         <div class="alert alert-${type} alert-custom" id="${alertId}" role="alert">
           <i class="bi bi-${iconMap[type]} me-2"></i>
           ${message}
         </div>
       `;
+      
+      container.innerHTML = alertHTML;
       
       if (autoHide && type === 'success') {
         setTimeout(() => {
@@ -664,17 +915,23 @@
           }
         }, 3000);
       }
+      
+      debugLog(`Alert shown: ${type} - ${message}`, type);
     }
 
-    function showLoading(show = true, message = 'Connecting to Global Platform...') {
+    function showLoading(show = true, title = 'Connecting to Global Platform...', message = 'Please wait while we authenticate you') {
       const overlay = document.getElementById('loadingOverlay');
-      const content = overlay.querySelector('.loading-content h5');
+      const titleElement = document.getElementById('loadingTitle');
+      const messageElement = document.getElementById('loadingMessage');
       
       if (show) {
-        content.textContent = message;
+        titleElement.textContent = title;
+        messageElement.textContent = message;
         overlay.style.display = 'flex';
+        debugLog(`Loading shown: ${title}`, 'info');
       } else {
         overlay.style.display = 'none';
+        debugLog('Loading hidden', 'info');
       }
     }
 
@@ -683,7 +940,7 @@
       return urlParams.get('next') || 'watch.html';
     }
 
-    // Create user session
+    // Create user session (From our session management discussion)
     function createUserSession(user, loginMethod = 'traditional') {
       const session = {
         username: user.username,
@@ -697,7 +954,13 @@
       };
       
       localStorage.setItem('allIn1st_user', JSON.stringify(session));
-      console.log('✅ Session created for:', user.username, '| Method:', loginMethod);
+      debugLog(`Session created for: ${user.username} | Method: ${loginMethod} | Role: ${user.role}`, 'success');
+      
+      // Special logging for admin access
+      if (user.role === 'admin') {
+        debugLog('👑 ADMINISTRATOR ACCESS GRANTED - Ultimate privileges active', 'success');
+        console.log('👑 Welcome back, Administrator! Full platform control activated.');
+      }
       
       return session;
     }
@@ -709,7 +972,7 @@
         if (session) {
           const user = JSON.parse(session);
           if (user.isLoggedIn === true) {
-            console.log('📱 Existing session found, redirecting...');
+            debugLog('Existing session found, redirecting...', 'info');
             showAlert('Welcome back! Redirecting to your dashboard...', 'success');
             setTimeout(() => {
               window.location.href = getNextPage();
@@ -718,7 +981,7 @@
           }
         }
       } catch (error) {
-        console.error('❌ Session check error:', error);
+        debugLog('Session check error: ' + error.message, 'error');
         localStorage.removeItem('allIn1st_user');
       }
       return false;
@@ -726,7 +989,7 @@
 
     // Traditional login function
     async function loginUser(username, password) {
-      console.log('🔐 Attempting login for:', username);
+      debugLog(`Attempting login for: ${username}`, 'info');
       
       const user = userAccounts[username.toLowerCase()];
       
@@ -741,23 +1004,81 @@
       // Simulate server delay for realistic UX
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      debugLog(`Login successful for: ${username}`, 'success');
       return user;
     }
 
-    // 🌐 GOOGLE SIGN-IN INTEGRATION
-    async function signInWithGoogle() {
-      console.log('🌐 Attempting Google Sign-In...');
-      showLoading(true, 'Connecting with Google...');
+    // Show Google fallback options
+    function showGoogleFallback(reason) {
+      debugLog(`Showing Google fallback: ${reason}`, 'warning');
+      
+      const fallback = document.getElementById('googleFallback');
+      const googleBtn = document.getElementById('googleLoginBtn');
+      
+      fallback.style.display = 'block';
+      googleBtn.disabled = true;
+      googleBtn.innerHTML = `
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        Google Login Unavailable
+      `;
+      
+      showAlert(`Google login temporarily unavailable: ${reason}. Use demo accounts for instant access.`, 'warning', false);
+    }
+
+    // Retry Google setup
+    function retryGoogleSetup() {
+      debugLog('Retrying Google setup...', 'info');
+      
+      const fallback = document.getElementById('googleFallback');
+      const googleBtn = document.getElementById('googleLoginBtn');
+      
+      fallback.style.display = 'none';
+      googleBtn.disabled = false;
+      googleBtn.innerHTML = `
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        <span>Retry Google Login</span>
+      `;
+      
+      // Reinitialize Google
+      initializeFirebase();
+    }
+
+    // 🌐 GOOGLE SIGN-IN WITH COMPREHENSIVE ERROR HANDLING
+    async function attemptGoogleLogin() {
+      debugLog('Attempting Google Sign-In...', 'info');
+      
+      if (!firebaseInitialized) {
+        debugLog('Firebase not initialized, attempting to initialize...', 'warning');
+        initializeFirebase();
+        
+        if (!firebaseInitialized) {
+          showGoogleFallback('Firebase initialization failed');
+          return;
+        }
+      }
+      
+      if (!authInitialized || !googleProvider) {
+        debugLog('Google Auth not properly initialized', 'error');
+        showGoogleFallback('Google authentication not configured');
+        return;
+      }
+
+      showLoading(true, 'Connecting with Google...', 'Opening Google sign-in popup...');
       
       try {
         const result = await auth.signInWithPopup(googleProvider);
         const user = result.user;
         
-        console.log('✅ Google Sign-In successful:', user.email);
+        debugLog(`Google Sign-In successful: ${user.email}`, 'success');
         
         // Create account object from Google user
         const googleUser = {
-          username: user.email.split('@')[0], // Use email prefix as username
+          username: user.email.split('@')[0], 
           displayName: user.displayName,
           email: user.email,
           role: 'user', // All Google users get regular user role
@@ -776,6 +1097,7 @@
         // Create session
         createUserSession(googleUser, 'google');
         
+        showLoading(false);
         showAlert(`Welcome ${user.displayName}! Redirecting to your dashboard...`, 'success');
         
         setTimeout(() => {
@@ -783,47 +1105,73 @@
         }, 1500);
         
       } catch (error) {
-        console.error('❌ Google Sign-In error:', error);
+        debugLog(`Google Sign-In error: ${error.code} - ${error.message}`, 'error');
         showLoading(false);
         
-        if (error.code === 'auth/popup-closed-by-user') {
-          showAlert('Google sign-in was cancelled.', 'info');
-        } else if (error.code === 'auth/popup-blocked') {
-          showAlert('Pop-up blocked. Please allow pop-ups and try again.', 'warning');
+        let errorMessage = 'Google sign-in failed';
+        let showFallback = false;
+        
+        switch (error.code) {
+          case 'auth/popup-closed-by-user':
+            errorMessage = 'Google sign-in was cancelled.';
+            showAlert(errorMessage, 'info');
+            break;
+          case 'auth/popup-blocked':
+            errorMessage = 'Pop-up blocked. Please allow pop-ups and try again.';
+            showAlert(errorMessage, 'warning');
+            break;
+          case 'auth/api-key-not-valid-please-pass-a-valid-api-key':
+            errorMessage = 'Google authentication not properly configured.';
+            showFallback = true;
+            break;
+          case 'auth/configuration-not-found':
+            errorMessage = 'Google sign-in not properly set up.';
+            showFallback = true;
+            break;
+          case 'auth/unauthorized-domain':
+            errorMessage = 'This domain is not authorized for Google sign-in.';
+            showFallback = true;
+            break;
+          default:
+            errorMessage = `Google sign-in failed: ${error.message}`;
+            showFallback = true;
+        }
+        
+        if (showFallback) {
+          showGoogleFallback(errorMessage);
         } else {
-          showAlert('Google sign-in failed: ' + error.message, 'danger');
+          showAlert(errorMessage, 'danger');
         }
       }
     }
 
-    // Demo login function
+    // Demo login function (From our demo accounts discussion)
     async function demoLogin(username, password) {
-      console.log('🎮 Demo login for:', username);
+      debugLog(`Demo login for: ${username}`, 'info');
       
       try {
-        showLoading(true, `Logging in as ${username}...`);
+        showLoading(true, `Logging in as ${username}...`, 'Authenticating demo account...');
         
         const user = await loginUser(username, password);
         createUserSession(user, 'demo');
         
         showLoading(false);
         
-        const welcomeMessage = user.role === 'admin' 
-          ? `Welcome back, Administrator! You have full control over the platform.`
-          : `Welcome ${user.displayName}! Enjoy exploring the global video library.`;
+        let welcomeMessage;
+        if (user.role === 'admin') {
+          welcomeMessage = `Welcome back, Administrator! You have full control over the platform.`;
+        } else {
+          welcomeMessage = `Welcome ${user.displayName}! Enjoy exploring the global video library.`;
+        }
         
         showAlert(welcomeMessage, 'success');
-        
-        // Special handling for admin
-        if (user.role === 'admin') {
-          console.log('👑 Admin login detected - full privileges granted');
-        }
         
         setTimeout(() => {
           window.location.href = getNextPage();
         }, 2000);
         
       } catch (error) {
+        debugLog(`Demo login error: ${error.message}`, 'error');
         showLoading(false);
         showAlert(error.message, 'danger');
       }
@@ -848,7 +1196,7 @@
         
         submitBtn.textContent = 'Signing In...';
         spinner.classList.remove('d-none');
-        showLoading(true, 'Authenticating your credentials...');
+        showLoading(true, 'Authenticating your credentials...', 'Verifying username and password...');
         
         const user = await loginUser(username, password);
         const session = createUserSession(user, 'traditional');
@@ -860,22 +1208,21 @@
         
         showLoading(false);
         
-        const welcomeMessage = user.role === 'admin'
-          ? `Welcome back, Administrator! Full platform control activated.`
-          : `Welcome ${user.displayName}! Access granted to global platform.`;
+        let welcomeMessage;
+        if (user.role === 'admin') {
+          welcomeMessage = `Welcome back, Administrator! Full platform control activated.`;
+        } else {
+          welcomeMessage = `Welcome ${user.displayName}! Access granted to global platform.`;
+        }
         
         showAlert(welcomeMessage, 'success');
-        
-        // Special admin logging
-        if (user.role === 'admin') {
-          console.log('👑 Administrator access granted - Ultimate privileges active');
-        }
         
         setTimeout(() => {
           window.location.href = getNextPage();
         }, 1500);
         
       } catch (error) {
+        debugLog(`Form login error: ${error.message}`, 'error');
         showLoading(false);
         
         const submitBtn = document.getElementById('loginBtnText');
@@ -886,7 +1233,7 @@
         
         showAlert(error.message, 'danger');
         
-        // Focus on username field if user not found, password field if password wrong
+        // Focus on appropriate field
         if (error.message.includes('Username not found')) {
           document.getElementById('username').focus();
         } else if (error.message.includes('Invalid password')) {
@@ -937,13 +1284,16 @@
 
     // Initialize page
     function initializePage() {
-      console.log('🚀 Ultimate Login page initializing...');
+      debugLog('Ultimate Login page initializing...', 'info');
       
       // Check for existing session first
       if (!checkExistingSession()) {
-        console.log('📱 No existing session, showing login form');
+        debugLog('No existing session, showing login form', 'info');
         
-        // Auto-fill demo credentials for development (remove in production)
+        // Initialize Firebase
+        initializeFirebase();
+        
+        // Auto-fill demo credentials for development (from URL parameters)
         const urlParams = new URLSearchParams(window.location.search);
         const demoUser = urlParams.get('demo');
         
@@ -958,29 +1308,47 @@
         }
       }
       
-      console.log('✅ Ultimate Login page ready');
-      console.log('🌐 Google Sign-In configured');
-      console.log('👑 Admin access available');
-      console.log('🎮 Demo accounts ready');
+      debugLog('Ultimate Login page ready', 'success');
+      console.log('🎬 Ultimate Login System v3.0 Ready');
+      console.log('🔥 Firebase Auth configured');
+      console.log('🌐 Google OAuth integrated (with fallback)');
+      console.log('👑 Admin panel access configured');
+      console.log('🎮 Demo accounts ready: demo/demo123, guest/guest123, admin/allin1st2025');
+      console.log('🔧 Debug mode available (click Debug button)');
+    }
+
+    // Firebase Auth state listener (with error handling)
+    function setupAuthListener() {
+      if (authInitialized && auth) {
+        auth.onAuthStateChanged((user) => {
+          if (user) {
+            debugLog(`Firebase Auth state: Signed in as ${user.email}`, 'info');
+          } else {
+            debugLog('Firebase Auth state: Signed out', 'info');
+          }
+        });
+      } else {
+        debugLog('Auth listener not set up - Auth not initialized', 'warning');
+      }
     }
 
     // Initialize when page loads
-    document.addEventListener('DOMContentLoaded', initializePage);
-
-    // Firebase Auth state listener
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        console.log('🔥 Firebase Auth state: Signed in as', user.email);
-      } else {
-        console.log('🔥 Firebase Auth state: Signed out');
-      }
+    document.addEventListener('DOMContentLoaded', function() {
+      initializePage();
+      setupAuthListener();
     });
 
-    console.log('🎬 Ultimate Login system loaded');
-    console.log('🔥 Firebase Auth ready');
-    console.log('🌐 Google OAuth integrated');
-    console.log('👑 Admin panel access configured');
-    console.log('🎮 Demo accounts: demo/demo123, guest/guest123, admin/allin1st2025');
+    // Global error handler
+    window.addEventListener('error', function(e) {
+      debugLog(`Global error: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
+    });
+
+    // Unhandled promise rejection handler
+    window.addEventListener('unhandledrejection', function(e) {
+      debugLog(`Unhandled promise rejection: ${e.reason}`, 'error');
+    });
+
+    debugLog('Ultimate Login system loaded with full error analysis', 'success');
   </script>
 </body>
 </html>
