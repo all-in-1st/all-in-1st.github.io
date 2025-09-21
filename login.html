@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Meta Tags -->
   <title>Login - All in 1st | Manga & Anime Platform</title>
-  <meta name="description" content="Access All in 1st - The ultimate manga and anime explainer video platform. Create account or login.">
-  <meta name="keywords" content="all in 1st, login, signup, manga, anime, videos, platform">
+  <meta name="description" content="Access All in 1st - The ultimate manga and anime explainer video platform. Login to your account.">
+  <meta name="keywords" content="all in 1st, login, manga, anime, videos, platform">
   <meta name="author" content="All in 1st">
   <meta property="og:title" content="All in 1st - Login Portal">
   <meta property="og:description" content="Access the world's best manga and anime video platform">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://all-in-1st.github.io/login.html">
   <!-- Stylesheets -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -606,15 +607,22 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ===== MODERN AUTHENTICATION SYSTEM =====
-    console.log('🚀 AUTHENTICATION SYSTEM v2.0 - Full Registration & Login');
+    // ===== UPDATED AUTHENTICATION SYSTEM FOR NEW REPO =====
+    console.log('🚀 AUTHENTICATION SYSTEM v2.1 - Updated for all-in-1st.github.io');
+
+    // ===== SITE CONFIGURATION =====
+    const SITE_CONFIG = {
+      baseURL: 'https://all-in-1st.github.io',
+      siteName: 'All in 1st',
+      version: '2.1',
+      repositoryName: 'all-in-1st.github.io'
+    };
 
     // ===== GLOBAL VARIABLES =====
     let currentForm = 'login';
     let sessionActive = false;
 
     // ===== USER DATABASE (TEMPORARY - IN PRODUCTION USE BACKEND) =====
-    // This would normally be handled by a backend database
     let users = JSON.parse(localStorage.getItem('allIn1st_users') || '{}');
 
     // ===== UTILITY FUNCTIONS =====
@@ -658,7 +666,8 @@
 
     function getNextPage() {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('next') || 'watch.html';
+      const defaultPage = `${SITE_CONFIG.baseURL}/watch.html`;
+      return urlParams.get('next') || defaultPage;
     }
 
     function redirectToWatchPage() {
@@ -705,35 +714,31 @@
 
     // ===== USER REGISTRATION =====
     async function registerUser(userData) {
-      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Check if user already exists
       if (users[userData.username.toLowerCase()]) {
         throw new Error('Username already exists');
       }
 
-      // Check if email already exists
       const existingUser = Object.values(users).find(user => user.email === userData.email);
       if (existingUser) {
         throw new Error('Email already registered');
       }
 
-      // Create new user
       const newUser = {
         id: Date.now().toString(),
         fullName: userData.fullName,
         email: userData.email,
         username: userData.username.toLowerCase(),
-        password: userData.password, // In production, this should be hashed
+        password: userData.password,
         role: 'user',
         displayName: userData.fullName,
         permissions: ['read', 'write', 'comment'],
         createdAt: new Date().toISOString(),
-        isVerified: true // In production, email verification would be required
+        isVerified: true,
+        siteVersion: SITE_CONFIG.version
       };
 
-      // Save to localStorage (in production, save to backend)
       users[userData.username.toLowerCase()] = newUser;
       localStorage.setItem('allIn1st_users', JSON.stringify(users));
 
@@ -743,7 +748,6 @@
 
     // ===== USER AUTHENTICATION =====
     async function authenticateUser(username, password) {
-      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1200));
 
       const userKey = username.toLowerCase().trim();
@@ -772,13 +776,15 @@
         isLoggedIn: true,
         loginTime: new Date().toISOString(),
         loginMethod: loginMethod,
-        sessionId: `session_${Date.now()}`
+        sessionId: `session_${Date.now()}`,
+        siteURL: SITE_CONFIG.baseURL,
+        repositoryName: SITE_CONFIG.repositoryName
       };
       
       localStorage.setItem('allIn1st_user', JSON.stringify(session));
       sessionActive = true;
       
-      console.log(`Session created: ${user.username} (${user.role})`);
+      console.log(`Session created: ${user.username} (${user.role}) on ${SITE_CONFIG.baseURL}`);
       return session;
     }
 
@@ -838,12 +844,10 @@
       
       let isValid = true;
 
-      // Reset validation
       [fullName, email, username, password, confirmPassword].forEach(field => {
         field.classList.remove('is-valid', 'is-invalid');
       });
 
-      // Validate full name
       if (fullName.value.trim().length >= 2) {
         fullName.classList.add('is-valid');
       } else {
@@ -851,7 +855,6 @@
         isValid = false;
       }
 
-      // Validate email
       if (validateEmail(email.value)) {
         email.classList.add('is-valid');
       } else if (email.value.length > 0) {
@@ -859,7 +862,6 @@
         isValid = false;
       }
 
-      // Validate username
       if (username.value.trim().length >= 3) {
         username.classList.add('is-valid');
       } else if (username.value.length > 0) {
@@ -867,7 +869,6 @@
         isValid = false;
       }
 
-      // Validate password
       const passwordValidation = validatePassword(password.value);
       if (passwordValidation.valid) {
         password.classList.add('is-valid');
@@ -876,7 +877,6 @@
         isValid = false;
       }
 
-      // Validate password confirmation
       if (confirmPassword.value === password.value && password.value.length > 0) {
         confirmPassword.classList.add('is-valid');
       } else if (confirmPassword.value.length > 0) {
@@ -884,7 +884,6 @@
         isValid = false;
       }
 
-      // Validate terms agreement
       if (!agreeTerms.checked) {
         isValid = false;
       }
@@ -907,7 +906,7 @@
       const password = document.getElementById('loginPassword').value;
 
       try {
-        showLoading(true, 'Signing In...', 'Verifying your credentials...');
+        showLoading(true, 'Signing In...', `Verifying credentials for ${SITE_CONFIG.siteName}...`);
 
         const user = await authenticateUser(username, password);
         const session = createSession(user, 'form');
@@ -940,7 +939,6 @@
         password: document.getElementById('signupPassword').value
       };
 
-      // Check password confirmation
       const confirmPassword = document.getElementById('confirmPassword').value;
       if (userData.password !== confirmPassword) {
         showAlert('Passwords do not match', 'danger');
@@ -948,13 +946,13 @@
       }
 
       try {
-        showLoading(true, 'Creating Account...', 'Setting up your profile...');
+        showLoading(true, 'Creating Account...', `Setting up your ${SITE_CONFIG.siteName} profile...`);
 
         const newUser = await registerUser(userData);
         const session = createSession(newUser, 'signup');
 
         showLoading(false);
-        showAlert(`Welcome to All in 1st, ${newUser.displayName}!`, 'success');
+        showAlert(`Welcome to ${SITE_CONFIG.siteName}, ${newUser.displayName}!`, 'success');
 
         setTimeout(redirectToWatchPage, 2000);
 
@@ -1014,13 +1012,14 @@
 
     // ===== PAGE INITIALIZATION =====
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 AUTHENTICATION SYSTEM v2.0 READY!');
+      console.log(`🚀 ${SITE_CONFIG.siteName} AUTHENTICATION SYSTEM v${SITE_CONFIG.version} READY!`);
+      console.log(`📍 Repository: ${SITE_CONFIG.repositoryName}`);
+      console.log(`🌐 Base URL: ${SITE_CONFIG.baseURL}`);
       
       // Check existing session
       if (!checkExistingSession()) {
         console.log('No existing session - showing login form');
         
-        // Auto-focus username field
         setTimeout(() => {
           document.getElementById('loginUsername').focus();
         }, 500);
@@ -1028,7 +1027,7 @@
 
       console.log('System initialization complete');
       console.log('✅ Full registration and login system active');
-      console.log('📱 Users can now create accounts and sign in');
+      console.log('📱 Updated for new repository structure');
     });
 
     // ===== MAKE FUNCTIONS GLOBAL =====
