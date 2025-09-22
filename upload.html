@@ -94,143 +94,146 @@
   <div id="loadingScreen" class="loading-screen">
     <div class="text-center">
       <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
-      <h4 class="text-success">Loading upload page...</h4>
-      <p class="text-muted">🔥 Verifying Firebase Authentication...</p>
+      <h4 class="text-success">Verifying Authentication...</h4>
+      <p class="text-muted">🔥 Connecting with Firebase...</p>
     </div>
   </div>
 
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold text-primary" href="watch.html">
-        <i class="bi bi-arrow-left me-2"></i>All in 1st <span class="global-badge">FIREBASE</span>
-      </a>
-      <div class="d-flex">
-        <span class="me-3 align-self-center" id="welcomeText">Loading...</span>
-        <a href="watch.html" class="btn btn-outline-primary">
-          Back to Watch
+  <!-- Main Content (Initially Hidden) -->
+  <div id="mainContent" style="display: none;">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="watch.html">
+          <i class="bi bi-arrow-left me-2"></i>All in 1st <span class="global-badge">FIREBASE</span>
         </a>
+        <div class="d-flex align-items-center">
+          <span class="me-3" id="welcomeText">Loading...</span>
+          <a href="watch.html" class="btn btn-outline-primary">
+            Back to Watch
+          </a>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <div class="upload-container" id="mainContent" style="display:none;">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-8 col-xl-6">
-          <div class="upload-card">
-            <!-- Header -->
-            <div class="upload-header">
-              <i class="bi bi-cloud-upload" style="font-size: 3rem;"></i>
-              <h2 class="mt-3 mb-1">Upload Your Video</h2>
-              <p class="mb-0 opacity-75">Share your manga content with the global Firebase community</p>
-            </div>
+    <div class="upload-container">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 col-xl-6">
+            <div class="upload-card">
+              <!-- Header -->
+              <div class="upload-header">
+                <i class="bi bi-cloud-upload" style="font-size: 3rem;"></i>
+                <h2 class="mt-3 mb-1">Upload Your Video</h2>
+                <p class="mb-0 opacity-75">Share your content with Firebase global community</p>
+              </div>
 
-            <!-- Upload Form -->
-            <div class="p-4" id="uploadFormSection">
-              <div id="alertContainer"></div>
+              <!-- Upload Form -->
+              <div class="p-4" id="uploadFormSection">
+                <div id="alertContainer"></div>
 
-              <form id="uploadForm">
-                <!-- Video Title -->
-                <div class="mb-4">
-                  <label class="form-label fw-bold">
-                    Video Title <span class="text-danger">*</span>
-                  </label>
-                  <input type="text" 
-                         id="videoTitle" 
-                         class="form-control form-control-lg" 
-                         placeholder="Enter an engaging title for your video..."
-                         required>
-                </div>
-
-                <!-- YouTube Link -->
-                <div class="mb-4">
-                  <label class="form-label fw-bold">
-                    YouTube Video Link <span class="text-danger">*</span>
-                  </label>
-                  <input type="url" 
-                         id="youtubeUrl" 
-                         class="form-control form-control-lg" 
-                         placeholder="https://www.youtube.com/watch?v=..."
-                         required>
-                  <div class="form-text">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Paste your YouTube video URL here. We'll extract the video ID automatically.
+                <form id="uploadForm">
+                  <!-- Video Title -->
+                  <div class="mb-4">
+                    <label class="form-label fw-bold">
+                      Video Title <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" 
+                           id="videoTitle" 
+                           class="form-control form-control-lg" 
+                           placeholder="Enter an engaging title for your video..."
+                           required>
                   </div>
-                </div>
 
-                <!-- Genre and Tags Row -->
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="mb-4">
-                      <label class="form-label fw-bold">Genre</label>
-                      <select id="videoGenre" class="form-select form-select-lg">
-                        <option value="Action">Action</option>
-                        <option value="Adventure">Adventure</option>
-                        <option value="Comedy">Comedy</option>
-                        <option value="Drama">Drama</option>
-                        <option value="Fantasy">Fantasy</option>
-                        <option value="Horror">Horror</option>
-                        <option value="Romance">Romance</option>
-                        <option value="Sci-Fi">Sci-Fi</option>
-                        <option value="Slice of Life">Slice of Life</option>
-                        <option value="Supernatural">Supernatural</option>
-                        <option value="Thriller">Thriller</option>
-                      </select>
+                  <!-- YouTube Link -->
+                  <div class="mb-4">
+                    <label class="form-label fw-bold">
+                      YouTube Video Link <span class="text-danger">*</span>
+                    </label>
+                    <input type="url" 
+                           id="youtubeUrl" 
+                           class="form-control form-control-lg" 
+                           placeholder="https://www.youtube.com/watch?v=..."
+                           required>
+                    <div class="form-text">
+                      <i class="bi bi-info-circle me-1"></i>
+                      Paste your YouTube video URL here. We'll extract the video ID automatically.
                     </div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="mb-4">
-                      <label class="form-label fw-bold">Tags</label>
-                      <input type="text" 
-                             id="videoTags" 
-                             class="form-control form-control-lg" 
-                             placeholder="manga, anime, explained...">
-                      <div class="form-text">Separate tags with commas</div>
+
+                  <!-- Genre and Tags Row -->
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-4">
+                        <label class="form-label fw-bold">Genre</label>
+                        <select id="videoGenre" class="form-select form-select-lg">
+                          <option value="Action">Action</option>
+                          <option value="Adventure">Adventure</option>
+                          <option value="Comedy">Comedy</option>
+                          <option value="Drama">Drama</option>
+                          <option value="Fantasy">Fantasy</option>
+                          <option value="Horror">Horror</option>
+                          <option value="Romance">Romance</option>
+                          <option value="Sci-Fi">Sci-Fi</option>
+                          <option value="Slice of Life">Slice of Life</option>
+                          <option value="Supernatural">Supernatural</option>
+                          <option value="Thriller">Thriller</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-4">
+                        <label class="form-label fw-bold">Tags</label>
+                        <input type="text" 
+                               id="videoTags" 
+                               class="form-control form-control-lg" 
+                               placeholder="manga, anime, explained...">
+                        <div class="form-text">Separate tags with commas</div>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Description -->
-                <div class="mb-4">
-                  <label class="form-label fw-bold">Description</label>
-                  <textarea id="videoDescription" 
-                            class="form-control" 
-                            rows="4" 
-                            placeholder="Describe your video content, what viewers will learn, key points covered..."></textarea>
-                </div>
+                  <!-- Description -->
+                  <div class="mb-4">
+                    <label class="form-label fw-bold">Description</label>
+                    <textarea id="videoDescription" 
+                              class="form-control" 
+                              rows="4" 
+                              placeholder="Describe your video content, what viewers will learn, key points covered..."></textarea>
+                  </div>
 
-                <!-- Submit Button -->
-                <div class="d-grid">
-                  <button type="submit" class="btn btn-upload btn-lg text-white">
-                    <i class="bi bi-cloud-upload me-2"></i>
-                    <span id="submitBtnText">Upload to Global Firebase Database</span>
-                    <div class="spinner-border spinner-border-sm ms-2 d-none" id="uploadSpinner"></div>
-                  </button>
-                </div>
-              </form>
+                  <!-- Submit Button -->
+                  <div class="d-grid">
+                    <button type="submit" class="btn btn-upload btn-lg text-white">
+                      <i class="bi bi-cloud-upload me-2"></i>
+                      <span id="submitBtnText">Upload to Firebase Database</span>
+                      <div class="spinner-border spinner-border-sm ms-2 d-none" id="uploadSpinner"></div>
+                    </button>
+                  </div>
+                </form>
 
-              <!-- Progress Bar -->
-              <div class="progress-container" id="progressContainer">
-                <div class="progress mb-3" style="height: 8px;">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
-                       id="uploadProgress" 
-                       style="width: 0%"></div>
+                <!-- Progress Bar -->
+                <div class="progress-container" id="progressContainer">
+                  <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                         id="uploadProgress" 
+                         style="width: 0%"></div>
+                  </div>
+                  <p class="text-center text-muted mb-0" id="progressText">Uploading to Firebase...</p>
                 </div>
-                <p class="text-center text-muted mb-0" id="progressText">Uploading to Firebase global database...</p>
               </div>
-            </div>
 
-            <!-- Success Animation -->
-            <div class="success-animation" id="successAnimation">
-              <div class="checkmark">
-                <i class="bi bi-check-lg"></i>
+              <!-- Success Animation -->
+              <div class="success-animation" id="successAnimation">
+                <div class="checkmark">
+                  <i class="bi bi-check-lg"></i>
+                </div>
+                <h4 class="text-success mb-2">Upload Successful!</h4>
+                <p class="text-muted mb-3">Your video is now live in Firebase global database!</p>
+                <a href="watch.html" class="btn btn-primary">
+                  View in Global Library
+                </a>
               </div>
-              <h4 class="text-success mb-2">Upload Successful!</h4>
-              <p class="text-muted mb-3">Your video is now visible to ALL Firebase users worldwide!</p>
-              <a href="watch.html" class="btn btn-primary">
-                View in Global Library
-              </a>
             </div>
           </div>
         </div>
@@ -240,9 +243,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
-  <!-- 🔥 FIREBASE v9+ MODULAR SDK - MATCHING LOGIN.HTML AND WATCH.HTML 🔥 -->
+  <!-- 🔥 FIREBASE v9+ MODULAR SDK - EXACT MATCH WITH LOGIN.HTML 🔥 -->
   <script type="module">
-    // Import Firebase functions - SAME AS LOGIN.HTML & WATCH.HTML
+    // Import Firebase modules - IDENTICAL TO LOGIN.HTML
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { 
       getAuth, 
@@ -255,9 +258,9 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    console.log('📤 Firebase Upload page loaded');
+    console.log('📤 FIREBASE UPLOAD PAGE - AUTHENTICATION SYNC v5.0');
 
-    // 🔥 FIREBASE CONFIG - EXACT SAME AS LOGIN.HTML & WATCH.HTML
+    // 🔥 FIREBASE CONFIGURATION - IDENTICAL TO LOGIN.HTML
     const firebaseConfig = {
       apiKey: "AIzaSyBLe4o4zI6f_l1og41NzKPVCtxn0woXJQM",
       authDomain: "all-in-1st.firebaseapp.com",
@@ -267,24 +270,39 @@
       appId: "1:226019788510:web:51c4bcd04e5c457a89a44f"
     };
 
-    // Initialize Firebase - SAME AS LOGIN.HTML & WATCH.HTML
+    // Initialize Firebase - IDENTICAL TO LOGIN.HTML
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ===== GLOBAL VARIABLES =====
+    // Global variables
     let currentUser = null;
+    let authChecked = false;
 
-    console.log('🔥 FIREBASE v9+ UPLOAD PAGE - MATCHING LOGIN & WATCH SYSTEMS');
+    // ===== AUTHENTICATION STATE LISTENER - BULLETPROOF =====
+    onAuthStateChanged(auth, (user) => {
+      authChecked = true;
+      document.getElementById('loadingScreen').style.display = 'none';
+      
+      if (user) {
+        // ✅ USER AUTHENTICATED - SHOW UPLOAD FORM
+        currentUser = user;
+        console.log('✅ Firebase user authenticated for upload:', user.email);
+        
+        document.getElementById('mainContent').style.display = 'block';
+        
+        // Update UI with user info
+        const displayName = user.displayName || user.email || 'User';
+        document.getElementById('welcomeText').textContent = `Welcome, ${displayName}!`;
+        
+      } else {
+        // ❌ NO USER - REDIRECT TO LOGIN
+        console.log('❌ No authenticated user - redirecting to login');
+        window.location.replace('login.html?next=upload.html');
+      }
+    });
 
     // ===== UTILITY FUNCTIONS =====
-    function updateUI() {
-      if (!currentUser) return;
-      
-      const displayName = currentUser.displayName || currentUser.email || 'User';
-      document.getElementById('welcomeText').textContent = `Welcome, ${displayName}!`;
-    }
-
     function showAlert(message, type = 'danger') {
       const container = document.getElementById('alertContainer');
       container.innerHTML = `
@@ -294,15 +312,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
       `;
-      
-      if (type === 'success') {
-        setTimeout(() => {
-          const alert = container.querySelector('.alert');
-          if (alert) {
-            new bootstrap.Alert(alert).close();
-          }
-        }, 5000);
-      }
     }
 
     function extractYouTubeId(url) {
@@ -314,9 +323,7 @@
       
       for (const pattern of patterns) {
         const match = url.match(pattern);
-        if (match) {
-          return match[1];
-        }
+        if (match) return match[1];
       }
       return null;
     }
@@ -335,7 +342,7 @@
         if (progress < 30) {
           progressText.textContent = 'Validating video...';
         } else if (progress < 60) {
-          progressText.textContent = 'Uploading to Firebase global database...';
+          progressText.textContent = 'Uploading to Firebase...';
         } else if (progress < 90) {
           progressText.textContent = 'Making available worldwide...';
         } else {
@@ -350,35 +357,20 @@
           }, 200);
         }
       }, 100);
-      
-      return interval;
     }
 
-    // ===== FIREBASE AUTH STATE LISTENER - MATCHES LOGIN.HTML & WATCH.HTML =====
-    onAuthStateChanged(auth, (user) => {
-      document.getElementById('loadingScreen').style.display = 'none';
-      
-      if (user) {
-        // ✅ USER IS AUTHENTICATED
-        currentUser = user;
-        console.log('✅ Firebase user authenticated:', user.email);
-        
-        updateUI();
-        document.getElementById('mainContent').style.display = 'block';
-        
-      } else {
-        // ❌ NO USER - REDIRECT TO LOGIN
-        console.log('❌ No Firebase user - redirecting to login');
-        window.location.replace('login.html?next=upload.html');
-      }
-    });
-
-    // ===== FORM SUBMISSION HANDLER =====
+    // ===== FORM SUBMISSION =====
     document.getElementById('uploadForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      console.log('📤 Starting Firebase upload process...');
 
-      // Get form values
+      if (!currentUser) {
+        showAlert('Authentication error. Please refresh and try again.');
+        return;
+      }
+
+      console.log('📤 Starting Firebase upload...');
+
+      // Get form data
       const title = document.getElementById('videoTitle').value.trim();
       const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
       const genre = document.getElementById('videoGenre').value;
@@ -402,9 +394,6 @@
         return;
       }
 
-      console.log('✅ Form validation passed');
-      console.log('🔗 YouTube ID extracted:', youtubeId);
-
       // Show loading state
       const submitBtn = document.getElementById('submitBtnText');
       const spinner = document.getElementById('uploadSpinner');
@@ -415,72 +404,67 @@
       progressContainer.style.display = 'block';
 
       try {
-        // Start progress animation
-        const progressInterval = animateProgress();
+        // Animate progress
+        animateProgress();
         
         // Process tags
         const tags = tagsInput 
           ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
           : [];
 
-        // Create video object for Firebase Firestore
-        const newVideo = {
+        // Create video document for Firestore
+        const videoData = {
           title: title,
           description: description,
           genre: genre,
           youtubeId: youtubeId,
           tags: tags,
           uploader: currentUser.displayName || currentUser.email,
-          uploaderEmail: currentUser.email,
           uploaderUID: currentUser.uid,
+          uploaderEmail: currentUser.email,
           uploadDate: serverTimestamp(),
           views: 0,
           likes: 0,
           comments: []
         };
 
-        console.log('📹 Uploading video to Firebase Firestore:', newVideo);
+        console.log('📹 Saving to Firebase Firestore:', videoData);
 
-        // 🔥 SAVE TO FIREBASE FIRESTORE (GLOBAL DATABASE)
-        await addDoc(collection(db, "videos"), newVideo);
+        // 🔥 SAVE TO FIREBASE FIRESTORE
+        await addDoc(collection(db, "videos"), videoData);
 
-        console.log('🌍 Video successfully saved to Firebase global database!');
+        console.log('🌍 Video saved to Firebase global database successfully!');
 
-        // Complete progress and show success
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Hide form and show success
-        document.getElementById('uploadFormSection').style.display = 'none';
-        document.getElementById('successAnimation').style.display = 'block';
-
-        console.log('🎉 Upload completed successfully! Video is now visible to ALL Firebase users worldwide!');
+        // Show success
+        setTimeout(() => {
+          document.getElementById('uploadFormSection').style.display = 'none';
+          document.getElementById('successAnimation').style.display = 'block';
+        }, 1500);
 
       } catch (error) {
         console.error('❌ Firebase upload error:', error);
-        
-        // Reset UI on error
         showAlert('Upload failed: ' + error.message);
-        submitBtn.textContent = 'Upload to Global Firebase Database';
+        
+        // Reset UI
+        submitBtn.textContent = 'Upload to Firebase Database';
         spinner.classList.add('d-none');
         progressContainer.style.display = 'none';
       }
     });
 
-    // Demo data shortcut (Ctrl+Shift+D)
+    // Demo data shortcut
     document.addEventListener('keydown', function(e) {
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-        console.log('🎮 Demo data filled');
-        document.getElementById('videoTitle').value = 'Attack on Titan Final Season Explained';
-        document.getElementById('youtubeUrl').value = 'https://www.youtube.com/watch?v=SlPhMPnQ58k';
-        document.getElementById('videoGenre').value = 'Drama';
-        document.getElementById('videoTags').value = 'attack on titan, anime, explained, drama, final season';
-        document.getElementById('videoDescription').value = 'Complete analysis of Attack on Titan\'s final season, covering major plot points, character development, and the epic conclusion of this masterpiece series.';
-        
-        showAlert('Demo data loaded! You can now submit to Firebase global database.', 'info');
+        document.getElementById('videoTitle').value = 'Sample Manga Explainer - Firebase Test';
+        document.getElementById('youtubeUrl').value = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+        document.getElementById('videoGenre').value = 'Action';
+        document.getElementById('videoTags').value = 'manga, anime, firebase, test';
+        document.getElementById('videoDescription').value = 'This is a test upload to Firebase global database.';
+        showAlert('Demo data loaded!', 'info');
       }
     });
 
-    // URL validation on input
+    // URL validation
     document.getElementById('youtubeUrl').addEventListener('input', function(e) {
       const url = e.target.value.trim();
       if (url && !extractYouTubeId(url)) {
@@ -490,7 +474,7 @@
       }
     });
 
-    console.log('📱 Firebase Upload page script initialized - Auth synchronized with login.html and watch.html');
+    console.log('🔥 Firebase Upload Authentication System Ready');
   </script>
 </body>
 </html>
