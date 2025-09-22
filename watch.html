@@ -41,47 +41,45 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBLe4o4zI6f_l1og41NzKPVCtxn0woXJQM",
-      authDomain: "all-in-1st.firebaseapp.com",
-      projectId: "all-in-1st",
-      storageBucket: "all-in-1st.firebasestorage.app",
-      messagingSenderId: "226019788510",
-      appId: "1:226019788510:web:51c4bcd04e5c457a89a44f"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  // 1) Firebase init
+  const app = initializeApp({
+    apiKey: "...",
+    authDomain: "...",
+    projectId: "...",
+    storageBucket: "...",
+    messagingSenderId: "...",
+    appId: "..."
+  });
+  const auth = getAuth(app);
 
+  // 2) One-time bypass flag
+  const bypass = sessionStorage.getItem("firebase_redirected") === "true";
+  if (bypass) {
+    sessionStorage.removeItem("firebase_redirected");
+    showMainContent(); // your function to unhide the library
+  } else {
+    // 3) Listen for auth state
     onAuthStateChanged(auth, user => {
-      document.getElementById('loading').style.display = 'none';
       if (user) {
-        document.getElementById('main-content').style.display = 'block';
-        loadVideos();
+        sessionStorage.setItem("firebase_redirected","true");
+        window.location.replace("watch.html");
       } else {
-        window.location.replace('login.html');
+        window.location.replace("login.html");
       }
     });
+  }
 
-    function loadVideos() {
-      const videosEl = document.getElementById('videos');
-      const list = [
-        {title:"Sample Video 1",thumb:"https://via.placeholder.com/400x225"},
-        {title:"Sample Video 2",thumb:"https://via.placeholder.com/400x225"}
-      ];
-      list.forEach(v => {
-        const col = document.createElement('div'); col.className = 'col-md-6';
-        col.innerHTML = `
-          <div class="video-card">
-            <img src="${v.thumb}" alt="${v.title}"/>
-            <div class="card-body"><h5>${v.title}</h5></div>
-          </div>`;
-        videosEl.append(col);
-      });
-    }
-  </script>
+  function showMainContent(){
+    document.getElementById("loading").style.display="none";
+    document.getElementById("main-content").style.display="block";
+    loadVideos(); // your existing function
+  }
+</script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
