@@ -73,11 +73,18 @@
       left: 0;
       width: 100%;
       height: 100vh;
-      background: white;
+      background: rgba(102, 126, 234, 0.95);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 9999;
+    }
+    .loading-content {
+      text-align: center;
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
     }
     .global-badge {
       background: linear-gradient(45deg, #ff6b6b, #feca57);
@@ -87,19 +94,37 @@
       border-radius: 10px;
       margin-left: 8px;
     }
+    .auth-status {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      z-index: 1000;
+      display: none;
+    }
   </style>
 </head>
 <body>
+  <!-- Auth Status Indicator -->
+  <div id="authStatus" class="auth-status">
+    🔥 Firebase Auth: Checking...
+  </div>
+
   <!-- Loading Screen -->
   <div id="loadingScreen" class="loading-screen">
-    <div class="text-center">
-      <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
-      <h4 class="text-success">Verifying Authentication...</h4>
-      <p class="text-muted">🔥 Connecting with Firebase...</p>
+    <div class="loading-content">
+      <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+      <h4 class="text-primary mb-2">Verifying Authentication</h4>
+      <p class="text-muted mb-1">🔥 Connecting with Firebase...</p>
+      <small class="text-muted" id="loadingStatus">Initializing...</small>
     </div>
   </div>
 
-  <!-- Main Content (Initially Hidden) -->
+  <!-- Main Content -->
   <div id="mainContent" style="display: none;">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
@@ -125,7 +150,7 @@
               <div class="upload-header">
                 <i class="bi bi-cloud-upload" style="font-size: 3rem;"></i>
                 <h2 class="mt-3 mb-1">Upload Your Video</h2>
-                <p class="mb-0 opacity-75">Share your content with Firebase global community</p>
+                <p class="mb-0 opacity-75">Share your content with the global Firebase community</p>
               </div>
 
               <!-- Upload Form -->
@@ -206,7 +231,7 @@
                   <div class="d-grid">
                     <button type="submit" class="btn btn-upload btn-lg text-white">
                       <i class="bi bi-cloud-upload me-2"></i>
-                      <span id="submitBtnText">Upload to Firebase Database</span>
+                      <span id="submitBtnText">Upload to Global Database</span>
                       <div class="spinner-border spinner-border-sm ms-2 d-none" id="uploadSpinner"></div>
                     </button>
                   </div>
@@ -229,7 +254,7 @@
                   <i class="bi bi-check-lg"></i>
                 </div>
                 <h4 class="text-success mb-2">Upload Successful!</h4>
-                <p class="text-muted mb-3">Your video is now live in Firebase global database!</p>
+                <p class="text-muted mb-3">Your video is now live in the global Firebase database!</p>
                 <a href="watch.html" class="btn btn-primary">
                   View in Global Library
                 </a>
@@ -243,9 +268,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
-  <!-- 🔥 FIREBASE v9+ MODULAR SDK - EXACT MATCH WITH LOGIN.HTML 🔥 -->
+  <!-- 🔥 FIREBASE v9+ WITH PROPER TIMING CONTROLS 🔥 -->
   <script type="module">
-    // Import Firebase modules - IDENTICAL TO LOGIN.HTML
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { 
       getAuth, 
@@ -258,9 +282,10 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    console.log('📤 FIREBASE UPLOAD PAGE - AUTHENTICATION SYNC v5.0');
+    console.log('📤 FIREBASE UPLOAD - ULTRA DEEP FIX v6.0');
+    console.log('🕐 Current Time:', new Date().toISOString());
 
-    // 🔥 FIREBASE CONFIGURATION - IDENTICAL TO LOGIN.HTML
+    // 🔥 FIREBASE CONFIG - IDENTICAL TO LOGIN.HTML
     const firebaseConfig = {
       apiKey: "AIzaSyBLe4o4zI6f_l1og41NzKPVCtxn0woXJQM",
       authDomain: "all-in-1st.firebaseapp.com",
@@ -270,36 +295,93 @@
       appId: "1:226019788510:web:51c4bcd04e5c457a89a44f"
     };
 
-    // Initialize Firebase - IDENTICAL TO LOGIN.HTML
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Global variables
+    // ===== TIMING CONTROL VARIABLES =====
     let currentUser = null;
-    let authChecked = false;
+    let authCheckComplete = false;
+    let authCheckStartTime = Date.now();
+    const MIN_WAIT_TIME = 2000; // Minimum 2 seconds to check auth
+    
+    // Update loading status
+    function updateLoadingStatus(message) {
+      document.getElementById('loadingStatus').textContent = message;
+      document.getElementById('authStatus').textContent = `🔥 Firebase: ${message}`;
+      console.log('🔄 Loading Status:', message);
+    }
 
-    // ===== AUTHENTICATION STATE LISTENER - BULLETPROOF =====
-    onAuthStateChanged(auth, (user) => {
-      authChecked = true;
-      document.getElementById('loadingScreen').style.display = 'none';
-      
+    // Show auth status indicator
+    document.getElementById('authStatus').style.display = 'block';
+    updateLoadingStatus('Connecting...');
+
+    // ===== FIREBASE AUTHENTICATION WITH PROPER TIMING =====
+    console.log('🔥 Starting Firebase authentication listener...');
+    updateLoadingStatus('Initializing Firebase...');
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      const authCheckDuration = Date.now() - authCheckStartTime;
+      console.log('🔄 Auth state changed. Duration:', authCheckDuration + 'ms');
+      updateLoadingStatus('Authentication verified');
+
       if (user) {
-        // ✅ USER AUTHENTICATED - SHOW UPLOAD FORM
+        // ✅ USER AUTHENTICATED
         currentUser = user;
-        console.log('✅ Firebase user authenticated for upload:', user.email);
+        console.log('✅ Firebase user authenticated:', user.email);
+        console.log('👤 User details:', {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          emailVerified: user.emailVerified
+        });
         
+        updateLoadingStatus('User authenticated ✅');
+        document.getElementById('authStatus').style.background = '#28a745';
+        
+        // Wait minimum time to prevent flash
+        const remainingWaitTime = Math.max(0, MIN_WAIT_TIME - authCheckDuration);
+        if (remainingWaitTime > 0) {
+          updateLoadingStatus(`Loading interface... (${Math.ceil(remainingWaitTime/1000)}s)`);
+          await new Promise(resolve => setTimeout(resolve, remainingWaitTime));
+        }
+        
+        // Show main content
+        document.getElementById('loadingScreen').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
         
-        // Update UI with user info
+        // Update UI
         const displayName = user.displayName || user.email || 'User';
         document.getElementById('welcomeText').textContent = `Welcome, ${displayName}!`;
         
+        // Hide auth status after success
+        setTimeout(() => {
+          document.getElementById('authStatus').style.display = 'none';
+        }, 3000);
+        
+        console.log('🎉 Upload page loaded successfully for authenticated user!');
+        
       } else {
-        // ❌ NO USER - REDIRECT TO LOGIN
-        console.log('❌ No authenticated user - redirecting to login');
+        // ❌ NO USER FOUND - BUT WAIT MINIMUM TIME
+        console.log('❌ No authenticated user found');
+        updateLoadingStatus('No user found');
+        document.getElementById('authStatus').style.background = '#dc3545';
+        
+        const remainingWaitTime = Math.max(0, MIN_WAIT_TIME - authCheckDuration);
+        if (remainingWaitTime > 0) {
+          updateLoadingStatus(`Checking authentication... (${Math.ceil(remainingWaitTime/1000)}s)`);
+          await new Promise(resolve => setTimeout(resolve, remainingWaitTime));
+        }
+        
+        console.log('🔄 Redirecting to login page...');
+        updateLoadingStatus('Redirecting to login...');
+        
+        // Redirect to login
         window.location.replace('login.html?next=upload.html');
       }
+      
+      authCheckComplete = true;
+      console.log('🏁 Auth check complete. Time taken:', Date.now() - authCheckStartTime + 'ms');
     });
 
     // ===== UTILITY FUNCTIONS =====
@@ -342,7 +424,7 @@
         if (progress < 30) {
           progressText.textContent = 'Validating video...';
         } else if (progress < 60) {
-          progressText.textContent = 'Uploading to Firebase...';
+          progressText.textContent = 'Uploading to Firebase Firestore...';
         } else if (progress < 90) {
           progressText.textContent = 'Making available worldwide...';
         } else {
@@ -359,18 +441,19 @@
       }, 100);
     }
 
-    // ===== FORM SUBMISSION =====
+    // ===== UPLOAD FORM HANDLING =====
     document.getElementById('uploadForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
       if (!currentUser) {
         showAlert('Authentication error. Please refresh and try again.');
+        console.error('❌ No current user when trying to upload');
         return;
       }
 
-      console.log('📤 Starting Firebase upload...');
+      console.log('📤 Starting upload process for user:', currentUser.email);
 
-      // Get form data
+      // Get form values
       const title = document.getElementById('videoTitle').value.trim();
       const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
       const genre = document.getElementById('videoGenre').value;
@@ -394,6 +477,8 @@
         return;
       }
 
+      console.log('✅ Form validation passed. YouTube ID:', youtubeId);
+
       // Show loading state
       const submitBtn = document.getElementById('submitBtnText');
       const spinner = document.getElementById('uploadSpinner');
@@ -404,7 +489,6 @@
       progressContainer.style.display = 'block';
 
       try {
-        // Animate progress
         animateProgress();
         
         // Process tags
@@ -412,7 +496,7 @@
           ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
           : [];
 
-        // Create video document for Firestore
+        // Create video document
         const videoData = {
           title: title,
           description: description,
@@ -428,12 +512,11 @@
           comments: []
         };
 
-        console.log('📹 Saving to Firebase Firestore:', videoData);
+        console.log('📹 Uploading video to Firestore:', videoData);
 
-        // 🔥 SAVE TO FIREBASE FIRESTORE
-        await addDoc(collection(db, "videos"), videoData);
-
-        console.log('🌍 Video saved to Firebase global database successfully!');
+        // Save to Firestore
+        const docRef = await addDoc(collection(db, "videos"), videoData);
+        console.log('🌍 Video uploaded successfully! Document ID:', docRef.id);
 
         // Show success
         setTimeout(() => {
@@ -442,25 +525,26 @@
         }, 1500);
 
       } catch (error) {
-        console.error('❌ Firebase upload error:', error);
+        console.error('❌ Upload error:', error);
         showAlert('Upload failed: ' + error.message);
         
         // Reset UI
-        submitBtn.textContent = 'Upload to Firebase Database';
+        submitBtn.textContent = 'Upload to Global Database';
         spinner.classList.add('d-none');
         progressContainer.style.display = 'none';
       }
     });
 
-    // Demo data shortcut
+    // Demo data (Ctrl+Shift+D)
     document.addEventListener('keydown', function(e) {
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-        document.getElementById('videoTitle').value = 'Sample Manga Explainer - Firebase Test';
+        console.log('🎮 Loading demo data...');
+        document.getElementById('videoTitle').value = 'Firebase Upload Test - ' + new Date().toLocaleTimeString();
         document.getElementById('youtubeUrl').value = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
         document.getElementById('videoGenre').value = 'Action';
-        document.getElementById('videoTags').value = 'manga, anime, firebase, test';
-        document.getElementById('videoDescription').value = 'This is a test upload to Firebase global database.';
-        showAlert('Demo data loaded!', 'info');
+        document.getElementById('videoTags').value = 'firebase, test, upload, demo';
+        document.getElementById('videoDescription').value = 'This is a test upload to verify Firebase Firestore integration.';
+        showAlert('Demo data loaded! Press upload to test Firebase integration.', 'info');
       }
     });
 
@@ -474,7 +558,16 @@
       }
     });
 
-    console.log('🔥 Firebase Upload Authentication System Ready');
+    // Timeout fallback (in case Firebase never responds)
+    setTimeout(() => {
+      if (!authCheckComplete) {
+        console.warn('⚠️ Firebase auth check taking too long, redirecting to login...');
+        updateLoadingStatus('Auth timeout - redirecting...');
+        window.location.replace('login.html?error=timeout');
+      }
+    }, 10000); // 10 second timeout
+
+    console.log('🔥 Firebase Upload page initialization complete');
   </script>
 </body>
 </html>
