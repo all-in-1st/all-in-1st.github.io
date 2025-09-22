@@ -9,10 +9,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
   
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -71,16 +67,46 @@
       margin: 0 auto 1rem;
       font-size: 2rem;
     }
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .global-badge {
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+    }
   </style>
 </head>
 <body>
+  <!-- Loading Screen -->
+  <div id="loadingScreen" class="loading-screen">
+    <div class="text-center">
+      <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;"></div>
+      <h4 class="text-success">Loading upload page...</h4>
+      <p class="text-muted">🔥 Verifying Firebase Authentication...</p>
+    </div>
+  </div>
+
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
       <a class="navbar-brand fw-bold text-primary" href="watch.html">
-        <i class="bi bi-arrow-left me-2"></i>All in 1st
+        <i class="bi bi-arrow-left me-2"></i>All in 1st <span class="global-badge">FIREBASE</span>
       </a>
       <div class="d-flex">
+        <span class="me-3 align-self-center" id="welcomeText">Loading...</span>
         <a href="watch.html" class="btn btn-outline-primary">
           Back to Watch
         </a>
@@ -88,7 +114,7 @@
     </div>
   </nav>
 
-  <div class="upload-container">
+  <div class="upload-container" id="mainContent" style="display:none;">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-8 col-xl-6">
@@ -97,7 +123,7 @@
             <div class="upload-header">
               <i class="bi bi-cloud-upload" style="font-size: 3rem;"></i>
               <h2 class="mt-3 mb-1">Upload Your Video</h2>
-              <p class="mb-0 opacity-75">Share your manga content with the global community</p>
+              <p class="mb-0 opacity-75">Share your manga content with the global Firebase community</p>
             </div>
 
             <!-- Upload Form -->
@@ -178,7 +204,7 @@
                 <div class="d-grid">
                   <button type="submit" class="btn btn-upload btn-lg text-white">
                     <i class="bi bi-cloud-upload me-2"></i>
-                    <span id="submitBtnText">Upload to Global Library</span>
+                    <span id="submitBtnText">Upload to Global Firebase Database</span>
                     <div class="spinner-border spinner-border-sm ms-2 d-none" id="uploadSpinner"></div>
                   </button>
                 </div>
@@ -191,7 +217,7 @@
                        id="uploadProgress" 
                        style="width: 0%"></div>
                 </div>
-                <p class="text-center text-muted mb-0" id="progressText">Uploading to global database...</p>
+                <p class="text-center text-muted mb-0" id="progressText">Uploading to Firebase global database...</p>
               </div>
             </div>
 
@@ -201,7 +227,7 @@
                 <i class="bi bi-check-lg"></i>
               </div>
               <h4 class="text-success mb-2">Upload Successful!</h4>
-              <p class="text-muted mb-3">Your video is now visible to ALL users worldwide!</p>
+              <p class="text-muted mb-3">Your video is now visible to ALL Firebase users worldwide!</p>
               <a href="watch.html" class="btn btn-primary">
                 View in Global Library
               </a>
@@ -213,49 +239,52 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
+  
+  <!-- 🔥 FIREBASE v9+ MODULAR SDK - MATCHING LOGIN.HTML AND WATCH.HTML 🔥 -->
+  <script type="module">
+    // Import Firebase functions - SAME AS LOGIN.HTML & WATCH.HTML
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
     console.log('📤 Firebase Upload page loaded');
 
-    // 🔥 FIREBASE CONFIG - REPLACE WITH YOUR KEYS!
-   const firebaseConfig = {
-  apiKey: "AIzaSyBLe404z16f_11og41NzKPVCtxn0w0XJQM",
-  authDomain: "all-in-1st.firebaseapp.com",
-  projectId: "all-in-1st",
-  storageBucket: "all-in-1st.firebasestorage.app",
-  messagingSenderId: "226019788510",
-  appId: "1:226019788510:web:51c4bcd04e5c457a89a44f"
-};
+    // 🔥 FIREBASE CONFIG - EXACT SAME AS LOGIN.HTML & WATCH.HTML
+    const firebaseConfig = {
+      apiKey: "AIzaSyBLe4o4zI6f_l1og41NzKPVCtxn0woXJQM",
+      authDomain: "all-in-1st.firebaseapp.com",
+      projectId: "all-in-1st",
+      storageBucket: "all-in-1st.firebasestorage.app",
+      messagingSenderId: "226019788510",
+      appId: "1:226019788510:web:51c4bcd04e5c457a89a44f"
+    };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    // Initialize Firebase - SAME AS LOGIN.HTML & WATCH.HTML
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    // Authentication check
-    function getUserSession() {
-      try {
-        const session = localStorage.getItem('allIn1st_user');
-        return session ? JSON.parse(session) : null;
-      } catch (error) {
-        console.error('❌ Session error:', error);
-        return null;
-      }
+    // ===== GLOBAL VARIABLES =====
+    let currentUser = null;
+
+    console.log('🔥 FIREBASE v9+ UPLOAD PAGE - MATCHING LOGIN & WATCH SYSTEMS');
+
+    // ===== UTILITY FUNCTIONS =====
+    function updateUI() {
+      if (!currentUser) return;
+      
+      const displayName = currentUser.displayName || currentUser.email || 'User';
+      document.getElementById('welcomeText').textContent = `Welcome, ${displayName}!`;
     }
 
-    function isLoggedIn() {
-      const session = getUserSession();
-      return session && session.isLoggedIn === true;
-    }
-
-    // Redirect if not logged in
-    if (!isLoggedIn()) {
-      console.log('❌ Not logged in, redirecting...');
-      window.location.href = 'login.html?next=upload.html';
-    }
-
-    const currentUser = getUserSession();
-    console.log('✅ User authenticated:', currentUser.username);
-
-    // Utility functions
     function showAlert(message, type = 'danger') {
       const container = document.getElementById('alertContainer');
       container.innerHTML = `
@@ -306,7 +335,7 @@
         if (progress < 30) {
           progressText.textContent = 'Validating video...';
         } else if (progress < 60) {
-          progressText.textContent = 'Uploading to global database...';
+          progressText.textContent = 'Uploading to Firebase global database...';
         } else if (progress < 90) {
           progressText.textContent = 'Making available worldwide...';
         } else {
@@ -325,7 +354,26 @@
       return interval;
     }
 
-    // Form submission handler
+    // ===== FIREBASE AUTH STATE LISTENER - MATCHES LOGIN.HTML & WATCH.HTML =====
+    onAuthStateChanged(auth, (user) => {
+      document.getElementById('loadingScreen').style.display = 'none';
+      
+      if (user) {
+        // ✅ USER IS AUTHENTICATED
+        currentUser = user;
+        console.log('✅ Firebase user authenticated:', user.email);
+        
+        updateUI();
+        document.getElementById('mainContent').style.display = 'block';
+        
+      } else {
+        // ❌ NO USER - REDIRECT TO LOGIN
+        console.log('❌ No Firebase user - redirecting to login');
+        window.location.replace('login.html?next=upload.html');
+      }
+    });
+
+    // ===== FORM SUBMISSION HANDLER =====
     document.getElementById('uploadForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       console.log('📤 Starting Firebase upload process...');
@@ -375,27 +423,28 @@
           ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
           : [];
 
-        // Create video object for Firebase
+        // Create video object for Firebase Firestore
         const newVideo = {
           title: title,
           description: description,
           genre: genre,
           youtubeId: youtubeId,
           tags: tags,
-          uploader: currentUser.username,
-          uploaderRole: currentUser.role,
-          uploadDate: firebase.firestore.FieldValue.serverTimestamp(),
+          uploader: currentUser.displayName || currentUser.email,
+          uploaderEmail: currentUser.email,
+          uploaderUID: currentUser.uid,
+          uploadDate: serverTimestamp(),
           views: 0,
           likes: 0,
           comments: []
         };
 
-        console.log('📹 Uploading video to Firebase:', newVideo);
+        console.log('📹 Uploading video to Firebase Firestore:', newVideo);
 
-        // 🔥 SAVE TO FIREBASE (GLOBAL DATABASE)
-        await db.collection("videos").add(newVideo);
+        // 🔥 SAVE TO FIREBASE FIRESTORE (GLOBAL DATABASE)
+        await addDoc(collection(db, "videos"), newVideo);
 
-        console.log('🌍 Video successfully saved to global database!');
+        console.log('🌍 Video successfully saved to Firebase global database!');
 
         // Complete progress and show success
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -404,14 +453,14 @@
         document.getElementById('uploadFormSection').style.display = 'none';
         document.getElementById('successAnimation').style.display = 'block';
 
-        console.log('🎉 Upload completed successfully! Video is now visible to ALL users worldwide!');
+        console.log('🎉 Upload completed successfully! Video is now visible to ALL Firebase users worldwide!');
 
       } catch (error) {
         console.error('❌ Firebase upload error:', error);
         
         // Reset UI on error
         showAlert('Upload failed: ' + error.message);
-        submitBtn.textContent = 'Upload to Global Library';
+        submitBtn.textContent = 'Upload to Global Firebase Database';
         spinner.classList.add('d-none');
         progressContainer.style.display = 'none';
       }
@@ -427,7 +476,7 @@
         document.getElementById('videoTags').value = 'attack on titan, anime, explained, drama, final season';
         document.getElementById('videoDescription').value = 'Complete analysis of Attack on Titan\'s final season, covering major plot points, character development, and the epic conclusion of this masterpiece series.';
         
-        showAlert('Demo data loaded! You can now submit to global database.', 'info');
+        showAlert('Demo data loaded! You can now submit to Firebase global database.', 'info');
       }
     });
 
@@ -441,10 +490,7 @@
       }
     });
 
-    console.log('📱 Firebase Upload page script initialized');
+    console.log('📱 Firebase Upload page script initialized - Auth synchronized with login.html and watch.html');
   </script>
 </body>
 </html>
-
-
-
