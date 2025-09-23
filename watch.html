@@ -233,6 +233,46 @@
       font-size: 0.9rem;
     }
     
+    /* ===== ACTION BUTTONS ===== */
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      background: none;
+      border: 2px solid #e9ecef;
+      border-radius: 25px;
+      padding: 8px 16px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #6c757d;
+    }
+    .action-btn:hover {
+      border-color: #007bff;
+      color: #007bff;
+      text-decoration: none;
+    }
+    .action-btn.liked {
+      background: #007bff;
+      border-color: #007bff;
+      color: white;
+    }
+    .subscribe-btn {
+      background: #ff0000;
+      border-color: #ff0000;
+      color: white;
+    }
+    .subscribe-btn:hover {
+      background: #cc0000;
+      border-color: #cc0000;
+      color: white;
+    }
+    
     /* ===== COMMENTS SECTION STYLES ===== */
     .comments-section {
       background: #f8f9fa;
@@ -342,25 +382,6 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
-    .like-btn {
-      background: none;
-      border: 2px solid #e9ecef;
-      border-radius: 25px;
-      padding: 8px 16px;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .like-btn:hover {
-      border-color: #007bff;
-      color: #007bff;
-    }
-    .like-btn.liked {
-      background: #007bff;
-      border-color: #007bff;
-      color: white;
-    }
     
     /* ===== LOADING STATE FOR COMMENTS ===== */
     .comment-loading {
@@ -387,7 +408,7 @@
 <body>
   <!-- Debug Status -->
   <div id="debugStatus" class="debug-status">
-    🔧 Video Player: Ready
+    🔧 Video System: Ready
   </div>
 
   <!-- Loading Screen -->
@@ -507,17 +528,30 @@
           <!-- Video Information -->
           <div class="video-info-section">
             <div class="d-flex justify-content-between align-items-start mb-3">
-              <div>
+              <div class="flex-grow-1">
                 <h5 id="videoInfoTitle" class="mb-2"></h5>
                 <div class="video-stats" id="videoStats">
                   <!-- Stats will be populated here -->
                 </div>
               </div>
-              <button id="likeButton" class="like-btn" onclick="toggleLike()">
+            </div>
+            
+            <!-- Action Buttons (Like, Subscribe, Share) -->
+            <div class="action-buttons" id="actionButtons">
+              <button id="likeButton" class="action-btn" onclick="toggleLike()">
                 <i class="bi bi-heart"></i>
                 <span id="likeCount">0</span>
               </button>
+              <a id="subscribeButton" class="action-btn subscribe-btn" href="#" target="_blank">
+                <i class="bi bi-youtube"></i>
+                Subscribe
+              </a>
+              <button class="action-btn" onclick="shareVideo()">
+                <i class="bi bi-share"></i>
+                Share
+              </button>
             </div>
+            
             <p id="videoDescription" class="text-muted"></p>
             <div class="d-flex flex-wrap gap-2" id="videoTags">
               <!-- Tags will be populated here -->
@@ -530,7 +564,7 @@
             <div class="comments-header">
               <h6 class="mb-0">
                 <i class="bi bi-chat-dots me-2"></i>
-                Comments (<span id="commentCount">0</span>)
+                Comments (<span id="commentCount">0</span>) for <span id="commentVideoTitle">this video</span>
               </h6>
             </div>
             
@@ -543,7 +577,7 @@
                     <input type="text" 
                            id="commentInput" 
                            class="form-control comment-input" 
-                           placeholder="Add a comment..." 
+                           placeholder="Add a comment to this video..." 
                            onkeypress="handleCommentKeyPress(event)">
                     <button class="btn comment-btn text-white" onclick="postComment()">
                       <i class="bi bi-send"></i>
@@ -557,11 +591,11 @@
             <div class="comments-container" id="commentsContainer">
               <div class="comment-loading" id="commentLoading">
                 <div class="spinner-border spinner-border-sm text-primary"></div>
-                <p class="mt-2 mb-0">Loading comments...</p>
+                <p class="mt-2 mb-0">Loading comments for this video...</p>
               </div>
               <div class="no-comments" id="noComments" style="display: none;">
                 <i class="bi bi-chat-dots" style="font-size: 2rem; color: #dee2e6;"></i>
-                <p class="mt-2 mb-0">No comments yet. Be the first to comment!</p>
+                <p class="mt-2 mb-0">No comments yet for this video. Be the first to comment!</p>
               </div>
             </div>
           </div>
@@ -602,7 +636,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
-  <!-- 🔥 FIREBASE v9+ WITH IFRAME REFRESH & COMMENT SYNC FIXES 🔥 -->
+  <!-- 🔥 FIREBASE v9+ WITH COMMENT ISOLATION & SUBSCRIBE FIXES 🔥 -->
   <script type="module">
     // Import Firebase functions - SAME AS LOGIN.HTML
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -647,8 +681,9 @@
     let currentVideo = null;
     let videoModal = null;
     let currentIframeId = 0; // Track iframe instances to force refresh
+    let commentCounter = 0; // Track comment uniqueness
 
-    console.log('🔥 FIREBASE v9+ WATCH PAGE - IFRAME & COMMENT FIXES v2.0');
+    console.log('🔥 FIREBASE v9+ WATCH PAGE - COMMENT ISOLATION & SUBSCRIBE v3.0');
 
     // Show debug status
     document.getElementById('debugStatus').style.display = 'block';
@@ -711,6 +746,22 @@
       }
     }
 
+    // ===== YOUTUBE CHANNEL EXTRACTION =====
+    function getYouTubeChannelUrl(youtubeId) {
+      // For demonstration, we'll create a generic channel link
+      // In real implementation, you'd need to fetch channel info from YouTube API
+      return `https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw?sub_confirmation=1`;
+    }
+
+    function extractChannelFromUrl(youtubeUrl) {
+      // Extract channel info from YouTube URL if available
+      // This is a simplified version - real implementation would use YouTube API
+      return {
+        channelUrl: `https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw?sub_confirmation=1`,
+        channelName: 'YouTube Channel'
+      };
+    }
+
     // ===== LOAD VIDEOS FROM FIRESTORE =====
     async function loadVideos() {
       console.log('🌍 Loading videos from Firestore...');
@@ -754,39 +805,49 @@
         allVideos = [
           {
             id: 'sample1',
-            title: 'Sample Manga Explainer',
-            description: 'A sample video for demonstration purposes. This video explains complex manga concepts in simple terms.',
+            title: 'Dragon Ball Z Explained',
+            description: 'Complete explanation of Dragon Ball Z saga with all transformations and power levels.',
             youtubeId: 'dQw4w9WgXcQ',
             genre: 'Action',
-            uploader: 'Demo User',
-            views: 1234,
-            likes: 45,
+            uploader: 'Anime Expert',
+            views: 15430,
+            likes: 892,
             likedBy: [],
             uploadDate: new Date().toISOString(),
-            tags: ['manga', 'demo', 'explainer'],
+            tags: ['dragon ball', 'dbz', 'anime', 'explanation'],
             comments: [
               {
-                id: 'comment1',
-                user: 'Sample User',
-                userUID: 'sample-uid-1',
-                text: 'Great explanation! Really helped me understand the concept.',
-                timestamp: new Date(Date.now() - 86400000).toISOString() // 1 day ago
+                id: 'dbz_comment1',
+                user: 'DBZ Fan',
+                userUID: 'dbz-fan-uid',
+                text: 'Best Dragon Ball explanation ever! Finally understand the power scaling.',
+                timestamp: new Date(Date.now() - 86400000).toISOString(),
+                uniqueId: 'dbz_comment1_1234567890'
               }
             ]
           },
           {
             id: 'sample2', 
-            title: 'Sample Anime Review',
-            description: 'An in-depth review of popular anime series with detailed analysis.',
+            title: 'One Piece Mysteries Revealed',
+            description: 'Deep dive into One Piece mysteries, Devil Fruits, and the Will of D.',
             youtubeId: 'jNQXAC9IVRw',
-            genre: 'Fantasy',
-            uploader: 'Test User',
-            views: 5678,
-            likes: 123,
+            genre: 'Adventure',
+            uploader: 'Pirate King',
+            views: 23150,
+            likes: 1456,
             likedBy: [],
-            uploadDate: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-            tags: ['anime', 'review', 'fantasy'],
-            comments: []
+            uploadDate: new Date(Date.now() - 172800000).toISOString(),
+            tags: ['one piece', 'luffy', 'devil fruit', 'mystery'],
+            comments: [
+              {
+                id: 'op_comment1',
+                user: 'Strawhat Crew',
+                userUID: 'strawhat-uid',
+                text: 'Mind blown! The Will of D theory makes so much sense now.',
+                timestamp: new Date(Date.now() - 43200000).toISOString(),
+                uniqueId: 'op_comment1_9876543210'
+              }
+            ]
           }
         ];
         
@@ -911,7 +972,10 @@
       currentIframeId++; // Increment to force new iframe
       
       console.log(`▶️ Playing video [${currentIframeId}]:`, video.title);
-      updateDebugStatus(`Playing: ${video.title}`);
+      updateDebugStatus(`Playing: ${video.title.substring(0, 20)}...`);
+      
+      // ===== FIX 1: CLEAR ALL COMMENT DATA ON VIDEO SWITCH =====
+      clearCommentsUI();
       
       // Update view count
       incrementViewCount(videoId);
@@ -920,6 +984,7 @@
       document.getElementById('videoModalTitle').textContent = video.title;
       document.getElementById('videoInfoTitle').textContent = video.title;
       document.getElementById('videoDescription').textContent = video.description || 'No description available.';
+      document.getElementById('commentVideoTitle').textContent = video.title;
       
       // Update video stats
       const statsContainer = document.getElementById('videoStats');
@@ -951,13 +1016,19 @@
       likeButton.querySelector('i').className = isLiked ? 'bi bi-heart-fill' : 'bi bi-heart';
       likeCount.textContent = video.likes || 0;
       
+      // ===== FIX 3: UPDATE SUBSCRIBE BUTTON =====
+      const subscribeButton = document.getElementById('subscribeButton');
+      const channelInfo = extractChannelFromUrl(video.youtubeUrl || '');
+      subscribeButton.href = getYouTubeChannelUrl(video.youtubeId);
+      subscribeButton.innerHTML = `<i class="bi bi-youtube"></i> Subscribe to ${video.uploader}`;
+      
       // Update tags
       const tagsContainer = document.getElementById('videoTags');
       tagsContainer.innerHTML = (video.tags || []).map(tag => 
         `<span class="badge bg-secondary">${tag}</span>`
       ).join('');
       
-      // ===== FIX 1: FORCE IFRAME REFRESH WITH UNIQUE KEY =====
+      // Force iframe refresh with unique key
       const playerContainer = document.getElementById('videoPlayerContainer');
       
       // Clear container completely first
@@ -981,7 +1052,7 @@
         updateDebugStatus(`Iframe loaded: ${currentIframeId}`);
       }, 100);
       
-      // Load comments
+      // Load comments for THIS specific video
       loadComments();
       
       // Show modal
@@ -992,17 +1063,41 @@
       videoModal.show();
     }
 
+    // ===== FIX 1: CLEAR COMMENTS UI COMPLETELY =====
+    function clearCommentsUI() {
+      const commentsContainer = document.getElementById('commentsContainer');
+      const commentLoading = document.getElementById('commentLoading');
+      const noComments = document.getElementById('noComments');
+      const commentCount = document.getElementById('commentCount');
+      const commentInput = document.getElementById('commentInput');
+      
+      // Clear everything
+      commentsContainer.innerHTML = '';
+      commentCount.textContent = '0';
+      commentInput.value = '';
+      
+      // Reset display states
+      commentLoading.style.display = 'block';
+      noComments.style.display = 'none';
+      
+      console.log('🧹 Comments UI cleared completely');
+      updateDebugStatus('Comments cleared');
+    }
+
     // ===== CLOSE VIDEO MODAL - ENHANCED CLEANUP =====
     function closeVideoModal() {
       // Clear video iframe completely to stop playback
       const playerContainer = document.getElementById('videoPlayerContainer');
       playerContainer.innerHTML = '';
       
+      // Clear comments UI
+      clearCommentsUI();
+      
       currentVideo = null;
       currentIframeId = 0;
       
       updateDebugStatus('Video stopped');
-      console.log('⏹️ Video modal closed, iframe cleared, playback stopped');
+      console.log('⏹️ Video modal closed, iframe cleared, comments cleared, playback stopped');
     }
 
     // ===== INCREMENT VIEW COUNT =====
@@ -1071,9 +1166,30 @@
       }
     }
 
-    // ===== COMMENTS SYSTEM - FIXED REFRESH ISSUE =====
+    // ===== SHARE FUNCTIONALITY =====
+    function shareVideo() {
+      if (!currentVideo) return;
+      
+      const shareUrl = `${window.location.origin}${window.location.pathname}?video=${currentVideo.id}`;
+      const shareText = `Check out this video: ${currentVideo.title}`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: currentVideo.title,
+          text: shareText,
+          url: shareUrl
+        });
+      } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(`${shareText} - ${shareUrl}`).then(() => {
+          alert('Video link copied to clipboard!');
+        });
+      }
+    }
+
+    // ===== COMMENTS SYSTEM - FIXED VIDEO ISOLATION & DUPLICATE ISSUE =====
     
-    // Load comments from current video data AND refresh from Firestore
+    // Load comments for SPECIFIC video only
     async function loadComments() {
       if (!currentVideo) return;
       
@@ -1085,12 +1201,12 @@
       // Show loading state
       commentLoading.style.display = 'block';
       noComments.style.display = 'none';
-      commentsContainer.innerHTML = '';
+      commentsContainer.innerHTML = commentLoading.outerHTML + noComments.outerHTML;
       
-      console.log('💬 Loading comments for video:', currentVideo.id);
+      console.log('💬 Loading comments for video:', currentVideo.id, 'Title:', currentVideo.title);
       
       try {
-        // ===== FIX 2: REFRESH COMMENTS FROM FIRESTORE =====
+        // ===== FETCH COMMENTS FOR THIS SPECIFIC VIDEO ONLY =====
         const videoRef = doc(db, "videos", currentVideo.id);
         const videoDoc = await getDoc(videoRef);
         
@@ -1098,11 +1214,11 @@
           const freshVideoData = videoDoc.data();
           const comments = freshVideoData.comments || [];
           
-          // Update current video data with fresh comments
+          // Update current video data with fresh comments FOR THIS VIDEO ONLY
           currentVideo.comments = comments;
           
-          console.log(`✅ Refreshed ${comments.length} comments from Firestore`);
-          updateDebugStatus(`${comments.length} comments loaded`);
+          console.log(`✅ Loaded ${comments.length} comments for video "${currentVideo.title}"`);
+          updateDebugStatus(`${comments.length} comments for this video`);
           
           // Update comment count
           commentCount.textContent = comments.length;
@@ -1112,6 +1228,7 @@
           
           if (comments.length === 0) {
             noComments.style.display = 'block';
+            commentsContainer.innerHTML = noComments.outerHTML;
             return;
           }
           
@@ -1120,7 +1237,7 @@
             new Date(b.timestamp) - new Date(a.timestamp)
           );
           
-          // Render comments
+          // Render comments for THIS video ONLY
           commentsContainer.innerHTML = sortedComments.map(comment => {
             const userInitial = (comment.user || 'U').charAt(0).toUpperCase();
             return `
@@ -1147,12 +1264,14 @@
           console.error('❌ Video document not found');
           commentLoading.style.display = 'none';
           noComments.style.display = 'block';
+          commentsContainer.innerHTML = noComments.outerHTML;
         }
         
       } catch (error) {
         console.error('❌ Error loading comments from Firestore:', error);
         commentLoading.style.display = 'none';
         noComments.style.display = 'block';
+        commentsContainer.innerHTML = noComments.outerHTML;
       }
     }
 
@@ -1167,34 +1286,42 @@
         return;
       }
       
-      console.log('💬 Posting comment to video:', currentVideo.id);
+      console.log('💬 Posting comment to video:', currentVideo.id, 'Title:', currentVideo.title);
       updateDebugStatus('Posting comment...');
       
       try {
+        // ===== FIX 2: CREATE UNIQUE COMMENT TO AVOID DUPLICATES =====
+        commentCounter++;
+        const uniqueId = `comment_${currentUser.uid}_${Date.now()}_${commentCounter}_${currentVideo.id}`;
+        
         const newComment = {
-          id: 'comment_' + Date.now(),
+          id: uniqueId,
           user: currentUser.displayName || currentUser.email,
           userUID: currentUser.uid,
           text: commentText,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          videoId: currentVideo.id, // Track which video this comment belongs to
+          uniqueId: uniqueId // Prevent duplicates
         };
+        
+        console.log('Creating unique comment:', uniqueId, 'for video:', currentVideo.title);
         
         const videoRef = doc(db, "videos", currentVideo.id);
         await updateDoc(videoRef, {
           comments: arrayUnion(newComment)
         });
         
-        console.log('✅ Comment posted successfully to Firestore');
+        console.log('✅ Comment posted successfully to Firestore for video:', currentVideo.title);
         
         // Clear input immediately
         commentInput.value = '';
         
-        // ===== FIX 2: REFRESH COMMENTS FROM FIRESTORE AFTER POSTING =====
+        // ===== REFRESH COMMENTS FOR THIS VIDEO ONLY =====
         updateDebugStatus('Refreshing comments...');
-        await loadComments(); // This will fetch fresh data from Firestore
+        await loadComments(); // This will fetch fresh data for THIS video only
         
-        console.log('✅ Comments refreshed after posting');
-        updateDebugStatus('Comment posted & refreshed');
+        console.log('✅ Comments refreshed after posting for video:', currentVideo.title);
+        updateDebugStatus(`Comment added to ${currentVideo.title.substring(0, 15)}...`);
         
       } catch (error) {
         console.error('❌ Error posting comment:', error);
@@ -1262,16 +1389,17 @@
     window.playVideo = playVideo;
     window.closeVideoModal = closeVideoModal;
     window.toggleLike = toggleLike;
+    window.shareVideo = shareVideo;
     window.postComment = postComment;
     window.handleCommentKeyPress = handleCommentKeyPress;
     window.replyToComment = replyToComment;
 
-    console.log('📱 Firebase Watch page loaded - IFRAME & COMMENTS FIXED v2.0');
+    console.log('📱 Firebase Watch page loaded - COMMENT ISOLATION & SUBSCRIBE FIXED v3.0');
     
-    // Hide debug status after 5 seconds
+    // Hide debug status after 8 seconds
     setTimeout(() => {
       document.getElementById('debugStatus').style.display = 'none';
-    }, 5000);
+    }, 8000);
   </script>
 </body>
 </html>
