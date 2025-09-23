@@ -144,6 +144,14 @@
       border-left: 3px solid #007bff;
       padding-left: 12px;
       margin-bottom: 12px;
+      background: #f8f9ff;
+      border-radius: 8px;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+    .comment-item:hover {
+      background: #f0f4ff;
+      transform: translateX(5px);
     }
     .no-results {
       text-align: center;
@@ -185,6 +193,173 @@
       background: linear-gradient(135deg, #ffeaa7, #fab1a0);
       border-radius: 8px;
       margin: 12px 0;
+    }
+    
+    /* ===== VIDEO MODAL STYLES ===== */
+    .video-modal {
+      z-index: 1055;
+    }
+    .video-modal .modal-dialog {
+      max-width: 900px;
+    }
+    .video-modal .modal-content {
+      border: none;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .video-modal .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-bottom: none;
+      padding: 1.5rem 2rem;
+    }
+    .video-modal .modal-body {
+      padding: 0;
+    }
+    .video-info-section {
+      padding: 2rem;
+    }
+    .video-stats {
+      display: flex;
+      gap: 20px;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+    
+    /* ===== COMMENTS SECTION STYLES ===== */
+    .comments-section {
+      background: #f8f9fa;
+      border-top: 1px solid #dee2e6;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .comments-header {
+      padding: 1rem 2rem;
+      background: white;
+      border-bottom: 1px solid #dee2e6;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .comments-container {
+      padding: 1rem 2rem 2rem;
+    }
+    .comment-form {
+      background: white;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #dee2e6;
+      position: sticky;
+      top: 60px;
+      z-index: 9;
+    }
+    .comment-input {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 12px 16px;
+      transition: all 0.3s ease;
+    }
+    .comment-input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+    }
+    .comment-btn {
+      background: linear-gradient(135deg, #007bff, #6610f2);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .comment-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    }
+    .comment-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .comment-avatar {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #007bff, #6610f2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .comment-username {
+      font-weight: 600;
+      color: #495057;
+    }
+    .comment-date {
+      color: #6c757d;
+      font-size: 0.8rem;
+    }
+    .comment-text {
+      color: #212529;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .comment-actions {
+      display: flex;
+      gap: 15px;
+      font-size: 0.85rem;
+    }
+    .comment-action {
+      color: #6c757d;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      cursor: pointer;
+    }
+    .comment-action:hover {
+      color: #007bff;
+    }
+    .no-comments {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #6c757d;
+    }
+    .video-duration-badge {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .like-btn {
+      background: none;
+      border: 2px solid #e9ecef;
+      border-radius: 25px;
+      padding: 8px 16px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .like-btn:hover {
+      border-color: #007bff;
+      color: #007bff;
+    }
+    .like-btn.liked {
+      background: #007bff;
+      border-color: #007bff;
+      color: white;
     }
   </style>
 </head>
@@ -289,6 +464,82 @@
     </div>
   </section>
 
+  <!-- Video Modal -->
+  <div class="modal fade video-modal" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="videoModalTitle">Video Title</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="closeVideoModal()"></button>
+        </div>
+        <div class="modal-body p-0">
+          <!-- Video Player -->
+          <div id="videoPlayerContainer" class="ratio ratio-16x9">
+            <!-- YouTube iframe will be inserted here -->
+          </div>
+          
+          <!-- Video Information -->
+          <div class="video-info-section">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <h5 id="videoInfoTitle" class="mb-2"></h5>
+                <div class="video-stats" id="videoStats">
+                  <!-- Stats will be populated here -->
+                </div>
+              </div>
+              <button id="likeButton" class="like-btn" onclick="toggleLike()">
+                <i class="bi bi-heart"></i>
+                <span id="likeCount">0</span>
+              </button>
+            </div>
+            <p id="videoDescription" class="text-muted"></p>
+            <div class="d-flex flex-wrap gap-2" id="videoTags">
+              <!-- Tags will be populated here -->
+            </div>
+          </div>
+          
+          <!-- Comments Section -->
+          <div class="comments-section">
+            <!-- Comments Header -->
+            <div class="comments-header">
+              <h6 class="mb-0">
+                <i class="bi bi-chat-dots me-2"></i>
+                Comments (<span id="commentCount">0</span>)
+              </h6>
+            </div>
+            
+            <!-- Comment Form -->
+            <div class="comment-form">
+              <div class="d-flex gap-3">
+                <div class="comment-avatar" id="commentUserAvatar">U</div>
+                <div class="flex-grow-1">
+                  <div class="input-group">
+                    <input type="text" 
+                           id="commentInput" 
+                           class="form-control comment-input" 
+                           placeholder="Add a comment..." 
+                           onkeypress="handleCommentKeyPress(event)">
+                    <button class="btn comment-btn text-white" onclick="postComment()">
+                      <i class="bi bi-send"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Comments Container -->
+            <div class="comments-container" id="commentsContainer">
+              <div class="no-comments" id="noComments">
+                <i class="bi bi-chat-dots" style="font-size: 2rem; color: #dee2e6;"></i>
+                <p class="mt-2 mb-0">No comments yet. Be the first to comment!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Sidebar Overlay -->
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -321,7 +572,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
-  <!-- 🔥 FIREBASE v9+ MODULAR SDK - MATCHING LOGIN.HTML EXACTLY 🔥 -->
+  <!-- 🔥 FIREBASE v9+ MODULAR SDK WITH EMBEDDED VIDEO PLAYER & COMMENTS 🔥 -->
   <script type="module">
     // Import Firebase functions - SAME AS LOGIN.HTML
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -335,7 +586,13 @@
       collection, 
       getDocs, 
       orderBy, 
-      query 
+      query,
+      doc,
+      updateDoc,
+      arrayUnion,
+      increment,
+      serverTimestamp,
+      getDoc
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // 🔥 FIREBASE CONFIG - EXACT SAME AS LOGIN.HTML
@@ -357,8 +614,10 @@
     let currentUser = null;
     let allVideos = [];
     let filteredVideos = [];
+    let currentVideo = null;
+    let videoModal = null;
 
-    console.log('🔥 FIREBASE v9+ WATCH PAGE - MATCHING LOGIN SYSTEM');
+    console.log('🔥 FIREBASE v9+ WATCH PAGE - WITH EMBEDDED PLAYER & COMMENTS');
 
     // ===== UTILITY FUNCTIONS =====
     function logout() {
@@ -394,6 +653,25 @@
       fallbackIcon.style.display = 'block';
     }
 
+    function formatDate(dateStr) {
+      if (!dateStr) return 'Unknown date';
+      
+      try {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) return '1 day ago';
+        if (diffDays < 7) return `${diffDays} days ago`;
+        if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+        if (diffDays < 365) return `${Math.ceil(diffDays / 30)} months ago`;
+        return `${Math.ceil(diffDays / 365)} years ago`;
+      } catch (error) {
+        return 'Unknown date';
+      }
+    }
+
     // ===== LOAD VIDEOS FROM FIRESTORE =====
     async function loadVideos() {
       console.log('🌍 Loading videos from Firestore...');
@@ -411,6 +689,11 @@
           if (video.uploadDate && video.uploadDate.toDate) {
             video.uploadDate = video.uploadDate.toDate().toISOString();
           }
+          
+          // Initialize missing fields
+          if (!video.comments) video.comments = [];
+          if (!video.likes) video.likes = 0;
+          if (!video.likedBy) video.likedBy = [];
           
           allVideos.push(video);
         });
@@ -430,24 +713,45 @@
           {
             id: 'sample1',
             title: 'Sample Manga Explainer',
-            description: 'A sample video for demonstration',
+            description: 'A sample video for demonstration purposes. This video explains complex manga concepts in simple terms.',
             youtubeId: 'dQw4w9WgXcQ',
             genre: 'Action',
             uploader: 'Demo User',
             views: 1234,
+            likes: 45,
+            likedBy: [],
             uploadDate: new Date().toISOString(),
-            tags: ['manga', 'demo']
+            tags: ['manga', 'demo', 'explainer'],
+            comments: [
+              {
+                id: 'comment1',
+                user: 'Sample User',
+                userUID: 'sample-uid-1',
+                text: 'Great explanation! Really helped me understand the concept.',
+                timestamp: new Date(Date.now() - 86400000).toISOString() // 1 day ago
+              },
+              {
+                id: 'comment2',
+                user: 'Another User',
+                userUID: 'sample-uid-2',
+                text: 'Could you make more videos like this? Amazing content!',
+                timestamp: new Date(Date.now() - 3600000).toISOString() // 1 hour ago
+              }
+            ]
           },
           {
             id: 'sample2', 
             title: 'Sample Anime Review',
-            description: 'Another sample video',
+            description: 'An in-depth review of popular anime series with detailed analysis.',
             youtubeId: 'dQw4w9WgXcQ',
             genre: 'Fantasy',
             uploader: 'Test User',
             views: 5678,
-            uploadDate: new Date().toISOString(),
-            tags: ['anime', 'demo']
+            likes: 123,
+            likedBy: [],
+            uploadDate: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+            tags: ['anime', 'review', 'fantasy'],
+            comments: []
           }
         ];
         
@@ -489,6 +793,9 @@
               </div>
               <div class="play-overlay">
                 <i class="bi bi-play-fill"></i>
+              </div>
+              <div class="video-duration-badge">
+                <i class="bi bi-play-fill me-1"></i>HD
               </div>
             </div>
             <div class="card-body">
@@ -560,16 +867,251 @@
       }, 500);
     }
 
-    // ===== PLAY VIDEO (PLACEHOLDER) =====
+    // ===== EMBEDDED VIDEO PLAYER =====
     function playVideo(videoId) {
       const video = allVideos.find(v => v.id === videoId);
       if (!video) return;
       
-      console.log('▶️ Playing video:', video.title);
+      currentVideo = video;
+      console.log('▶️ Playing embedded video:', video.title);
       
-      // For now, just open YouTube link
-      if (video.youtubeId) {
-        window.open(`https://www.youtube.com/watch?v=${video.youtubeId}`, '_blank');
+      // Update view count
+      incrementViewCount(videoId);
+      
+      // Set modal content
+      document.getElementById('videoModalTitle').textContent = video.title;
+      document.getElementById('videoInfoTitle').textContent = video.title;
+      document.getElementById('videoDescription').textContent = video.description || 'No description available.';
+      
+      // Update video stats
+      const statsContainer = document.getElementById('videoStats');
+      statsContainer.innerHTML = `
+        <div class="stat-item">
+          <i class="bi bi-eye"></i>
+          <span>${(video.views || 0).toLocaleString()} views</span>
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-person-circle"></i>
+          <span>By ${video.uploader}</span>
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-calendar3"></i>
+          <span>${formatDate(video.uploadDate)}</span>
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-tag"></i>
+          <span>${video.genre}</span>
+        </div>
+      `;
+      
+      // Update like button
+      const likeButton = document.getElementById('likeButton');
+      const likeCount = document.getElementById('likeCount');
+      const isLiked = video.likedBy && video.likedBy.includes(currentUser?.uid);
+      
+      likeButton.classList.toggle('liked', isLiked);
+      likeButton.querySelector('i').className = isLiked ? 'bi bi-heart-fill' : 'bi bi-heart';
+      likeCount.textContent = video.likes || 0;
+      
+      // Update tags
+      const tagsContainer = document.getElementById('videoTags');
+      tagsContainer.innerHTML = (video.tags || []).map(tag => 
+        `<span class="badge bg-secondary">${tag}</span>`
+      ).join('');
+      
+      // Embed YouTube video with autoplay
+      const playerContainer = document.getElementById('videoPlayerContainer');
+      playerContainer.innerHTML = `
+        <iframe 
+          src="https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1"
+          allow="autoplay; encrypted-media; fullscreen"
+          allowfullscreen
+          frameborder="0"
+          style="width: 100%; height: 100%;">
+        </iframe>
+      `;
+      
+      // Load comments
+      loadComments();
+      
+      // Show modal
+      videoModal = new bootstrap.Modal(document.getElementById('videoModal'));
+      videoModal.show();
+    }
+
+    // ===== CLOSE VIDEO MODAL =====
+    function closeVideoModal() {
+      // Clear video iframe to stop playback
+      document.getElementById('videoPlayerContainer').innerHTML = '';
+      currentVideo = null;
+      console.log('⏹️ Video modal closed, playback stopped');
+    }
+
+    // ===== INCREMENT VIEW COUNT =====
+    async function incrementViewCount(videoId) {
+      try {
+        const videoRef = doc(db, "videos", videoId);
+        await updateDoc(videoRef, {
+          views: increment(1)
+        });
+        
+        // Update local data
+        const video = allVideos.find(v => v.id === videoId);
+        if (video) {
+          video.views = (video.views || 0) + 1;
+        }
+        
+        console.log('👁️ View count incremented for video:', videoId);
+      } catch (error) {
+        console.error('❌ Error incrementing view count:', error);
+      }
+    }
+
+    // ===== LIKE FUNCTIONALITY =====
+    async function toggleLike() {
+      if (!currentVideo || !currentUser) return;
+      
+      const videoId = currentVideo.id;
+      const userId = currentUser.uid;
+      const isCurrentlyLiked = currentVideo.likedBy && currentVideo.likedBy.includes(userId);
+      
+      try {
+        const videoRef = doc(db, "videos", videoId);
+        
+        if (isCurrentlyLiked) {
+          // Unlike
+          await updateDoc(videoRef, {
+            likes: increment(-1),
+            likedBy: currentVideo.likedBy.filter(uid => uid !== userId)
+          });
+          currentVideo.likes = Math.max((currentVideo.likes || 0) - 1, 0);
+          currentVideo.likedBy = currentVideo.likedBy.filter(uid => uid !== userId);
+        } else {
+          // Like
+          await updateDoc(videoRef, {
+            likes: increment(1),
+            likedBy: arrayUnion(userId)
+          });
+          currentVideo.likes = (currentVideo.likes || 0) + 1;
+          if (!currentVideo.likedBy) currentVideo.likedBy = [];
+          currentVideo.likedBy.push(userId);
+        }
+        
+        // Update UI
+        const likeButton = document.getElementById('likeButton');
+        const likeCount = document.getElementById('likeCount');
+        const newIsLiked = !isCurrentlyLiked;
+        
+        likeButton.classList.toggle('liked', newIsLiked);
+        likeButton.querySelector('i').className = newIsLiked ? 'bi bi-heart-fill' : 'bi bi-heart';
+        likeCount.textContent = currentVideo.likes;
+        
+        console.log(`💖 Video ${newIsLiked ? 'liked' : 'unliked'}:`, videoId);
+        
+      } catch (error) {
+        console.error('❌ Error toggling like:', error);
+      }
+    }
+
+    // ===== COMMENTS SYSTEM =====
+    function loadComments() {
+      if (!currentVideo) return;
+      
+      const commentsContainer = document.getElementById('commentsContainer');
+      const noComments = document.getElementById('noComments');
+      const commentCount = document.getElementById('commentCount');
+      
+      const comments = currentVideo.comments || [];
+      commentCount.textContent = comments.length;
+      
+      if (comments.length === 0) {
+        noComments.style.display = 'block';
+        commentsContainer.innerHTML = '';
+        return;
+      }
+      
+      noComments.style.display = 'none';
+      
+      // Sort comments by timestamp (newest first)
+      const sortedComments = comments.sort((a, b) => 
+        new Date(b.timestamp) - new Date(a.timestamp)
+      );
+      
+      commentsContainer.innerHTML = sortedComments.map(comment => {
+        const userInitial = (comment.user || 'U').charAt(0).toUpperCase();
+        return `
+          <div class="comment-item">
+            <div class="comment-user">
+              <div class="comment-avatar">${userInitial}</div>
+              <span class="comment-username">${comment.user}</span>
+              <span class="comment-date">${formatDate(comment.timestamp)}</span>
+            </div>
+            <div class="comment-text">${comment.text}</div>
+            <div class="comment-actions">
+              <span class="comment-action" onclick="replyToComment('${comment.id}')">
+                <i class="bi bi-reply me-1"></i>Reply
+              </span>
+              <span class="comment-action">
+                <i class="bi bi-heart me-1"></i>Like
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function postComment() {
+      if (!currentVideo || !currentUser) return;
+      
+      const commentInput = document.getElementById('commentInput');
+      const commentText = commentInput.value.trim();
+      
+      if (!commentText) {
+        commentInput.focus();
+        return;
+      }
+      
+      try {
+        const newComment = {
+          id: 'comment_' + Date.now(),
+          user: currentUser.displayName || currentUser.email,
+          userUID: currentUser.uid,
+          text: commentText,
+          timestamp: new Date().toISOString()
+        };
+        
+        const videoRef = doc(db, "videos", currentVideo.id);
+        await updateDoc(videoRef, {
+          comments: arrayUnion(newComment)
+        });
+        
+        // Update local data
+        if (!currentVideo.comments) currentVideo.comments = [];
+        currentVideo.comments.push(newComment);
+        
+        // Clear input and refresh comments
+        commentInput.value = '';
+        loadComments();
+        
+        console.log('💬 Comment posted successfully');
+        
+      } catch (error) {
+        console.error('❌ Error posting comment:', error);
+      }
+    }
+
+    function handleCommentKeyPress(event) {
+      if (event.key === 'Enter') {
+        postComment();
+      }
+    }
+
+    function replyToComment(commentId) {
+      const commentInput = document.getElementById('commentInput');
+      const comment = currentVideo.comments.find(c => c.id === commentId);
+      if (comment) {
+        commentInput.value = `@${comment.user} `;
+        commentInput.focus();
       }
     }
 
@@ -584,6 +1126,9 @@
       document.getElementById('userAvatar').textContent = initial;
       document.getElementById('sidebarAvatar').textContent = initial;
       document.getElementById('sidebarUsername').textContent = displayName;
+      
+      // Update comment user avatar
+      document.getElementById('commentUserAvatar').textContent = initial;
     }
 
     // ===== FIREBASE AUTH STATE LISTENER - MATCHES LOGIN.HTML =====
@@ -612,8 +1157,13 @@
     window.refreshVideos = refreshVideos;
     window.filterVideos = filterVideos;
     window.playVideo = playVideo;
+    window.closeVideoModal = closeVideoModal;
+    window.toggleLike = toggleLike;
+    window.postComment = postComment;
+    window.handleCommentKeyPress = handleCommentKeyPress;
+    window.replyToComment = replyToComment;
 
-    console.log('📱 Firebase Watch page loaded - Auth system synchronized with login.html');
+    console.log('📱 Firebase Watch page loaded with embedded player & comments system');
   </script>
 </body>
 </html>
