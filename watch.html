@@ -361,9 +361,35 @@
       border-color: #007bff;
       color: white;
     }
+    
+    /* ===== LOADING STATE FOR COMMENTS ===== */
+    .comment-loading {
+      text-align: center;
+      padding: 2rem;
+      color: #6c757d;
+    }
+    
+    /* ===== DEBUG INDICATOR ===== */
+    .debug-status {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      z-index: 1000;
+      display: none;
+    }
   </style>
 </head>
 <body>
+  <!-- Debug Status -->
+  <div id="debugStatus" class="debug-status">
+    🔧 Video Player: Ready
+  </div>
+
   <!-- Loading Screen -->
   <div id="loadingScreen" class="loading-screen">
     <div class="text-center">
@@ -473,7 +499,7 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="closeVideoModal()"></button>
         </div>
         <div class="modal-body p-0">
-          <!-- Video Player -->
+          <!-- Video Player Container -->
           <div id="videoPlayerContainer" class="ratio ratio-16x9">
             <!-- YouTube iframe will be inserted here -->
           </div>
@@ -529,7 +555,11 @@
             
             <!-- Comments Container -->
             <div class="comments-container" id="commentsContainer">
-              <div class="no-comments" id="noComments">
+              <div class="comment-loading" id="commentLoading">
+                <div class="spinner-border spinner-border-sm text-primary"></div>
+                <p class="mt-2 mb-0">Loading comments...</p>
+              </div>
+              <div class="no-comments" id="noComments" style="display: none;">
                 <i class="bi bi-chat-dots" style="font-size: 2rem; color: #dee2e6;"></i>
                 <p class="mt-2 mb-0">No comments yet. Be the first to comment!</p>
               </div>
@@ -572,7 +602,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   
-  <!-- 🔥 FIREBASE v9+ MODULAR SDK WITH EMBEDDED VIDEO PLAYER & COMMENTS 🔥 -->
+  <!-- 🔥 FIREBASE v9+ WITH IFRAME REFRESH & COMMENT SYNC FIXES 🔥 -->
   <script type="module">
     // Import Firebase functions - SAME AS LOGIN.HTML
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -616,10 +646,19 @@
     let filteredVideos = [];
     let currentVideo = null;
     let videoModal = null;
+    let currentIframeId = 0; // Track iframe instances to force refresh
 
-    console.log('🔥 FIREBASE v9+ WATCH PAGE - WITH EMBEDDED PLAYER & COMMENTS');
+    console.log('🔥 FIREBASE v9+ WATCH PAGE - IFRAME & COMMENT FIXES v2.0');
+
+    // Show debug status
+    document.getElementById('debugStatus').style.display = 'block';
 
     // ===== UTILITY FUNCTIONS =====
+    function updateDebugStatus(message) {
+      document.getElementById('debugStatus').textContent = `🔧 ${message}`;
+      console.log(`🔧 DEBUG: ${message}`);
+    }
+
     function logout() {
       console.log('👋 Signing out with Firebase');
       signOut(auth).then(() => {
@@ -675,6 +714,7 @@
     // ===== LOAD VIDEOS FROM FIRESTORE =====
     async function loadVideos() {
       console.log('🌍 Loading videos from Firestore...');
+      updateDebugStatus('Loading videos...');
       
       try {
         const q = query(collection(db, "videos"), orderBy("uploadDate", "desc"));
@@ -702,11 +742,13 @@
         
         console.log('✅ Loaded', allVideos.length, 'videos from Firestore');
         document.getElementById('videoCount').textContent = allVideos.length;
+        updateDebugStatus(`Loaded ${allVideos.length} videos`);
         
         renderVideos();
         
       } catch (error) {
         console.error('❌ Error loading videos from Firestore:', error);
+        updateDebugStatus('Using sample data');
         
         // Show sample videos for demo
         allVideos = [
@@ -729,13 +771,6 @@
                 userUID: 'sample-uid-1',
                 text: 'Great explanation! Really helped me understand the concept.',
                 timestamp: new Date(Date.now() - 86400000).toISOString() // 1 day ago
-              },
-              {
-                id: 'comment2',
-                user: 'Another User',
-                userUID: 'sample-uid-2',
-                text: 'Could you make more videos like this? Amazing content!',
-                timestamp: new Date(Date.now() - 3600000).toISOString() // 1 hour ago
               }
             ]
           },
@@ -743,7 +778,7 @@
             id: 'sample2', 
             title: 'Sample Anime Review',
             description: 'An in-depth review of popular anime series with detailed analysis.',
-            youtubeId: 'dQw4w9WgXcQ',
+            youtubeId: 'jNQXAC9IVRw',
             genre: 'Fantasy',
             uploader: 'Test User',
             views: 5678,
@@ -867,13 +902,16 @@
       }, 500);
     }
 
-    // ===== EMBEDDED VIDEO PLAYER =====
+    // ===== EMBEDDED VIDEO PLAYER - FIXED IFRAME REFRESH ISSUE =====
     function playVideo(videoId) {
       const video = allVideos.find(v => v.id === videoId);
       if (!video) return;
       
       currentVideo = video;
-      console.log('▶️ Playing embedded video:', video.title);
+      currentIframeId++; // Increment to force new iframe
+      
+      console.log(`▶️ Playing video [${currentIframeId}]:`, video.title);
+      updateDebugStatus(`Playing: ${video.title}`);
       
       // Update view count
       incrementViewCount(videoId);
@@ -919,32 +957,52 @@
         `<span class="badge bg-secondary">${tag}</span>`
       ).join('');
       
-      // Embed YouTube video with autoplay
+      // ===== FIX 1: FORCE IFRAME REFRESH WITH UNIQUE KEY =====
       const playerContainer = document.getElementById('videoPlayerContainer');
-      playerContainer.innerHTML = `
-        <iframe 
-          src="https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1"
-          allow="autoplay; encrypted-media; fullscreen"
-          allowfullscreen
-          frameborder="0"
-          style="width: 100%; height: 100%;">
-        </iframe>
-      `;
+      
+      // Clear container completely first
+      playerContainer.innerHTML = '';
+      
+      // Wait a moment then create fresh iframe
+      setTimeout(() => {
+        playerContainer.innerHTML = `
+          <iframe 
+            key="iframe-${currentIframeId}"
+            id="videoIframe-${currentIframeId}"
+            src="https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1&key=${currentIframeId}"
+            allow="autoplay; encrypted-media; fullscreen"
+            allowfullscreen
+            frameborder="0"
+            style="width: 100%; height: 100%;">
+          </iframe>
+        `;
+        
+        console.log(`✅ Fresh iframe created [${currentIframeId}] for video:`, video.youtubeId);
+        updateDebugStatus(`Iframe loaded: ${currentIframeId}`);
+      }, 100);
       
       // Load comments
       loadComments();
       
       // Show modal
+      if (videoModal) {
+        videoModal.dispose(); // Dispose existing modal
+      }
       videoModal = new bootstrap.Modal(document.getElementById('videoModal'));
       videoModal.show();
     }
 
-    // ===== CLOSE VIDEO MODAL =====
+    // ===== CLOSE VIDEO MODAL - ENHANCED CLEANUP =====
     function closeVideoModal() {
-      // Clear video iframe to stop playback
-      document.getElementById('videoPlayerContainer').innerHTML = '';
+      // Clear video iframe completely to stop playback
+      const playerContainer = document.getElementById('videoPlayerContainer');
+      playerContainer.innerHTML = '';
+      
       currentVideo = null;
-      console.log('⏹️ Video modal closed, playback stopped');
+      currentIframeId = 0;
+      
+      updateDebugStatus('Video stopped');
+      console.log('⏹️ Video modal closed, iframe cleared, playback stopped');
     }
 
     // ===== INCREMENT VIEW COUNT =====
@@ -1013,51 +1071,89 @@
       }
     }
 
-    // ===== COMMENTS SYSTEM =====
-    function loadComments() {
+    // ===== COMMENTS SYSTEM - FIXED REFRESH ISSUE =====
+    
+    // Load comments from current video data AND refresh from Firestore
+    async function loadComments() {
       if (!currentVideo) return;
       
       const commentsContainer = document.getElementById('commentsContainer');
+      const commentLoading = document.getElementById('commentLoading');
       const noComments = document.getElementById('noComments');
       const commentCount = document.getElementById('commentCount');
       
-      const comments = currentVideo.comments || [];
-      commentCount.textContent = comments.length;
-      
-      if (comments.length === 0) {
-        noComments.style.display = 'block';
-        commentsContainer.innerHTML = '';
-        return;
-      }
-      
+      // Show loading state
+      commentLoading.style.display = 'block';
       noComments.style.display = 'none';
+      commentsContainer.innerHTML = '';
       
-      // Sort comments by timestamp (newest first)
-      const sortedComments = comments.sort((a, b) => 
-        new Date(b.timestamp) - new Date(a.timestamp)
-      );
+      console.log('💬 Loading comments for video:', currentVideo.id);
       
-      commentsContainer.innerHTML = sortedComments.map(comment => {
-        const userInitial = (comment.user || 'U').charAt(0).toUpperCase();
-        return `
-          <div class="comment-item">
-            <div class="comment-user">
-              <div class="comment-avatar">${userInitial}</div>
-              <span class="comment-username">${comment.user}</span>
-              <span class="comment-date">${formatDate(comment.timestamp)}</span>
-            </div>
-            <div class="comment-text">${comment.text}</div>
-            <div class="comment-actions">
-              <span class="comment-action" onclick="replyToComment('${comment.id}')">
-                <i class="bi bi-reply me-1"></i>Reply
-              </span>
-              <span class="comment-action">
-                <i class="bi bi-heart me-1"></i>Like
-              </span>
-            </div>
-          </div>
-        `;
-      }).join('');
+      try {
+        // ===== FIX 2: REFRESH COMMENTS FROM FIRESTORE =====
+        const videoRef = doc(db, "videos", currentVideo.id);
+        const videoDoc = await getDoc(videoRef);
+        
+        if (videoDoc.exists()) {
+          const freshVideoData = videoDoc.data();
+          const comments = freshVideoData.comments || [];
+          
+          // Update current video data with fresh comments
+          currentVideo.comments = comments;
+          
+          console.log(`✅ Refreshed ${comments.length} comments from Firestore`);
+          updateDebugStatus(`${comments.length} comments loaded`);
+          
+          // Update comment count
+          commentCount.textContent = comments.length;
+          
+          // Hide loading
+          commentLoading.style.display = 'none';
+          
+          if (comments.length === 0) {
+            noComments.style.display = 'block';
+            return;
+          }
+          
+          // Sort comments by timestamp (newest first)
+          const sortedComments = comments.sort((a, b) => 
+            new Date(b.timestamp) - new Date(a.timestamp)
+          );
+          
+          // Render comments
+          commentsContainer.innerHTML = sortedComments.map(comment => {
+            const userInitial = (comment.user || 'U').charAt(0).toUpperCase();
+            return `
+              <div class="comment-item">
+                <div class="comment-user">
+                  <div class="comment-avatar">${userInitial}</div>
+                  <span class="comment-username">${comment.user}</span>
+                  <span class="comment-date">${formatDate(comment.timestamp)}</span>
+                </div>
+                <div class="comment-text">${comment.text}</div>
+                <div class="comment-actions">
+                  <span class="comment-action" onclick="replyToComment('${comment.id}')">
+                    <i class="bi bi-reply me-1"></i>Reply
+                  </span>
+                  <span class="comment-action">
+                    <i class="bi bi-heart me-1"></i>Like
+                  </span>
+                </div>
+              </div>
+            `;
+          }).join('');
+          
+        } else {
+          console.error('❌ Video document not found');
+          commentLoading.style.display = 'none';
+          noComments.style.display = 'block';
+        }
+        
+      } catch (error) {
+        console.error('❌ Error loading comments from Firestore:', error);
+        commentLoading.style.display = 'none';
+        noComments.style.display = 'block';
+      }
     }
 
     async function postComment() {
@@ -1070,6 +1166,9 @@
         commentInput.focus();
         return;
       }
+      
+      console.log('💬 Posting comment to video:', currentVideo.id);
+      updateDebugStatus('Posting comment...');
       
       try {
         const newComment = {
@@ -1085,18 +1184,21 @@
           comments: arrayUnion(newComment)
         });
         
-        // Update local data
-        if (!currentVideo.comments) currentVideo.comments = [];
-        currentVideo.comments.push(newComment);
+        console.log('✅ Comment posted successfully to Firestore');
         
-        // Clear input and refresh comments
+        // Clear input immediately
         commentInput.value = '';
-        loadComments();
         
-        console.log('💬 Comment posted successfully');
+        // ===== FIX 2: REFRESH COMMENTS FROM FIRESTORE AFTER POSTING =====
+        updateDebugStatus('Refreshing comments...');
+        await loadComments(); // This will fetch fresh data from Firestore
+        
+        console.log('✅ Comments refreshed after posting');
+        updateDebugStatus('Comment posted & refreshed');
         
       } catch (error) {
         console.error('❌ Error posting comment:', error);
+        updateDebugStatus('Comment posting failed');
       }
     }
 
@@ -1139,6 +1241,7 @@
         // ✅ USER IS AUTHENTICATED
         currentUser = user;
         console.log('✅ Firebase user authenticated:', user.email);
+        updateDebugStatus('User authenticated');
         
         updateUI();
         loadVideos();
@@ -1163,7 +1266,12 @@
     window.handleCommentKeyPress = handleCommentKeyPress;
     window.replyToComment = replyToComment;
 
-    console.log('📱 Firebase Watch page loaded with embedded player & comments system');
+    console.log('📱 Firebase Watch page loaded - IFRAME & COMMENTS FIXED v2.0');
+    
+    // Hide debug status after 5 seconds
+    setTimeout(() => {
+      document.getElementById('debugStatus').style.display = 'none';
+    }, 5000);
   </script>
 </body>
 </html>
